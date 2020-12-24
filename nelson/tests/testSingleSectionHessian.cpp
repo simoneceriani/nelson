@@ -63,7 +63,7 @@ TEMPLATE_TEST_CASE_SIG("SingleSectionHessian", "[SingleSectionHessian]",
     }
   }
 
-  nelson::SingleSectionHessianEval<matType, double, B, NB> sec;
+  nelson::SingleSectionHessian<matType, double, B, NB> sec;
   sec.resize(SecType<B>::secSize, numBlocks, sp);
   sec.clearAll();
   sec.clearChi2();
@@ -77,32 +77,32 @@ TEST_CASE("temp", "temp") {
 
   mat::SparsityPatternColMajor sp(numBlocks, numBlocks);
 
-  nelson::SingleSectionHessianEval<mat::BlockDense, double, secSizeFix, numBlocks>       sec_01;
-  nelson::SingleSectionHessianEval<mat::BlockDense, double, secSizeFix, mat::Dynamic>    sec_02;
-  nelson::SingleSectionHessianEval<mat::BlockDense, double, mat::Dynamic, secSizeFix>    sec_03;
-  nelson::SingleSectionHessianEval<mat::BlockDense, double, mat::Dynamic, mat::Dynamic>  sec_04;
-  nelson::SingleSectionHessianEval<mat::BlockDense, double, mat::Variable, secSizeFix>   sec_05;
-  nelson::SingleSectionHessianEval<mat::BlockDense, double, mat::Variable, mat::Dynamic> sec_06;
+  nelson::SingleSectionHessian<mat::BlockDense, double, secSizeFix, numBlocks>       sec_01;
+  nelson::SingleSectionHessian<mat::BlockDense, double, secSizeFix, mat::Dynamic>    sec_02;
+  nelson::SingleSectionHessian<mat::BlockDense, double, mat::Dynamic, secSizeFix>    sec_03;
+  nelson::SingleSectionHessian<mat::BlockDense, double, mat::Dynamic, mat::Dynamic>  sec_04;
+  nelson::SingleSectionHessian<mat::BlockDense, double, mat::Variable, secSizeFix>   sec_05;
+  nelson::SingleSectionHessian<mat::BlockDense, double, mat::Variable, mat::Dynamic> sec_06;
 
-  nelson::SingleSectionHessianEval<mat::BlockDiagonal, double, secSizeFix, numBlocks>       sec_11;
-  nelson::SingleSectionHessianEval<mat::BlockDiagonal, double, secSizeFix, mat::Dynamic>    sec_12;
-  nelson::SingleSectionHessianEval<mat::BlockDiagonal, double, mat::Dynamic, secSizeFix>    sec_13;
-  nelson::SingleSectionHessianEval<mat::BlockDiagonal, double, mat::Dynamic, mat::Dynamic>  sec_14;
-  nelson::SingleSectionHessianEval<mat::BlockDiagonal, double, mat::Variable, secSizeFix>   sec_15;
-  nelson::SingleSectionHessianEval<mat::BlockDiagonal, double, mat::Variable, mat::Dynamic> sec_16;
+  nelson::SingleSectionHessian<mat::BlockDiagonal, double, secSizeFix, numBlocks>       sec_11;
+  nelson::SingleSectionHessian<mat::BlockDiagonal, double, secSizeFix, mat::Dynamic>    sec_12;
+  nelson::SingleSectionHessian<mat::BlockDiagonal, double, mat::Dynamic, secSizeFix>    sec_13;
+  nelson::SingleSectionHessian<mat::BlockDiagonal, double, mat::Dynamic, mat::Dynamic>  sec_14;
+  nelson::SingleSectionHessian<mat::BlockDiagonal, double, mat::Variable, secSizeFix>   sec_15;
+  nelson::SingleSectionHessian<mat::BlockDiagonal, double, mat::Variable, mat::Dynamic> sec_16;
 
-  nelson::SingleSectionHessianEval<mat::BlockSparse, double, secSizeFix, numBlocks>       sec_21;
-  nelson::SingleSectionHessianEval<mat::BlockSparse, double, secSizeFix, mat::Dynamic>    sec_22;
-  nelson::SingleSectionHessianEval<mat::BlockSparse, double, mat::Dynamic, secSizeFix>    sec_23;
-  nelson::SingleSectionHessianEval<mat::BlockSparse, double, mat::Dynamic, mat::Dynamic>  sec_24;
-  nelson::SingleSectionHessianEval<mat::BlockSparse, double, mat::Variable, secSizeFix>   sec_25;
-  nelson::SingleSectionHessianEval<mat::BlockSparse, double, mat::Variable, mat::Dynamic> sec_26;
+  nelson::SingleSectionHessian<mat::BlockSparse, double, secSizeFix, numBlocks>       sec_21;
+  nelson::SingleSectionHessian<mat::BlockSparse, double, secSizeFix, mat::Dynamic>    sec_22;
+  nelson::SingleSectionHessian<mat::BlockSparse, double, mat::Dynamic, secSizeFix>    sec_23;
+  nelson::SingleSectionHessian<mat::BlockSparse, double, mat::Dynamic, mat::Dynamic>  sec_24;
+  nelson::SingleSectionHessian<mat::BlockSparse, double, mat::Variable, secSizeFix>   sec_25;
+  nelson::SingleSectionHessian<mat::BlockSparse, double, mat::Variable, mat::Dynamic> sec_26;
 
-  nelson::SingleSectionHessianEval<mat::BlockCoeffSparse, double, secSizeFix, numBlocks>       sec_31;
-  nelson::SingleSectionHessianEval<mat::BlockCoeffSparse, double, secSizeFix, mat::Dynamic>    sec_32;
-  nelson::SingleSectionHessianEval<mat::BlockCoeffSparse, double, mat::Dynamic, secSizeFix>    sec_33;
-  nelson::SingleSectionHessianEval<mat::BlockCoeffSparse, double, mat::Dynamic, mat::Dynamic>  sec_34;
-  nelson::SingleSectionHessianEval<mat::BlockCoeffSparse, double, mat::Variable, secSizeFix>   sec_35;
-  nelson::SingleSectionHessianEval<mat::BlockCoeffSparse, double, mat::Variable, mat::Dynamic> sec_36;
+  nelson::SingleSectionHessian<mat::BlockCoeffSparse, double, secSizeFix, numBlocks>       sec_31;
+  nelson::SingleSectionHessian<mat::BlockCoeffSparse, double, secSizeFix, mat::Dynamic>    sec_32;
+  nelson::SingleSectionHessian<mat::BlockCoeffSparse, double, mat::Dynamic, secSizeFix>    sec_33;
+  nelson::SingleSectionHessian<mat::BlockCoeffSparse, double, mat::Dynamic, mat::Dynamic>  sec_34;
+  nelson::SingleSectionHessian<mat::BlockCoeffSparse, double, mat::Variable, secSizeFix>   sec_35;
+  nelson::SingleSectionHessian<mat::BlockCoeffSparse, double, mat::Variable, mat::Dynamic> sec_36;
 
 }

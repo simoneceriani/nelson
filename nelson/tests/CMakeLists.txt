@@ -20,6 +20,7 @@ include(Catch)
 
 set(TESTS_LIST 
   testSingleSectionHessian.cpp
+  testSingleSection.cpp
 )
 
 foreach(s ${TESTS_LIST})

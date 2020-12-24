@@ -9,7 +9,7 @@
 namespace nelson {
 
   template<int matType, class T, int B, int NB = mat::Dynamic>
-  class SingleSectionHessianEval {
+  class SingleSectionHessian {
   public:
     using MatTraits = mat::MatrixBlockIterableTypeTraits<matType, T, mat::ColMajor, B, B, NB, NB>;
 
@@ -24,8 +24,8 @@ namespace nelson {
     T _chi2;
 
   public:
-    SingleSectionHessianEval();
-    virtual ~SingleSectionHessianEval();
+    SingleSectionHessian();
+    virtual ~SingleSectionHessian();
 
     void resize(BlockSizeTypePar blockSizes, int nBlocks, const mat::SparsityPattern<mat::ColMajor>& sp);
 

@@ -31,9 +31,14 @@ target_sources_wrapper(nelson
     Global.h
     SingleSectionHessian.h
     SingleSectionHessian.hpp
+    SingleSection.h
+    SingleSection.hpp
+    EdgeInterface.h
 	PRIVATE
     Global.cpp
     SingleSectionHessian.cpp
+    SingleSection.cpp
+    EdgeInterface.cpp
 )
 
 # if you do not want to have nelsond.{dll,lib,so} in debug disable this 
