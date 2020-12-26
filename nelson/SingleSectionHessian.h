@@ -37,6 +37,14 @@ namespace nelson {
       return _chi2;
     }
 
+    inline const MatType& H() const {
+      return _H;
+    }
+
+    inline MatType& H() {
+      return _H;
+    }
+
     void clearAll();
 
   };

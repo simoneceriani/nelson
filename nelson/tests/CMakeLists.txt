@@ -9,7 +9,7 @@ include(Catch)
 
 # add these lines block for each test, or if you need more complex structure, create a subfolder
 #add_executable(<<TARGET_NAME>>)
-#target_sources(<<TARGET_NAME>> PRIVATE <<...>>)
+#target_sources_wrapper(<<TARGET_NAME>> PRIVATE <<...>>)
 #if (WIN32)
 #	set_target_properties(<<TARGET_NAME>> PROPERTIES FOLDER nelson/test)
 #endif()
@@ -26,7 +26,7 @@ set(TESTS_LIST
 foreach(s ${TESTS_LIST})
 	get_filename_component(sn "${s}" NAME_WE)
 	add_executable(nelsonTest_${sn})
-	target_sources(nelsonTest_${sn} PRIVATE ${s})
+	target_sources_wrapper(nelsonTest_${sn} PRIVATE ${s})
 	if (WIN32)
 		set_target_properties(nelsonTest_${sn} PROPERTIES FOLDER nelson/test)
 	endif()	

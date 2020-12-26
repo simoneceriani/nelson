@@ -9,7 +9,12 @@
 #include "SingleSectionHessian.h"
 
 #include "EdgeInterface.h"
+#include "EdgeUnary.h"
+#include "EdgeBinary.h"
+
 #include <memory>
+#include <vector>
+#include <map>
 #include <forward_list>
 
 namespace nelson {
@@ -79,12 +84,17 @@ namespace nelson {
     using Hessian = SingleSectionHessian<matTypeV, T, B, NB>;
   private:
 
+    // once the number of params is known (parametersReady() called), _sparsityPattern is allocated and _edgeSetter too, ready to receive edges
+    std::unique_ptr<mat::SparsityPattern<mat::ColMajor>> _sparsityPattern;
+    std::vector<std::map<int, std::forward_list<std::unique_ptr<EdgeUIDSetterInterface>>>> _edgeSetter;
+
     Hessian _hessian;
-    std::forward_list<std::unique_ptr<EdgeInterface<T>>> _edges;
+
+
+    std::forward_list<std::unique_ptr<EdgeInterface>> _edges;
 
     // outer size is the number of independent computation, safe to be computed in parallel, inside they have to go sequential or parallel but with reduction
     //std::vector<std::forward_list<EdgeComputator*>> _computationUnits;
-    std::unique_ptr<mat::SparsityPattern<mat::ColMajor>> _sparsityPattern;
   public:
 
     constexpr int matType() const { return matTypeV; }
@@ -110,11 +120,13 @@ namespace nelson {
       return _hessian;
     }
 
-    void addEdge(int i/*, EdgeUnary* e*/);
-    void addEdge(int i, int j/*, EdgeBinary* e*/);
+    void addEdge(int i, EdgeUnary* e);
+    void addEdge(int i, int j, EdgeBinary* e);
     void addEdge(int i, int j, int k/*, EdgeTernary* e*/);
     template<int N>
     void addEdge(const std::array<int, N> & ids/*, EdgeNAry * e*/);
+
+    void update();
   };
 
 }

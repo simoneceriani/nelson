@@ -1,18 +1,13 @@
 #include "EdgeInterface.h"
 
 namespace nelson {
-  template<class T>
-  EdgeInterface<T>::EdgeInterface() {
+  
+  EdgeInterface::EdgeInterface() {
 
   }
 
-  template<class T>
-  EdgeInterface<T>::~EdgeInterface() {
+  EdgeInterface::~EdgeInterface() {
 
   }
-
-  // explicit instantiation
-  template class EdgeInterface<float>;
-  template class EdgeInterface<double>;
 
 }
