@@ -9,7 +9,7 @@ namespace nelson {
     EdgeInterface();
     virtual ~EdgeInterface();
     virtual T chi2() const = 0;
-    virtual void update(bool updateHessians) const = 0;
+    virtual void update(bool updateHessians) = 0;
 
   };
 
