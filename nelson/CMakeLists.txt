@@ -34,6 +34,8 @@ target_sources_wrapper(nelson
     SingleSection.h
     SingleSection.hpp
     EdgeInterface.h
+    EdgeSingleSectionBase.h
+    EdgeSingleSectionBase.hpp
     EdgeUnary.h
     EdgeUnary.hpp
     EdgeBinary.h
@@ -42,6 +44,7 @@ target_sources_wrapper(nelson
     Global.cpp
     SingleSectionHessian.cpp
     SingleSection.cpp
+    EdgeSingleSectionBase.cpp
     EdgeInterface.cpp
     EdgeUnary.cpp
     EdgeBinary.cpp

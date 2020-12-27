@@ -77,7 +77,7 @@ namespace nelson {
 
   //--------------------------------------------------------------------------------
 
-  template<class ParT, int matTypeV, class T, int B, int NB = mat::Dynamic>
+  template<class Derived, class ParT, int matTypeV, class T, int B, int NB = mat::Dynamic>
   class SingleSection : public BaseNumSizeParameters<B, NB> {
   public:
 
@@ -120,13 +120,13 @@ namespace nelson {
       return _hessian;
     }
 
-    void addEdge(int i, EdgeUnary* e);
-    void addEdge(int i, int j, EdgeBinary* e);
+    void addEdge(int i, EdgeUnarySingleSection<Derived> * e);
+    void addEdge(int i, int j, EdgeBinarySingleSection<Derived>* e);
     void addEdge(int i, int j, int k/*, EdgeTernary* e*/);
     template<int N>
     void addEdge(const std::array<int, N> & ids/*, EdgeNAry * e*/);
 
-    void update();
+    void update(bool hessian);
   };
 
 }

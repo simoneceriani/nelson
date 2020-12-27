@@ -8,26 +8,32 @@
 
 namespace nelson {
 
-  template<class ParT, int matTypeV, class T, int B, int NB >
-  SingleSection<ParT, matTypeV, T, B, NB>::SingleSection() {
+  template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
+  SingleSection<Derived, ParT, matTypeV, T, B, NB>::SingleSection() {
 
   }
 
-  template<class ParT, int matTypeV, class T, int B, int NB >
-  SingleSection<ParT, matTypeV, T, B, NB>::~SingleSection() {
+  template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
+  SingleSection<Derived, ParT, matTypeV, T, B, NB>::~SingleSection() {
 
   }
 
-  template<class ParT, int matTypeV, class T, int B, int NB >
-  void SingleSection<ParT, matTypeV, T, B, NB>::parametersReady() {
-    assert(this->_sparsityPattern == nullptr);
-    this->_sparsityPattern.reset(new mat::SparsityPattern<mat::ColMajor>(this->numParameters(), this->numParameters()));
+  template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
+  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::parametersReady() {
     this->_edgeSetter.swap(std::vector<std::map<int, std::forward_list<std::unique_ptr<EdgeUIDSetterInterface>>>>(this->numParameters()));
   }
 
-  template<class ParT, int matTypeV, class T, int B, int NB >
-  void SingleSection<ParT, matTypeV, T, B, NB>::structureReady() {
-    assert(this->_sparsityPattern != nullptr);
+  template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
+  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::structureReady() {
+    assert(this->_sparsityPattern == nullptr);
+    this->_sparsityPattern.reset(new mat::SparsityPattern<mat::ColMajor>(this->numParameters(), this->numParameters()));
+    // create sparsity pattern from edges
+    for (int j = 0; j < this->_edgeSetter.size(); j++) {
+      for (auto& setList : this->_edgeSetter[j]) {
+        this->_sparsityPattern->add(setList.first, j);
+      }
+    }
+
     this->_hessian.resize(this->parameterSize(), this->numParameters(), *this->_sparsityPattern);
 
     // iterate on sparsity pattern and _edgeSetter, they have to be the same!
@@ -45,72 +51,52 @@ namespace nelson {
 
   }
 
-  template<class ParT, int matTypeV, class T, int B, int NB >
-  void SingleSection<ParT, matTypeV, T, B, NB>::addEdge(int i, EdgeUnary* e) {
+  template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
+  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(int i, EdgeUnarySingleSection<Derived>* e) {
     assert(e != nullptr);
-    assert(this->_sparsityPattern != nullptr);
-
-    // add to sparsity pattern
-    this->_sparsityPattern->add(i, i);
 
     // add to edges
     e->setParId(i);
+    e->setSection(static_cast<Derived*>(this));
     this->_edges.push_front(std::unique_ptr<EdgeInterface>(e));
 
     // add setters
-    this->_edgeSetter[i][i].emplace_front(new EdgeUnary::EdgeUIDSetter(e));
+    this->_edgeSetter[i][i].emplace_front(new EdgeUnaryBase::EdgeUIDSetter(e));
   }
 
-  template<class ParT, int matTypeV, class T, int B, int NB >
-  void SingleSection<ParT, matTypeV, T, B, NB>::addEdge(int i, int j, EdgeBinary* e) {
-    assert(this->_sparsityPattern != nullptr);
+  template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
+  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(int i, int j, EdgeBinarySingleSection<Derived>* e) {
     assert(i < j);
-    this->_sparsityPattern->add(i, i);
-    this->_sparsityPattern->add(i, j);
-    this->_sparsityPattern->add(j, j);
 
     // add to edges
     e->setPar_1_Id(i);
     e->setPar_2_Id(j);
+    e->setSection(static_cast<Derived*>(this));
     this->_edges.push_front(std::unique_ptr<EdgeInterface>(e));
 
     // add setters
-    this->_edgeSetter[i][i].emplace_front(new EdgeBinary::EdgeUID_11_Setter(e));
-    this->_edgeSetter[j][j].emplace_front(new EdgeBinary::EdgeUID_22_Setter(e));
-    this->_edgeSetter[j][i].emplace_front(new EdgeBinary::EdgeUID_12_Setter(e));
+    this->_edgeSetter[i][i].emplace_front(new EdgeBinaryBase::EdgeUID_11_Setter(e));
+    this->_edgeSetter[j][j].emplace_front(new EdgeBinaryBase::EdgeUID_22_Setter(e));
+    this->_edgeSetter[j][i].emplace_front(new EdgeBinaryBase::EdgeUID_12_Setter(e));
   }
 
-  template<class ParT, int matTypeV, class T, int B, int NB >
-  void SingleSection<ParT, matTypeV, T, B, NB>::addEdge(int i, int j, int k/*, EdgeTernary* e*/) {
-    assert(this->_sparsityPattern != nullptr);
+  template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
+  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(int i, int j, int k/*, EdgeTernary* e*/) {
     assert(i < j);
-    this->_sparsityPattern->add(i, i);
-    this->_sparsityPattern->add(i, j);
-    this->_sparsityPattern->add(i, k);
-
-    this->_sparsityPattern->add(j, j);
-    this->_sparsityPattern->add(j, k);
-
-    this->_sparsityPattern->add(k, k);
+    assert(j < k);
   }
 
-  template<class ParT, int matTypeV, class T, int B, int NB >
+  template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
   template<int N>
-  void SingleSection<ParT, matTypeV, T, B, NB>::addEdge(const std::array<int, N>& ids/*, EdgeNAry * e*/) {
-    assert(this->_sparsityPattern != nullptr);
-    for (int i = 0; i < ids.size(); i++) {
-      for (int j = i; j < ids.size(); j++) {
-        this->_sparsityPattern->add(i, j);
-      }
-    }
+  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(const std::array<int, N>& ids/*, EdgeNAry * e*/) {
 
   }
 
-  template<class ParT, int matTypeV, class T, int B, int NB >
-  void SingleSection<ParT, matTypeV, T, B, NB>::update() {
+  template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
+  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::update(bool hessian) {
     // dummy implementation so far
     for (auto& e : _edges) {
-      e->update(true);
+      e->update(hessian);
     }
   }
 

@@ -18,7 +18,8 @@ struct Point {
 static constexpr int secSizeFix = 3;
 static constexpr int numBlocks = 10;
 
-class EdgeUnaryTest : public nelson::EdgeUnary {
+template<class Section>
+class EdgeUnaryTest : public nelson::EdgeUnarySingleSection<Section> {
   int _parId;
 
 public:
@@ -27,10 +28,13 @@ public:
   void update(bool hessians) override {
     REQUIRE(this->parId() == _parId);
     REQUIRE(this->HUid() >= 0);
+
+    const auto & par = this->section().parameter(this->parId());
   }
 };
 
-class EdgeBinaryTest : public nelson::EdgeBinary {
+template<class Section>
+class EdgeBinaryTest : public nelson::EdgeBinarySingleSection<Section> {
   int _par1Id, _par2Id;
 
 public:
@@ -42,14 +46,16 @@ public:
     REQUIRE(this->H_11_Uid() >= 0);
     REQUIRE(this->H_12_Uid() >= 0);
     REQUIRE(this->H_22_Uid() >= 0);
+
+    const auto& par1 = this->section().parameter(this->par_1_Id());
+    const auto& par2 = this->section().parameter(this->par_2_Id());
   }
 };
 
 template<int matType>
-class PointsSectionFF : public nelson::SingleSection<Point, matType, double, secSizeFix, numBlocks> {
+class PointsSectionFF : public nelson::SingleSection<PointsSectionFF<matType>, Point, matType, double, secSizeFix, numBlocks> {
   std::array<Point, numBlocks> _points;
 public:
-
   PointsSectionFF() {
     this->parametersReady();
   }
@@ -71,7 +77,7 @@ using PointsSectionFF_BlockCoeffSparse = PointsSectionFF<mat::BlockCoeffSparse>;
 //-----------------------------------------------------------------------------------------------------------------
 
 template<int matType>
-class PointsSectionFD : public nelson::SingleSection<Point, matType, double, secSizeFix, mat::Dynamic> {
+class PointsSectionFD : public nelson::SingleSection<PointsSectionFD<matType>, Point, matType, double, secSizeFix, mat::Dynamic> {
   std::vector<Point> _points;
 public:
 
@@ -101,7 +107,7 @@ using PointsSectionFD_BlockCoeffSparse = PointsSectionFD<mat::BlockCoeffSparse>;
 //-----------------------------------------------------------------------------------------------------------------
 
 template<int matType>
-class PointsSectionDF : public nelson::SingleSection<Point, matType, double, mat::Dynamic, numBlocks> {
+class PointsSectionDF : public nelson::SingleSection<PointsSectionDF<matType>, Point, matType, double, mat::Dynamic, numBlocks> {
   std::array<Point, numBlocks> _points;
 public:
 
@@ -130,7 +136,7 @@ using PointsSectionDF_BlockCoeffSparse = PointsSectionDF<mat::BlockCoeffSparse>;
 //-----------------------------------------------------------------------------------------------------------------
 
 template<int matType>
-class PointsSectionDD : public nelson::SingleSection<Point, matType, double, mat::Dynamic, mat::Dynamic> {
+class PointsSectionDD : public nelson::SingleSection<PointsSectionDD<matType>, Point, matType, double, mat::Dynamic, mat::Dynamic> {
   std::vector<Point> _points;
 public:
 
@@ -164,7 +170,7 @@ using PointsSectionDD_BlockCoeffSparse = PointsSectionDD<mat::BlockCoeffSparse>;
 //-----------------------------------------------------------------------------------------------------------------
 
 template<int matType>
-class PointsSectionVF : public nelson::SingleSection<Point, matType, double, mat::Variable, numBlocks> {
+class PointsSectionVF : public nelson::SingleSection<PointsSectionVF<matType>, Point, matType, double, mat::Variable, numBlocks> {
   std::array<Point, numBlocks> _points;
   std::vector<int> _sizes;
 public:
@@ -195,7 +201,7 @@ using PointsSectionVF_BlockCoeffSparse = PointsSectionVF<mat::BlockCoeffSparse>;
 //-----------------------------------------------------------------------------------------------------------------
 
 template<int matType>
-class PointsSectionVD : public nelson::SingleSection<Point, matType, double, mat::Variable, mat::Dynamic> {
+class PointsSectionVD : public nelson::SingleSection<PointsSectionVD<matType>, Point, matType, double, mat::Variable, mat::Dynamic> {
   std::vector<Point> _points;
   std::vector<int> _sizes;
 public:
@@ -237,22 +243,34 @@ TEMPLATE_TEST_CASE("SingleSection", "[SingleSection]",
   //  REQUIRE(pss.parameterSize() == secSizeFix);
   REQUIRE(pss.numParameters() == numBlocks);
 
-  REQUIRE(pss.sparsityPattern().outerSize() == numBlocks);
-  for (int j = 0; j < pss.sparsityPattern().outerSize(); j++) {
-    REQUIRE(pss.sparsityPattern().inner(j).size() == 0);
-  }
-
   // unary edge
   for (int i = 0; i < numBlocks; i++) {
-    pss.addEdge(i, new EdgeUnaryTest(i));
-    REQUIRE(pss.sparsityPattern().has(i, i));
+    pss.addEdge(i, new EdgeUnaryTest<TestType>(i));
   }
 
   // add "odometry"  edges (not if mat diagonal)
   if (pss.matType() != mat::BlockDiagonal) {
     for (int i = 0; i < numBlocks - 1; i++) {
-      pss.addEdge(i, i + 1, new EdgeBinaryTest(i, i + 1));
+      pss.addEdge(i, i + 1, new EdgeBinaryTest<TestType>(i, i + 1));
     }
+  }
+
+  // add "extreme" bin relation (not if mat diagonal)
+  if (pss.matType() != mat::BlockDiagonal) {
+    for (int i = 0; i < numBlocks - 1; i++) {
+      pss.addEdge(i, numBlocks - 1, new EdgeBinaryTest<TestType>(i, numBlocks - 1));
+    }
+  }
+
+
+  // ready!
+  pss.structureReady();
+
+  for (int i = 0; i < numBlocks; i++) {
+    REQUIRE(pss.sparsityPattern().has(i, i));
+  }
+  // check "odometry"  edges (not if mat diagonal)
+  if (pss.matType() != mat::BlockDiagonal) {
     for (int i = 0; i < numBlocks; i++) {
       REQUIRE(pss.sparsityPattern().has(i, i));
     }
@@ -261,19 +279,15 @@ TEMPLATE_TEST_CASE("SingleSection", "[SingleSection]",
     }
   }
 
-  // add "extreme" bin relation (not if mat diagonal)
+  // check "extreme" bin relation (not if mat diagonal)
   if (pss.matType() != mat::BlockDiagonal) {
-    for (int i = 0; i < numBlocks - 1; i++) {
-      pss.addEdge(i, numBlocks - 1, new EdgeBinaryTest(i, numBlocks - 1));
-    }
     for (int i = 0; i < numBlocks - 1; i++) {
       REQUIRE(pss.sparsityPattern().has(i, numBlocks - 1));
     }
   }
 
-  pss.structureReady();
 
-  pss.update();
+  pss.update(false);
 
 }
 
