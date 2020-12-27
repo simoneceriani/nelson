@@ -7,40 +7,19 @@ namespace nelson {
 
   class EdgeBinary : public EdgeInterface {
 
+    template<class ParT, int matTypeV, class T, int B, int NB> friend class SingleSection;
+
     int _par_1_Id;
     int _par_2_Id;
     int _H_11_uid;
     int _H_12_uid;
     int _H_22_uid;
 
-  public:
-    EdgeBinary();
-    virtual ~EdgeBinary();
-
     void setPar_1_Id(int id);
     void setPar_2_Id(int id);
     void setH_11_Uid(int uid);
     void setH_12_Uid(int uid);
     void setH_22_Uid(int uid);
-
-    int par_1_Id() const {
-      return _par_1_Id;
-    }
-    int par_2_Id() const {
-      return _par_2_Id;
-    }
-
-    int H_11_Uid() const {
-      return _H_11_uid;
-    }
-    int H_12_Uid() const {
-      return _H_12_uid;
-    }
-    int H_22_Uid() const {
-      return _H_22_uid;
-    }
-
-    virtual void update(bool updateHessians) = 0;
 
     class EdgeUID_11_Setter final : public EdgeUIDSetterInterface {
       EdgeBinary* _e;
@@ -63,6 +42,30 @@ namespace nelson {
 
       void setUID(int uid) override;
     };
+
+  public:
+    EdgeBinary();
+    virtual ~EdgeBinary();
+
+
+    int par_1_Id() const {
+      return _par_1_Id;
+    }
+    int par_2_Id() const {
+      return _par_2_Id;
+    }
+
+    int H_11_Uid() const {
+      return _H_11_uid;
+    }
+    int H_12_Uid() const {
+      return _H_12_uid;
+    }
+    int H_22_Uid() const {
+      return _H_22_uid;
+    }
+
+    virtual void update(bool updateHessians) = 0;
 
   };
 

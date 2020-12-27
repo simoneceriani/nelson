@@ -58,10 +58,6 @@ namespace nelson {
     this->_edges.push_front(std::unique_ptr<EdgeInterface>(e));
 
     // add setters
-    auto it = this->_edgeSetter[i].find(i);
-    if (it == this->_edgeSetter[i].end()) {
-      this->_edgeSetter[i].insert(std::make_pair(i, std::forward_list<std::unique_ptr<EdgeUIDSetterInterface>>()));
-    }
     this->_edgeSetter[i][i].emplace_front(new EdgeUnary::EdgeUIDSetter(e));
   }
 
@@ -79,23 +75,9 @@ namespace nelson {
     this->_edges.push_front(std::unique_ptr<EdgeInterface>(e));
 
     // add setters
-    {
-      // 11
-      auto it = this->_edgeSetter[i].find(i);
-      if (it == this->_edgeSetter[i].end()) {
-        this->_edgeSetter[i].insert(std::make_pair(i, std::forward_list<std::unique_ptr<EdgeUIDSetterInterface>>()));
-      }
-      this->_edgeSetter[i][i].emplace_front(new EdgeBinary::EdgeUID_11_Setter(e));
-    }
-    {
-      // 12 and 22
-      auto it = this->_edgeSetter[j].find(i);
-      if (it == this->_edgeSetter[j].end()) {
-        this->_edgeSetter[j].insert(std::make_pair(i, std::forward_list<std::unique_ptr<EdgeUIDSetterInterface>>()));
-      }
-      this->_edgeSetter[j][j].emplace_front(new EdgeBinary::EdgeUID_22_Setter(e));
-      this->_edgeSetter[j][i].emplace_front(new EdgeBinary::EdgeUID_12_Setter(e));
-    }
+    this->_edgeSetter[i][i].emplace_front(new EdgeBinary::EdgeUID_11_Setter(e));
+    this->_edgeSetter[j][j].emplace_front(new EdgeBinary::EdgeUID_22_Setter(e));
+    this->_edgeSetter[j][i].emplace_front(new EdgeBinary::EdgeUID_12_Setter(e));
   }
 
   template<class ParT, int matTypeV, class T, int B, int NB >
