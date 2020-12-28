@@ -26,13 +26,15 @@ class EdgeUnaryTest : public nelson::EdgeUnarySingleSectionCRPT<Section, EdgeUna
 public:
   EdgeUnaryTest(int parId) : _parId(parId) {}
 
-  void update(const Point & point, bool hessians) {
+  void update(bool hessians) override {
     REQUIRE(this->parId() == _parId);
     REQUIRE(this->HUid() >= 0);
+
+    const auto& par = this->parameter();
   }
 
   template<class Derived>
-  void updateHBlock(Eigen::MatrixBase<Derived> & b) {
+  void updateHBlock(Eigen::MatrixBase<Derived>& b) {
     std::cout << "EdgeUnaryTest::updateHBlock " << this->parId() << "," << this->parId() << std::endl;
     b.setConstant(1);
   }
@@ -45,27 +47,30 @@ class EdgeBinaryTest : public nelson::EdgeBinarySingleSectionCRPT<Section, EdgeB
 public:
   EdgeBinaryTest(int par1Id, int par2Id) : _par1Id(par1Id), _par2Id(par2Id) {}
 
-  void update(const Point& point1, const Point& point2, bool hessians) {
+  void update(bool hessians) override {
     REQUIRE(this->par_1_Id() == _par1Id);
     REQUIRE(this->par_2_Id() == _par2Id);
     REQUIRE(this->H_11_Uid() >= 0);
     REQUIRE(this->H_12_Uid() >= 0);
     REQUIRE(this->H_22_Uid() >= 0);
 
+    const auto& p1 = this->parameter_1();
+    const auto& p2 = this->parameter_2();
+
   }
 
   template<class Derived>
-  void updateH11Block(Eigen::MatrixBase<Derived> & b) {
-    std::cout << "EdgeBinaryTest::updateHBlock[11] " << this->par_1_Id() << ","<< this->par_1_Id() << std::endl;
+  void updateH11Block(Eigen::MatrixBase<Derived>& b) {
+    std::cout << "EdgeBinaryTest::updateHBlock[11] " << this->par_1_Id() << "," << this->par_1_Id() << std::endl;
     b.setConstant(11);
   }
   template<class Derived>
-  void updateH12Block(Eigen::MatrixBase<Derived> & b) {
+  void updateH12Block(Eigen::MatrixBase<Derived>& b) {
     std::cout << "EdgeBinaryTest::updateHBlock[12] " << this->par_1_Id() << "," << this->par_2_Id() << std::endl;
     b.setConstant(12);
   }
   template<class Derived>
-  void updateH22Block(Eigen::MatrixBase<Derived> & b) {
+  void updateH22Block(Eigen::MatrixBase<Derived>& b) {
     std::cout << "EdgeBinaryTest::updateHBlock[22] " << this->par_2_Id() << "," << this->par_2_Id() << std::endl;
     b.setConstant(22);
   }

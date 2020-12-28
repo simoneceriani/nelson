@@ -82,6 +82,7 @@ namespace nelson {
   public:
 
     using Hessian = SingleSectionHessian<matTypeV, T, B, NB>;
+    using ParameterType = ParT;
   private:
 
     // once the number of params is known (parametersReady() called), _sparsityPattern is allocated and _edgeSetter too, ready to receive edges

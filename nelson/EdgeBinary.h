@@ -122,20 +122,23 @@ namespace nelson {
 
   public:
 
-    void update(bool updateHessian) override {
-      static_cast<Derived*>(this)->update(this->section().parameter(this->par_1_Id()), this->section().parameter(this->par_2_Id()), updateHessian);
+    const typename Section::ParameterType& parameter_1() const {
+      return this->section().parameter(this->par_1_Id());
+    }
+    const typename Section::ParameterType& parameter_2() const {
+      return this->section().parameter(this->par_2_Id());
     }
 
     void updateH_11() override final {
-      auto b = this->section().hessianBlockByUID(this->H_11_Uid());
+      typename Section::Hessian::MatTraits::MatrixType::BlockType b = this->section().hessianBlockByUID(this->H_11_Uid());
       static_cast<Derived*>(this)->updateH11Block(b);
     }
     void updateH_12() override final {
-      auto b = this->section().hessianBlockByUID(this->H_12_Uid());
+      typename Section::Hessian::MatTraits::MatrixType::BlockType b = this->section().hessianBlockByUID(this->H_12_Uid());
       static_cast<Derived*>(this)->updateH12Block(b);
     }
     void updateH_22() override final {
-      auto b = this->section().hessianBlockByUID(this->H_22_Uid());
+      typename Section::Hessian::MatTraits::MatrixType::BlockType b = this->section().hessianBlockByUID(this->H_22_Uid());
       static_cast<Derived*>(this)->updateH22Block(b);
     }
   };

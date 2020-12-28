@@ -75,12 +75,12 @@ namespace nelson {
 
   public:
 
-    void update(bool updateHessian) override {
-      static_cast<Derived*>(this)->update(this->section().parameter(this->parId()), updateHessian);
+    const typename Section::ParameterType& parameter() const {
+      return this->section().parameter(this->parId());
     }
 
     void updateH() override final {
-      auto b = this->section().hessianBlockByUID(this->HUid());
+      typename Section::Hessian::MatTraits::MatrixType::BlockType b = this->section().hessianBlockByUID(this->HUid());
       static_cast<Derived*>(this)->updateHBlock(b);
     }
   };
