@@ -37,6 +37,7 @@ namespace nelson {
 
     this->_hessian.resize(this->parameterSize(), this->numParameters(), *this->_sparsityPattern);
 
+    // set the UIDs to the edges
     // iterate on sparsity pattern and _edgeSetterComputer, they have to be the same!
     int buid = 0;
     for (int j = 0; j < this->_edgeSetterComputer.size(); j++) {
@@ -50,6 +51,23 @@ namespace nelson {
     }
     assert(buid == _hessian.H().nonZeroBlocks());
 
+    // prepare the _computationUnits, they are the same than the H blocks
+    auto newV = std::vector<std::forward_list<std::unique_ptr<EdgeHessianUpdater>>>(this->_sparsityPattern->count());
+    _computationUnits.swap(newV);
+
+    for (int j = 0; j < this->_edgeSetterComputer.size(); j++) {
+      for (auto& setList : this->_edgeSetterComputer[j]) {
+        for (auto& set : setList.second) {
+          //auto ptr = std::move(set.computer);
+          _computationUnits[j].emplace_front(std::move(set.computer));
+        }
+      }
+    }
+
+    // the _edgeSetter is no more required
+    this->_edgeSetterComputer.clear();
+
+
   }
 
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
@@ -62,7 +80,7 @@ namespace nelson {
     this->_edges.push_front(std::unique_ptr<EdgeInterface>(e));
 
     // add setters
-    this->_edgeSetterComputer[i][i].emplace_front(SetterComputer(new EdgeUnaryBase::EdgeUIDSetter(e),new typename EdgeUnarySingleSection<Derived>::HessianUpdater(e) ));
+    this->_edgeSetterComputer[i][i].emplace_front(SetterComputer(new EdgeUnaryBase::EdgeUIDSetter(e), new typename EdgeUnarySingleSection<Derived>::HessianUpdater(e)));
   }
 
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
@@ -76,11 +94,12 @@ namespace nelson {
     this->_edges.push_front(std::unique_ptr<EdgeInterface>(e));
 
     // add setters
-    this->_edgeSetterComputer[i][i].emplace_front(SetterComputer( new EdgeBinaryBase::EdgeUID_11_Setter(e),new typename EdgeBinarySingleSection<Derived>::HessianUpdater_11(e) ));
+    this->_edgeSetterComputer[i][i].emplace_front(SetterComputer(new EdgeBinaryBase::EdgeUID_11_Setter(e), new typename EdgeBinarySingleSection<Derived>::HessianUpdater_11(e)));
 
-    this->_edgeSetterComputer[j][j].emplace_front(SetterComputer( new EdgeBinaryBase::EdgeUID_22_Setter(e),new typename EdgeBinarySingleSection<Derived>::HessianUpdater_12(e) ));
+    this->_edgeSetterComputer[j][i].emplace_front(SetterComputer(new EdgeBinaryBase::EdgeUID_12_Setter(e), new typename EdgeBinarySingleSection<Derived>::HessianUpdater_12(e)));
 
-    this->_edgeSetterComputer[j][i].emplace_front(SetterComputer( new EdgeBinaryBase::EdgeUID_12_Setter(e),new typename EdgeBinarySingleSection<Derived>::HessianUpdater_22(e) ));
+    this->_edgeSetterComputer[j][j].emplace_front(SetterComputer(new EdgeBinaryBase::EdgeUID_22_Setter(e), new typename EdgeBinarySingleSection<Derived>::HessianUpdater_22(e)));
+
   }
 
   //template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
@@ -111,11 +130,9 @@ namespace nelson {
     }
 
     // test hessian updatee
-    for (int j = 0; j < this->_edgeSetterComputer.size(); j++) {
-      for (auto& setList : this->_edgeSetterComputer[j]) {
-        for (auto& set : setList.second) {
-          set.computer->updateH();
-        }
+    for (int j = 0; j < this->_computationUnits.size(); j++) {
+      for (auto& set : this->_computationUnits[j]) {
+        set->updateH();
       }
     }
 

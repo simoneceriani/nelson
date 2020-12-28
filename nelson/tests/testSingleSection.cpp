@@ -10,13 +10,14 @@
 #include "nelson/EdgeBinary.hpp"
 
 #include <array>
+#include <iostream>
 
 struct Point {
   Eigen::Vector3d point;
 };
 
 static constexpr int secSizeFix = 3;
-static constexpr int numBlocks = 2;
+static constexpr int numBlocks = 10;
 
 template<class Section>
 class EdgeUnaryTest : public nelson::EdgeUnarySingleSectionCRPT<Section, EdgeUnaryTest<Section>> {
@@ -28,11 +29,11 @@ public:
   void update(const Point & point, bool hessians) {
     REQUIRE(this->parId() == _parId);
     REQUIRE(this->HUid() >= 0);
-
   }
 
   template<class Derived>
   void updateHBlock(Eigen::MatrixBase<Derived> & b) {
+    std::cout << "EdgeUnaryTest::updateHBlock " << this->parId() << "," << this->parId() << std::endl;
     b.setConstant(1);
   }
 };
@@ -55,14 +56,17 @@ public:
 
   template<class Derived>
   void updateH11Block(Eigen::MatrixBase<Derived> & b) {
+    std::cout << "EdgeBinaryTest::updateHBlock[11] " << this->par_1_Id() << ","<< this->par_1_Id() << std::endl;
     b.setConstant(11);
   }
   template<class Derived>
   void updateH12Block(Eigen::MatrixBase<Derived> & b) {
+    std::cout << "EdgeBinaryTest::updateHBlock[12] " << this->par_1_Id() << "," << this->par_2_Id() << std::endl;
     b.setConstant(12);
   }
   template<class Derived>
   void updateH22Block(Eigen::MatrixBase<Derived> & b) {
+    std::cout << "EdgeBinaryTest::updateHBlock[22] " << this->par_2_Id() << "," << this->par_2_Id() << std::endl;
     b.setConstant(22);
   }
 
@@ -255,6 +259,7 @@ TEMPLATE_TEST_CASE("SingleSection", "[SingleSection]",
   PointsSectionVD_BlockDense, PointsSectionVD_BlockDiagonal, PointsSectionVD_BlockSparse, PointsSectionVD_BlockCoeffSparse
 )
 {
+  std::cout << "-------------------------------------------------------" << std::endl;
   TestType pss;
   //  REQUIRE(pss.parameterSize() == secSizeFix);
   REQUIRE(pss.numParameters() == numBlocks);

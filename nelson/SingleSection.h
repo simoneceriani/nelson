@@ -103,7 +103,7 @@ namespace nelson {
     std::forward_list<std::unique_ptr<EdgeInterface>> _edges;
 
     // outer size is the number of independent computation, safe to be computed in parallel, inside they have to go sequential or parallel but with reduction
-    // std::vector<std::forward_list<EdgeHessianUpdater*>> _computationUnits;
+    std::vector<std::forward_list<std::unique_ptr<EdgeHessianUpdater>>> _computationUnits;
 
   public:
 
