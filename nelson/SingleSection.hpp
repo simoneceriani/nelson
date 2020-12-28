@@ -97,6 +97,14 @@ namespace nelson {
 
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
   void SingleSection<Derived, ParT, matTypeV, T, B, NB>::update(bool hessian) {
+
+    if (hessian) {
+      this->_hessian.clearAll();
+    }
+    else {
+      this->_hessian.clearChi2();
+    }
+
     // dummy implementation so far
     for (auto& e : _edges) {
       e->update(hessian);

@@ -303,7 +303,7 @@ TEMPLATE_TEST_CASE("SingleSection", "[SingleSection]",
   }
 
 
-  pss.update(false);
+  pss.update(true);
 
 }
 
