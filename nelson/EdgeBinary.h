@@ -127,13 +127,16 @@ namespace nelson {
     }
 
     void updateH_11() override final {
-      static_cast<Derived*>(this)->updateH11Block(this->section().hessianBlockByUID(this->H_11_Uid()));
+      auto b = this->section().hessianBlockByUID(this->H_11_Uid());
+      static_cast<Derived*>(this)->updateH11Block(b);
     }
     void updateH_12() override final {
-      static_cast<Derived*>(this)->updateH12Block(this->section().hessianBlockByUID(this->H_12_Uid()));
+      auto b = this->section().hessianBlockByUID(this->H_12_Uid());
+      static_cast<Derived*>(this)->updateH12Block(b);
     }
     void updateH_22() override final {
-      static_cast<Derived*>(this)->updateH22Block(this->section().hessianBlockByUID(this->H_22_Uid()));
+      auto b = this->section().hessianBlockByUID(this->H_22_Uid());
+      static_cast<Derived*>(this)->updateH22Block(b);
     }
   };
 

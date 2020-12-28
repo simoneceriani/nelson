@@ -20,7 +20,8 @@ namespace nelson {
 
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
   void SingleSection<Derived, ParT, matTypeV, T, B, NB>::parametersReady() {
-    this->_edgeSetterComputer.swap(std::vector<std::map<int, std::forward_list<SetterComputer>>>(this->numParameters()));
+    auto newV = std::vector<std::map<int, std::forward_list<SetterComputer>>>(this->numParameters());
+    this->_edgeSetterComputer.swap(newV);
   }
 
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
@@ -61,7 +62,7 @@ namespace nelson {
     this->_edges.push_front(std::unique_ptr<EdgeInterface>(e));
 
     // add setters
-    this->_edgeSetterComputer[i][i].emplace_front(SetterComputer(new EdgeUnaryBase::EdgeUIDSetter(e),new EdgeUnarySingleSection<Derived>::HessianUpdater(e) ));
+    this->_edgeSetterComputer[i][i].emplace_front(SetterComputer(new EdgeUnaryBase::EdgeUIDSetter(e),new typename EdgeUnarySingleSection<Derived>::HessianUpdater(e) ));
   }
 
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
@@ -75,11 +76,11 @@ namespace nelson {
     this->_edges.push_front(std::unique_ptr<EdgeInterface>(e));
 
     // add setters
-    this->_edgeSetterComputer[i][i].emplace_front(SetterComputer( new EdgeBinaryBase::EdgeUID_11_Setter(e),new EdgeBinarySingleSection<Derived>::HessianUpdater_11(e) ));
+    this->_edgeSetterComputer[i][i].emplace_front(SetterComputer( new EdgeBinaryBase::EdgeUID_11_Setter(e),new typename EdgeBinarySingleSection<Derived>::HessianUpdater_11(e) ));
 
-    this->_edgeSetterComputer[j][j].emplace_front(SetterComputer( new EdgeBinaryBase::EdgeUID_22_Setter(e),new EdgeBinarySingleSection<Derived>::HessianUpdater_12(e) ));
+    this->_edgeSetterComputer[j][j].emplace_front(SetterComputer( new EdgeBinaryBase::EdgeUID_22_Setter(e),new typename EdgeBinarySingleSection<Derived>::HessianUpdater_12(e) ));
 
-    this->_edgeSetterComputer[j][i].emplace_front(SetterComputer( new EdgeBinaryBase::EdgeUID_12_Setter(e),new EdgeBinarySingleSection<Derived>::HessianUpdater_22(e) ));
+    this->_edgeSetterComputer[j][i].emplace_front(SetterComputer( new EdgeBinaryBase::EdgeUID_12_Setter(e),new typename EdgeBinarySingleSection<Derived>::HessianUpdater_22(e) ));
   }
 
   //template<class Derived, class ParT, int matTypeV, class T, int B, int NB >

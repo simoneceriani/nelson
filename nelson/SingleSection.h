@@ -90,9 +90,9 @@ namespace nelson {
     struct SetterComputer {
       std::unique_ptr<EdgeUIDSetterInterface> setter;
       std::unique_ptr<EdgeHessianUpdater> computer;
-      SetterComputer(EdgeUIDSetterInterface* s, EdgeHessianUpdater* c) : setter(s), computer(c) {
-
+      SetterComputer(EdgeUIDSetterInterface* s, EdgeHessianUpdater* c) : setter(s), computer(c) {     
       }
+      SetterComputer(){}
     };
 
     std::vector<std::map<int, std::forward_list<SetterComputer>>> _edgeSetterComputer;

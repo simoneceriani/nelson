@@ -80,7 +80,8 @@ namespace nelson {
     }
 
     void updateH() override final {
-      static_cast<Derived*>(this)->updateHBlock(this->section().hessianBlockByUID(this->HUid()));
+      auto b = this->section().hessianBlockByUID(this->HUid());
+      static_cast<Derived*>(this)->updateHBlock(b);
     }
   };
 

@@ -32,7 +32,7 @@ public:
   }
 
   template<class Derived>
-  void updateHBlock(Eigen::MatrixBase<Derived>& b) {
+  void updateHBlock(Eigen::MatrixBase<Derived> & b) {
     b.setConstant(1);
   }
 };
@@ -54,15 +54,15 @@ public:
   }
 
   template<class Derived>
-  void updateH11Block(Eigen::MatrixBase<Derived>& b) {
+  void updateH11Block(Eigen::MatrixBase<Derived> & b) {
     b.setConstant(11);
   }
   template<class Derived>
-  void updateH12Block(Eigen::MatrixBase<Derived>& b) {
+  void updateH12Block(Eigen::MatrixBase<Derived> & b) {
     b.setConstant(12);
   }
   template<class Derived>
-  void updateH22Block(Eigen::MatrixBase<Derived>& b) {
+  void updateH22Block(Eigen::MatrixBase<Derived> & b) {
     b.setConstant(22);
   }
 
