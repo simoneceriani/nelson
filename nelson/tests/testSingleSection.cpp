@@ -16,40 +16,56 @@ struct Point {
 };
 
 static constexpr int secSizeFix = 3;
-static constexpr int numBlocks = 10;
+static constexpr int numBlocks = 2;
 
 template<class Section>
-class EdgeUnaryTest : public nelson::EdgeUnarySingleSection<Section> {
+class EdgeUnaryTest : public nelson::EdgeUnarySingleSectionCRPT<Section, EdgeUnaryTest<Section>> {
   int _parId;
 
 public:
   EdgeUnaryTest(int parId) : _parId(parId) {}
 
-  void update(bool hessians) override {
+  void update(const Point & point, bool hessians) {
     REQUIRE(this->parId() == _parId);
     REQUIRE(this->HUid() >= 0);
 
-    const auto & par = this->section().parameter(this->parId());
+  }
+
+  template<class Derived>
+  void updateHBlock(Eigen::MatrixBase<Derived>& b) {
+    b.setConstant(1);
   }
 };
 
 template<class Section>
-class EdgeBinaryTest : public nelson::EdgeBinarySingleSection<Section> {
+class EdgeBinaryTest : public nelson::EdgeBinarySingleSectionCRPT<Section, EdgeBinaryTest<Section>> {
   int _par1Id, _par2Id;
 
 public:
   EdgeBinaryTest(int par1Id, int par2Id) : _par1Id(par1Id), _par2Id(par2Id) {}
 
-  void update(bool hessians) override {
+  void update(const Point& point1, const Point& point2, bool hessians) {
     REQUIRE(this->par_1_Id() == _par1Id);
     REQUIRE(this->par_2_Id() == _par2Id);
     REQUIRE(this->H_11_Uid() >= 0);
     REQUIRE(this->H_12_Uid() >= 0);
     REQUIRE(this->H_22_Uid() >= 0);
 
-    const auto& par1 = this->section().parameter(this->par_1_Id());
-    const auto& par2 = this->section().parameter(this->par_2_Id());
   }
+
+  template<class Derived>
+  void updateH11Block(Eigen::MatrixBase<Derived>& b) {
+    b.setConstant(11);
+  }
+  template<class Derived>
+  void updateH12Block(Eigen::MatrixBase<Derived>& b) {
+    b.setConstant(12);
+  }
+  template<class Derived>
+  void updateH22Block(Eigen::MatrixBase<Derived>& b) {
+    b.setConstant(22);
+  }
+
 };
 
 template<int matType>
@@ -60,10 +76,10 @@ public:
     this->parametersReady();
   }
 
-  virtual const Point& parameter(int i) const {
+  virtual const Point& parameter(int i) const override {
     return _points[i];
   }
-  virtual Point& parameter(int i) {
+  virtual Point& parameter(int i) override {
     return _points[i];
   }
 

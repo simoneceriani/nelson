@@ -16,7 +16,7 @@ namespace nelson {
   }
 
   template<class Section>
-  void EdgeSingleSectionBase<Section>::setSection(const Section* section) {
+  void EdgeSingleSectionBase<Section>::setSection(Section* section) {
     this->_section = section;
   }
 

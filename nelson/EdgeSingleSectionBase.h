@@ -8,10 +8,15 @@ namespace nelson {
   template<class Section>
   class EdgeSingleSectionBase {
 
-    const Section* _section;
+    Section* _section;
 
   protected:
-    void setSection(const Section* section);
+    void setSection(Section* section);
+
+    Section& section() {
+      assert(_section != nullptr);
+      return *_section;
+    }
 
   public:
     EdgeSingleSectionBase();

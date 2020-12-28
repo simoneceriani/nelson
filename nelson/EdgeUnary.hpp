@@ -5,7 +5,7 @@
 namespace nelson {
 
   template<class Section>
-  EdgeUnarySingleSection<Section>::EdgeUnarySingleSection() : 
+  EdgeUnarySingleSection<Section>::EdgeUnarySingleSection() :
     EdgeUnaryBase(),
     EdgeSingleSectionBase<Section>()
   {

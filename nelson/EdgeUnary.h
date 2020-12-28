@@ -46,13 +46,42 @@ namespace nelson {
 
     template<class Derived, class ParT, int matTypeV, class T, int B, int NB> friend class SingleSection;
 
+    class HessianUpdater : public EdgeHessianUpdater {
+      EdgeUnarySingleSection* _e;
+    public:
+      HessianUpdater(EdgeUnarySingleSection* e) : _e(e) {
+
+      }
+
+      void updateH() override {
+        _e->updateH();
+      }
+    };
+
   public:
     EdgeUnarySingleSection();
     virtual ~EdgeUnarySingleSection();
 
     // virtual void update(bool updateHessians) = 0; // defined in base
 
+    virtual void updateH() = 0;
+
   };
 
+  //--------------------------------------------------------------------------------------------------------
+
+  template<class Section, class Derived>
+  class EdgeUnarySingleSectionCRPT : public EdgeUnarySingleSection<Section> {
+
+  public:
+
+    void update(bool updateHessian) override {
+      static_cast<Derived*>(this)->update(this->section().parameter(this->parId()), updateHessian);
+    }
+
+    void updateH() override final {
+      static_cast<Derived*>(this)->updateHBlock(this->section().hessianBlockByUID(this->HUid()));
+    }
+  };
 
 }

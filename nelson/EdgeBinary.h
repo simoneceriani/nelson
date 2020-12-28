@@ -72,14 +72,69 @@ namespace nelson {
 
     template<class Derived, class ParT, int matTypeV, class T, int B, int NB> friend class SingleSection;
 
+    class HessianUpdater_11 : public EdgeHessianUpdater {
+      EdgeBinarySingleSection* _e;
+    public:
+      HessianUpdater_11(EdgeBinarySingleSection* e) : _e(e) {
+
+      }
+
+      void updateH() override {
+        _e->updateH_11();
+      }
+    };
+    class HessianUpdater_12 : public EdgeHessianUpdater {
+      EdgeBinarySingleSection* _e;
+    public:
+      HessianUpdater_12(EdgeBinarySingleSection* e) : _e(e) {
+
+      }
+
+      void updateH() override {
+        _e->updateH_12();
+      }
+    };
+    class HessianUpdater_22 : public EdgeHessianUpdater {
+      EdgeBinarySingleSection* _e;
+    public:
+      HessianUpdater_22(EdgeBinarySingleSection* e) : _e(e) {
+
+      }
+
+      void updateH() override {
+        _e->updateH_22();
+      }
+    };
   public:
     EdgeBinarySingleSection();
     virtual ~EdgeBinarySingleSection();
 
+    virtual void updateH_11() = 0;
+    virtual void updateH_12() = 0;
+    virtual void updateH_22() = 0;
 
     // virtual void update(bool updateHessians) = 0; // defined in base
 
   };
 
+  template<class Section, class Derived>
+  class EdgeBinarySingleSectionCRPT : public EdgeBinarySingleSection<Section> {
+
+  public:
+
+    void update(bool updateHessian) override {
+      static_cast<Derived*>(this)->update(this->section().parameter(this->par_1_Id()), this->section().parameter(this->par_2_Id()), updateHessian);
+    }
+
+    void updateH_11() override final {
+      static_cast<Derived*>(this)->updateH11Block(this->section().hessianBlockByUID(this->H_11_Uid()));
+    }
+    void updateH_12() override final {
+      static_cast<Derived*>(this)->updateH12Block(this->section().hessianBlockByUID(this->H_12_Uid()));
+    }
+    void updateH_22() override final {
+      static_cast<Derived*>(this)->updateH22Block(this->section().hessianBlockByUID(this->H_22_Uid()));
+    }
+  };
 
 }

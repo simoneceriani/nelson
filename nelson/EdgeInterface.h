@@ -16,4 +16,9 @@ namespace nelson {
     virtual void setUID(int uid) = 0;
   };
 
+  class EdgeHessianUpdater {
+  public:
+    virtual void updateH() = 0;
+  };
+
 }

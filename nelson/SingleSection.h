@@ -58,7 +58,7 @@ namespace nelson {
   template<int NB>
   class BaseNumSizeParameters<mat::Variable, NB> {
   public:
-    virtual const std::vector<int> & parameterSize() const = 0;
+    virtual const std::vector<int>& parameterSize() const = 0;
     constexpr int numParameters() const {
       assert(parameterSize().size() == NB);
       return NB;
@@ -86,7 +86,16 @@ namespace nelson {
 
     // once the number of params is known (parametersReady() called), _sparsityPattern is allocated and _edgeSetter too, ready to receive edges
     std::unique_ptr<mat::SparsityPattern<mat::ColMajor>> _sparsityPattern;
-    std::vector<std::map<int, std::forward_list<std::unique_ptr<EdgeUIDSetterInterface>>>> _edgeSetter;
+
+    struct SetterComputer {
+      std::unique_ptr<EdgeUIDSetterInterface> setter;
+      std::unique_ptr<EdgeHessianUpdater> computer;
+      SetterComputer(EdgeUIDSetterInterface* s, EdgeHessianUpdater* c) : setter(s), computer(c) {
+
+      }
+    };
+
+    std::vector<std::map<int, std::forward_list<SetterComputer>>> _edgeSetterComputer;
 
     Hessian _hessian;
 
@@ -94,14 +103,15 @@ namespace nelson {
     std::forward_list<std::unique_ptr<EdgeInterface>> _edges;
 
     // outer size is the number of independent computation, safe to be computed in parallel, inside they have to go sequential or parallel but with reduction
-    //std::vector<std::forward_list<EdgeComputator*>> _computationUnits;
+    // std::vector<std::forward_list<EdgeHessianUpdater*>> _computationUnits;
+
   public:
 
     constexpr int matType() const { return matTypeV; }
 
     SingleSection();
     virtual ~SingleSection();
-    
+
     virtual const ParT& parameter(int i) const = 0;
     virtual ParT& parameter(int i) = 0;
 
@@ -120,11 +130,15 @@ namespace nelson {
       return _hessian;
     }
 
-    void addEdge(int i, EdgeUnarySingleSection<Derived> * e);
+    typename Hessian::MatTraits::MatrixType::BlockType hessianBlockByUID(int uid) {
+      return _hessian.H().blockByUID(uid);
+    }
+
+    void addEdge(int i, EdgeUnarySingleSection<Derived>* e);
     void addEdge(int i, int j, EdgeBinarySingleSection<Derived>* e);
-    void addEdge(int i, int j, int k/*, EdgeTernary* e*/);
-    template<int N>
-    void addEdge(const std::array<int, N> & ids/*, EdgeNAry * e*/);
+    //void addEdge(int i, int j, int k/*, EdgeTernary* e*/);
+    //template<int N>
+    //void addEdge(const std::array<int, N>& ids/*, EdgeNAry * e*/);
 
     void update(bool hessian);
   };
