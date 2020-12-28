@@ -130,16 +130,18 @@ namespace nelson {
     }
 
     void updateH_11() override final {
-      typename Section::Hessian::MatTraits::MatrixType::BlockType b = this->section().hessianBlockByUID(this->H_11_Uid());
-      static_cast<Derived*>(this)->updateH11Block(b);
+      typename Section::Hessian::MatTraits::MatrixType::BlockType bH = this->section().hessianBlockByUID(this->H_11_Uid());
+      typename Section::Hessian::VecType::SegmentType bV = this->section().bVectorSegment(this->par_1_Id());
+      static_cast<Derived*>(this)->updateH11Block(bH, bV);
     }
     void updateH_12() override final {
-      typename Section::Hessian::MatTraits::MatrixType::BlockType b = this->section().hessianBlockByUID(this->H_12_Uid());
-      static_cast<Derived*>(this)->updateH12Block(b);
+      typename Section::Hessian::MatTraits::MatrixType::BlockType bH = this->section().hessianBlockByUID(this->H_12_Uid());
+      static_cast<Derived*>(this)->updateH12Block(bH);
     }
     void updateH_22() override final {
-      typename Section::Hessian::MatTraits::MatrixType::BlockType b = this->section().hessianBlockByUID(this->H_22_Uid());
-      static_cast<Derived*>(this)->updateH22Block(b);
+      typename Section::Hessian::MatTraits::MatrixType::BlockType bH = this->section().hessianBlockByUID(this->H_22_Uid());
+      typename Section::Hessian::VecType::SegmentType bV = this->section().bVectorSegment(this->par_2_Id());
+      static_cast<Derived*>(this)->updateH22Block(bH, bV);
     }
   };
 

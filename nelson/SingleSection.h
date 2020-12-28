@@ -135,6 +135,10 @@ namespace nelson {
       return _hessian.H().blockByUID(uid);
     }
 
+    typename Hessian::VecType::SegmentType bVectorSegment(int pid) {
+      return _hessian.b().segment(pid);
+    }
+
     void addEdge(int i, EdgeUnarySingleSection<Derived>* e);
     void addEdge(int i, int j, EdgeBinarySingleSection<Derived>* e);
     //void addEdge(int i, int j, int k/*, EdgeTernary* e*/);

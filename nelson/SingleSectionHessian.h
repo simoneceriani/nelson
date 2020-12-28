@@ -45,6 +45,14 @@ namespace nelson {
       return _H;
     }
 
+    inline const VecType& b() const {
+      return _b;
+    }
+
+    inline VecType& b() {
+      return _b;
+    }
+
     void clearAll();
 
   };

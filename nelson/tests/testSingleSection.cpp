@@ -33,10 +33,11 @@ public:
     const auto& par = this->parameter();
   }
 
-  template<class Derived>
-  void updateHBlock(Eigen::MatrixBase<Derived>& b) {
+  template<class Derived1, class Derived2>
+  void updateHBlock(Eigen::MatrixBase<Derived1>& H, Eigen::MatrixBase<Derived2>& v) {
     std::cout << "EdgeUnaryTest::updateHBlock " << this->parId() << "," << this->parId() << std::endl;
-    b.setConstant(1);
+    H.setConstant(1);
+    v.setConstant(1);
   }
 };
 
@@ -59,9 +60,10 @@ public:
 
   }
 
-  template<class Derived>
-  void updateH11Block(Eigen::MatrixBase<Derived>& b) {
+  template<class Derived1, class Derived2>
+  void updateH11Block(Eigen::MatrixBase<Derived1>& H, Eigen::MatrixBase<Derived2>& b) {
     std::cout << "EdgeBinaryTest::updateHBlock[11] " << this->par_1_Id() << "," << this->par_1_Id() << std::endl;
+    H.setConstant(11);
     b.setConstant(11);
   }
   template<class Derived>
@@ -69,9 +71,10 @@ public:
     std::cout << "EdgeBinaryTest::updateHBlock[12] " << this->par_1_Id() << "," << this->par_2_Id() << std::endl;
     b.setConstant(12);
   }
-  template<class Derived>
-  void updateH22Block(Eigen::MatrixBase<Derived>& b) {
+  template<class Derived1, class Derived2>
+  void updateH22Block(Eigen::MatrixBase<Derived1>& H, Eigen::MatrixBase<Derived2>& b) {
     std::cout << "EdgeBinaryTest::updateHBlock[22] " << this->par_2_Id() << "," << this->par_2_Id() << std::endl;
+    H.setConstant(22);
     b.setConstant(22);
   }
 

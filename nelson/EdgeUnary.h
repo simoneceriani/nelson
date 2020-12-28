@@ -80,8 +80,9 @@ namespace nelson {
     }
 
     void updateH() override final {
-      typename Section::Hessian::MatTraits::MatrixType::BlockType b = this->section().hessianBlockByUID(this->HUid());
-      static_cast<Derived*>(this)->updateHBlock(b);
+      typename Section::Hessian::MatTraits::MatrixType::BlockType bH = this->section().hessianBlockByUID(this->HUid());
+      typename Section::Hessian::VecType::SegmentType bV = this->section().bVectorSegment(this->parId());
+      static_cast<Derived*>(this)->updateHBlock(bH, bV);
     }
   };
 
