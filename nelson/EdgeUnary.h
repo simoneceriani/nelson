@@ -8,11 +8,11 @@ namespace nelson {
 
   class EdgeUnaryBase : public EdgeInterface {
 
-    int _parId;
+    NodeId _parId;
     int _H_uid;
 
   protected:
-    void setParId(int id);
+    void setParId(NodeId id);
     void setHUid(int uid);
 
     class EdgeUIDSetter final : public EdgeUIDSetterInterface {
@@ -29,7 +29,7 @@ namespace nelson {
     EdgeUnaryBase();
     virtual ~EdgeUnaryBase();
 
-    int parId() const {
+    NodeId parId() const {
       return _parId;
     }
 
@@ -80,8 +80,11 @@ namespace nelson {
     }
 
     void updateH() override final {
+      assert(this->HUid() >= 0);
+      assert(this->parId().isVariable());
+
       typename Section::Hessian::MatTraits::MatrixType::BlockType bH = this->section().hessianBlockByUID(this->HUid());
-      typename Section::Hessian::VecType::SegmentType bV = this->section().bVectorSegment(this->parId());
+      typename Section::Hessian::VecType::SegmentType bV = this->section().bVectorSegment(this->parId().id());
       static_cast<Derived*>(this)->updateHBlock(bH, bV);
     }
   };

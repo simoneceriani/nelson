@@ -113,11 +113,17 @@ namespace nelson {
     SingleSection();
     virtual ~SingleSection();
 
-    virtual const ParT& parameter(int i) const = 0;
-    virtual ParT& parameter(int i) = 0;
+    virtual const ParT& parameter(NodeId i) const = 0;
+    virtual ParT& parameter(NodeId i) = 0;
 
-    // virtual int numParameters() = 0; // not defined here, but in base class BaseNumParameters<NB>, only if not fixed size (NB)!
-    // virtual const std::vector<int>& | int parameterSize() = 0; // not defined here, but in base class BaseParameterSize<B>, only if not fixed size !
+    virtual int numFixedParameters() const {
+      // override if have fixed parameters
+      return 0;
+    }
+
+    // virtual int numParameters() const = 0; // not defined here, but in base class BaseNumParameters<NB>, only if not fixed size (NB)!
+    // virtual const std::vector<int>& | int parameterSize() const = 0; // not defined here, but in base class BaseParameterSize<B>, only if not fixed size !
+
 
     void parametersReady(); // client has to call this method when numParameters() is known
     void structureReady(); // client has to call this method when all edges have been added
@@ -139,8 +145,8 @@ namespace nelson {
       return _hessian.b().segment(pid);
     }
 
-    void addEdge(int i, EdgeUnarySingleSection<Derived>* e);
-    void addEdge(int i, int j, EdgeBinarySingleSection<Derived>* e);
+    void addEdge(NodeId i, EdgeUnarySingleSection<Derived>* e);
+    void addEdge(NodeId i, NodeId j, EdgeBinarySingleSection<Derived>* e);
     //void addEdge(int i, int j, int k/*, EdgeTernary* e*/);
     //template<int N>
     //void addEdge(const std::array<int, N>& ids/*, EdgeNAry * e*/);

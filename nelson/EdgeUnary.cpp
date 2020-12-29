@@ -14,7 +14,7 @@ namespace nelson {
 
   }
 
-  void EdgeUnaryBase::setParId(int id) {
+  void EdgeUnaryBase::setParId(NodeId id) {
     this->_parId = id;
   }
 

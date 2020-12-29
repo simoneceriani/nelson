@@ -71,7 +71,7 @@ namespace nelson {
   }
 
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
-  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(int i, EdgeUnarySingleSection<Derived>* e) {
+  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(NodeId i, EdgeUnarySingleSection<Derived>* e) {
     assert(e != nullptr);
 
     // add to edges
@@ -80,12 +80,13 @@ namespace nelson {
     this->_edges.push_front(std::unique_ptr<EdgeInterface>(e));
 
     // add setters
-    this->_edgeSetterComputer[i][i].emplace_front(SetterComputer(new EdgeUnaryBase::EdgeUIDSetter(e), new typename EdgeUnarySingleSection<Derived>::HessianUpdater(e)));
+    if (i.type() == NodeType::Variable) {
+      this->_edgeSetterComputer[i.id()][i.id()].emplace_front(SetterComputer(new EdgeUnaryBase::EdgeUIDSetter(e), new typename EdgeUnarySingleSection<Derived>::HessianUpdater(e)));
+    }
   }
 
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
-  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(int i, int j, EdgeBinarySingleSection<Derived>* e) {
-    assert(i < j);
+  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(NodeId i, NodeId j, EdgeBinarySingleSection<Derived>* e) {
 
     // add to edges
     e->setPar_1_Id(i);
@@ -94,11 +95,18 @@ namespace nelson {
     this->_edges.push_front(std::unique_ptr<EdgeInterface>(e));
 
     // add setters
-    this->_edgeSetterComputer[i][i].emplace_front(SetterComputer(new EdgeBinaryBase::EdgeUID_11_Setter(e), new typename EdgeBinarySingleSection<Derived>::HessianUpdater_11(e)));
+    if (i.type() == NodeType::Variable) {
+      this->_edgeSetterComputer[i.id()][i.id()].emplace_front(SetterComputer(new EdgeBinaryBase::EdgeUID_11_Setter(e), new typename EdgeBinarySingleSection<Derived>::HessianUpdater_11(e)));
+    }
 
-    this->_edgeSetterComputer[j][i].emplace_front(SetterComputer(new EdgeBinaryBase::EdgeUID_12_Setter(e), new typename EdgeBinarySingleSection<Derived>::HessianUpdater_12(e)));
+    if (i.type() == NodeType::Variable && j.type() == NodeType::Variable) {
+      assert(i.id() < j.id());
+      this->_edgeSetterComputer[j.id()][i.id()].emplace_front(SetterComputer(new EdgeBinaryBase::EdgeUID_12_Setter(e), new typename EdgeBinarySingleSection<Derived>::HessianUpdater_12(e)));
+    }
 
-    this->_edgeSetterComputer[j][j].emplace_front(SetterComputer(new EdgeBinaryBase::EdgeUID_22_Setter(e), new typename EdgeBinarySingleSection<Derived>::HessianUpdater_22(e)));
+    if (j.type() == NodeType::Variable) {
+      this->_edgeSetterComputer[j.id()][j.id()].emplace_front(SetterComputer(new EdgeBinaryBase::EdgeUID_22_Setter(e), new typename EdgeBinarySingleSection<Derived>::HessianUpdater_22(e)));
+    }
 
   }
 

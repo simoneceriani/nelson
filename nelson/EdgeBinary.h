@@ -7,15 +7,15 @@
 namespace nelson {
 
   class EdgeBinaryBase : public EdgeInterface {
-    int _par_1_Id;
-    int _par_2_Id;
+    NodeId _par_1_Id;
+    NodeId _par_2_Id;
     int _H_11_uid;
     int _H_12_uid;
     int _H_22_uid;
 
   protected:
-    void setPar_1_Id(int id);
-    void setPar_2_Id(int id);
+    void setPar_1_Id(NodeId id);
+    void setPar_2_Id(NodeId id);
     void setH_11_Uid(int uid);
     void setH_12_Uid(int uid);
     void setH_22_Uid(int uid);
@@ -46,10 +46,10 @@ namespace nelson {
     EdgeBinaryBase();
     virtual ~EdgeBinaryBase();
 
-    int par_1_Id() const {
+    NodeId par_1_Id() const {
       return _par_1_Id;
     }
-    int par_2_Id() const {
+    NodeId par_2_Id() const {
       return _par_2_Id;
     }
 
@@ -130,17 +130,24 @@ namespace nelson {
     }
 
     void updateH_11() override final {
+      assert(this->H_11_Uid() >= 0);
+      assert(this->par_1_Id().isVariable());
+
       typename Section::Hessian::MatTraits::MatrixType::BlockType bH = this->section().hessianBlockByUID(this->H_11_Uid());
-      typename Section::Hessian::VecType::SegmentType bV = this->section().bVectorSegment(this->par_1_Id());
+      typename Section::Hessian::VecType::SegmentType bV = this->section().bVectorSegment(this->par_1_Id().id());
       static_cast<Derived*>(this)->updateH11Block(bH, bV);
     }
     void updateH_12() override final {
+      assert(this->H_12_Uid() >= 0);
       typename Section::Hessian::MatTraits::MatrixType::BlockType bH = this->section().hessianBlockByUID(this->H_12_Uid());
       static_cast<Derived*>(this)->updateH12Block(bH);
     }
     void updateH_22() override final {
+      assert(this->H_22_Uid() >= 0);
+      assert(this->par_2_Id().isVariable());
+
       typename Section::Hessian::MatTraits::MatrixType::BlockType bH = this->section().hessianBlockByUID(this->H_22_Uid());
-      typename Section::Hessian::VecType::SegmentType bV = this->section().bVectorSegment(this->par_2_Id());
+      typename Section::Hessian::VecType::SegmentType bV = this->section().bVectorSegment(this->par_2_Id().id());
       static_cast<Derived*>(this)->updateH22Block(bH, bV);
     }
   };

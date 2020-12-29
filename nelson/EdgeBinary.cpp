@@ -14,10 +14,10 @@ namespace nelson {
 
   }
 
-  void EdgeBinaryBase::setPar_1_Id(int id) {
+  void EdgeBinaryBase::setPar_1_Id(NodeId id) {
     this->_par_1_Id = id;
   }
-  void EdgeBinaryBase::setPar_2_Id(int id) {
+  void EdgeBinaryBase::setPar_2_Id(NodeId id) {
     this->_par_2_Id = id;
   }
 

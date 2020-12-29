@@ -3,5 +3,5 @@ include_guard(GLOBAL)
 
 # generated with CMakeBaseBuildSystem
 
-set(mat_HASH "0cb5cb05f87d9869e373b088822665d2f4100bbd")
-set(mat_LOG "2020-12-23T16:09:27+01:00 start-develop-inside-nelson")
+set(mat_HASH "0972717a1f97552926506b2524eed443ff34a1e2")
+set(mat_LOG "2020-12-29T23:56:57+01:00 small-fix-in-global-assert")
