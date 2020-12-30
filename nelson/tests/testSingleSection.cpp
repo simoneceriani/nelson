@@ -372,7 +372,7 @@ TEMPLATE_TEST_CASE("SingleSection", "[SingleSection]",
     pss.addEdge(i, new EdgeUnaryTest<TestType>(i));
   }
 
-  // unary edge on fixed
+  // unary edge on fixed (not really useful...)
   pss.addEdge(nelson::NodeId::fixed(0), new EdgeUnaryTest<TestType>(0));
 
   // add "odometry"  edges (not if mat diagonal)

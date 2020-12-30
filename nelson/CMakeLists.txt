@@ -40,6 +40,10 @@ target_sources_wrapper(nelson
     EdgeUnary.hpp
     EdgeBinary.h
     EdgeBinary.hpp
+    MatrixDenseWrapper.h
+    MatrixDenseWrapper.hpp
+    MatrixSparseWrapper.h
+    MatrixSparseWrapper.hpp
 	PRIVATE
     Global.cpp
     SingleSectionHessian.cpp
@@ -48,6 +52,8 @@ target_sources_wrapper(nelson
     EdgeInterface.cpp
     EdgeUnary.cpp
     EdgeBinary.cpp
+    MatrixDenseWrapper.cpp
+    MatrixSparseWrapper.cpp
 )
 
 # if you do not want to have nelsond.{dll,lib,so} in debug disable this 

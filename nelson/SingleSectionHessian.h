@@ -27,7 +27,7 @@ namespace nelson {
     SingleSectionHessian();
     virtual ~SingleSectionHessian();
 
-    void resize(BlockSizeTypePar blockSizes, int nBlocks, const mat::SparsityPattern<mat::ColMajor>& sp);
+    void resize(BlockSizeTypePar blockSizes, int nBlocks, const mat::SparsityPattern<mat::ColMajor>::CSPtr& sp);
 
     inline void clearChi2() {
       this->_chi2 = 0;

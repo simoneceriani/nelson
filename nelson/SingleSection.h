@@ -86,7 +86,7 @@ namespace nelson {
   private:
 
     // once the number of params is known (parametersReady() called), _sparsityPattern is allocated and _edgeSetter too, ready to receive edges
-    std::unique_ptr<mat::SparsityPattern<mat::ColMajor>> _sparsityPattern;
+    std::shared_ptr<mat::SparsityPattern<mat::ColMajor>> _sparsityPattern;
 
     struct SetterComputer {
       std::unique_ptr<EdgeUIDSetterInterface> setter;

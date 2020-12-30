@@ -35,7 +35,7 @@ namespace nelson {
       }
     }
 
-    this->_hessian.resize(this->parameterSize(), this->numParameters(), *this->_sparsityPattern);
+    this->_hessian.resize(this->parameterSize(), this->numParameters(), this->_sparsityPattern);
 
     // set the UIDs to the edges
     // iterate on sparsity pattern and _edgeSetterComputer, they have to be the same!

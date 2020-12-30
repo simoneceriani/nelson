@@ -23,7 +23,7 @@ namespace nelson {
   }
 
   template<int matType, class T, int B, int NB>
-  void SingleSectionHessian<matType, T, B, NB>::resize(BlockSizeTypePar blockSizes, int nBlocks, const mat::SparsityPattern<mat::ColMajor>& sp) {
+  void SingleSectionHessian<matType, T, B, NB>::resize(BlockSizeTypePar blockSizes, int nBlocks, const mat::SparsityPattern<mat::ColMajor>::CSPtr& sp) {
     auto blockDescriptor = MatType::BlockDescriptor::squareMatrix(blockSizes, nBlocks);
     _H.resize(blockDescriptor, sp);
     _b.resize(blockDescriptor.rowDescriptionCSPtr());
