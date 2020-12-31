@@ -53,6 +53,9 @@ foreach(s ${TESTS_LIST})
 	if (WIN32)
 		set_target_properties(nelsonTest_${sn} PROPERTIES FOLDER nelson/test)
 	endif()	
+	if(MSVC)
+		target_compile_options(nelsonTest_${sn} PRIVATE /bigobj)
+	endif()
 	target_link_libraries(nelsonTest_${sn} PRIVATE nelson::nelson Catch2::Catch2WithMain lie::lie)
   
   # add to tests

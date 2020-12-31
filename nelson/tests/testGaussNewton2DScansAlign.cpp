@@ -129,12 +129,13 @@ public:
 
 };
 
-template<int matType>
-class SE2PoseSectionFF : public nelson::SingleSection<SE2PoseSectionFF<matType>, SE2Pose, matType, double, constants::poseParSize, constants::numPoses> {
+//-----------------------------------------------------------------------------------------------------------------
+
+template<int matTypeV>
+class SE2PoseSectionFF : public nelson::SingleSection<SE2PoseSectionFF<matTypeV>, SE2Pose, matTypeV, double, constants::poseParSize, constants::numPoses> {
   std::array<SE2Pose, constants::numPoses> _poses;
   SE2Pose _fixedPose;
-
-  using SingleSectionBase = nelson::SingleSection<SE2PoseSectionFF<matType>, SE2Pose, matType, double, constants::poseParSize, constants::numPoses>;
+  using SingleSectionBase = nelson::SingleSection<SE2PoseSectionFF<matTypeV>, SE2Pose, matTypeV, double, constants::poseParSize, constants::numPoses>;
 public:
   SE2PoseSectionFF() {
     this->parametersReady();
@@ -172,10 +173,266 @@ using SE2PoseSectionFF_BlockDiagonal = SE2PoseSectionFF<mat::BlockDiagonal>;
 using SE2PoseSectionFF_BlockSparse = SE2PoseSectionFF<mat::BlockSparse>;
 using SE2PoseSectionFF_BlockCoeffSparse = SE2PoseSectionFF<mat::BlockCoeffSparse>;
 
+//-----------------------------------------------------------------------------------------------------------------
 
+template<int matTypeV>
+class SE2PoseSectionFD : public nelson::SingleSection<SE2PoseSectionFD<matTypeV>, SE2Pose, matTypeV, double, constants::poseParSize, mat::Dynamic> {
+  std::vector<SE2Pose> _poses;
+  SE2Pose _fixedPose;
+  using SingleSectionBase = nelson::SingleSection<SE2PoseSectionFD<matTypeV>, SE2Pose, matTypeV, double, constants::poseParSize, mat::Dynamic>;
+public:
+  SE2PoseSectionFD() {
+    _poses.resize(constants::numPoses);
+    this->parametersReady();
+  }
 
+  virtual const SE2Pose& parameter(nelson::NodeId i) const {
+    if (i.isVariable()) return _poses[i.id()];
+    else {
+      assert(i.id() == 0);
+      return _fixedPose;
+    }
+  }
+  virtual SE2Pose& parameter(nelson::NodeId i) {
+    if (i.isVariable()) return _poses[i.id()];
+    else {
+      assert(i.id() == 0);
+      return _fixedPose;
+    }
+  }
+
+  int numFixedParameters() const override {
+    return 1;
+  }
+
+  int numParameters() const override {
+    return _poses.size();
+  }
+
+  void oplus(const typename SingleSectionBase::HessianVecType& inc) {
+    for (int i = 0; i < this->numParameters(); i++) {
+      _poses[i].oplus(inc.segment(i));
+    }
+  }
+
+};
+
+using SE2PoseSectionFD_BlockDense = SE2PoseSectionFD<mat::BlockDense>;
+using SE2PoseSectionFD_BlockDiagonal = SE2PoseSectionFD<mat::BlockDiagonal>;
+using SE2PoseSectionFD_BlockSparse = SE2PoseSectionFD<mat::BlockSparse>;
+using SE2PoseSectionFD_BlockCoeffSparse = SE2PoseSectionFD<mat::BlockCoeffSparse>;
+//-----------------------------------------------------------------------------------------------------------------
+
+template<int matTypeV>
+class SE2PoseSectionDF : public nelson::SingleSection<SE2PoseSectionDF<matTypeV>, SE2Pose, matTypeV, double, mat::Dynamic, constants::numPoses> {
+  std::array<SE2Pose, constants::numPoses> _poses;
+  SE2Pose _fixedPose;
+
+  using SingleSectionBase = nelson::SingleSection<SE2PoseSectionDF<matTypeV>, SE2Pose, matTypeV, double, mat::Dynamic, constants::numPoses>;
+public:
+  SE2PoseSectionDF() {
+    this->parametersReady();
+  }
+
+  virtual const SE2Pose& parameter(nelson::NodeId i) const {
+    if (i.isVariable()) return _poses[i.id()];
+    else {
+      assert(i.id() == 0);
+      return _fixedPose;
+    }
+  }
+  virtual SE2Pose& parameter(nelson::NodeId i) {
+    if (i.isVariable()) return _poses[i.id()];
+    else {
+      assert(i.id() == 0);
+      return _fixedPose;
+    }
+  }
+
+  int numFixedParameters() const override {
+    return 1;
+  }
+
+  int parameterSize() const override {
+    return constants::poseParSize;
+  }
+
+  void oplus(const typename SingleSectionBase::HessianVecType& inc) {
+    for (int i = 0; i < this->numParameters(); i++) {
+      _poses[i].oplus(inc.segment(i));
+    }
+  }
+
+};
+
+using SE2PoseSectionDF_BlockDense = SE2PoseSectionDF<mat::BlockDense>;
+using SE2PoseSectionDF_BlockDiagonal = SE2PoseSectionDF<mat::BlockDiagonal>;
+using SE2PoseSectionDF_BlockSparse = SE2PoseSectionDF<mat::BlockSparse>;
+using SE2PoseSectionDF_BlockCoeffSparse = SE2PoseSectionDF<mat::BlockCoeffSparse>;
+
+//-----------------------------------------------------------------------------------------------------------------
+
+template<int matTypeV>
+class SE2PoseSectionDD : public nelson::SingleSection<SE2PoseSectionDD<matTypeV>, SE2Pose, matTypeV, double, mat::Dynamic, mat::Dynamic> {
+  std::vector<SE2Pose> _poses;
+  SE2Pose _fixedPose;
+
+  using SingleSectionBase = nelson::SingleSection<SE2PoseSectionDD<matTypeV>, SE2Pose, matTypeV, double, mat::Dynamic, mat::Dynamic>;
+public:
+  SE2PoseSectionDD() {
+    _poses.resize(constants::numPoses);
+    this->parametersReady();
+  }
+
+  virtual const SE2Pose& parameter(nelson::NodeId i) const {
+    if (i.isVariable()) return _poses[i.id()];
+    else {
+      assert(i.id() == 0);
+      return _fixedPose;
+    }
+  }
+  virtual SE2Pose& parameter(nelson::NodeId i) {
+    if (i.isVariable()) return _poses[i.id()];
+    else {
+      assert(i.id() == 0);
+      return _fixedPose;
+    }
+  }
+
+  int numFixedParameters() const override {
+    return 1;
+  }
+
+  int numParameters() const override {
+    return _poses.size();
+  }
+
+  int parameterSize() const override {
+    return constants::poseParSize;
+  }
+
+  void oplus(const typename SingleSectionBase::HessianVecType& inc) {
+    for (int i = 0; i < this->numParameters(); i++) {
+      _poses[i].oplus(inc.segment(i));
+    }
+  }
+
+};
+
+using SE2PoseSectionDD_BlockDense = SE2PoseSectionDD<mat::BlockDense>;
+using SE2PoseSectionDD_BlockDiagonal = SE2PoseSectionDD<mat::BlockDiagonal>;
+using SE2PoseSectionDD_BlockSparse = SE2PoseSectionDD<mat::BlockSparse>;
+using SE2PoseSectionDD_BlockCoeffSparse = SE2PoseSectionDD<mat::BlockCoeffSparse>;
+
+//-----------------------------------------------------------------------------------------------------------------
+
+template<int matTypeV>
+class SE2PoseSectionVF : public nelson::SingleSection<SE2PoseSectionVF<matTypeV>, SE2Pose, matTypeV, double, mat::Variable, constants::numPoses> {
+  std::array<SE2Pose, constants::numPoses> _poses;
+  std::vector<int> _sizes;
+  SE2Pose _fixedPose;
+
+  using SingleSectionBase = nelson::SingleSection<SE2PoseSectionVF<matTypeV>, SE2Pose, matTypeV, double, mat::Variable, constants::numPoses>;
+public:
+  SE2PoseSectionVF() : _sizes(constants::numPoses, constants::poseParSize) {
+    this->parametersReady();
+  }
+
+  virtual const SE2Pose& parameter(nelson::NodeId i) const {
+    if (i.isVariable()) return _poses[i.id()];
+    else {
+      assert(i.id() == 0);
+      return _fixedPose;
+    }
+  }
+  virtual SE2Pose& parameter(nelson::NodeId i) {
+    if (i.isVariable()) return _poses[i.id()];
+    else {
+      assert(i.id() == 0);
+      return _fixedPose;
+    }
+  }
+
+  int numFixedParameters() const override {
+    return 1;
+  }
+
+  const std::vector<int>& parameterSize() const override {
+    return _sizes;
+  }
+
+  void oplus(const typename SingleSectionBase::HessianVecType& inc) {
+    for (int i = 0; i < this->numParameters(); i++) {
+      _poses[i].oplus(inc.segment(i));
+    }
+  }
+
+};
+
+using SE2PoseSectionVF_BlockDense = SE2PoseSectionVF<mat::BlockDense>;
+using SE2PoseSectionVF_BlockDiagonal = SE2PoseSectionVF<mat::BlockDiagonal>;
+using SE2PoseSectionVF_BlockSparse = SE2PoseSectionVF<mat::BlockSparse>;
+using SE2PoseSectionVF_BlockCoeffSparse = SE2PoseSectionVF<mat::BlockCoeffSparse>;
+//-----------------------------------------------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------------------------------------------
+
+template<int matTypeV>
+class SE2PoseSectionVD : public nelson::SingleSection<SE2PoseSectionVD<matTypeV>, SE2Pose, matTypeV, double, mat::Variable, mat::Dynamic> {
+  std::vector<SE2Pose> _poses;
+  std::vector<int> _sizes;
+  SE2Pose _fixedPose;
+
+  using SingleSectionBase = nelson::SingleSection<SE2PoseSectionVD<matTypeV>, SE2Pose, matTypeV, double, mat::Variable, mat::Dynamic>;
+public:
+  SE2PoseSectionVD() : _sizes(constants::numPoses, constants::poseParSize) {
+    _poses.resize(constants::numPoses);
+    this->parametersReady();
+  }
+
+  virtual const SE2Pose& parameter(nelson::NodeId i) const {
+    if (i.isVariable()) return _poses[i.id()];
+    else {
+      assert(i.id() == 0);
+      return _fixedPose;
+    }
+  }
+  virtual SE2Pose& parameter(nelson::NodeId i) {
+    if (i.isVariable()) return _poses[i.id()];
+    else {
+      assert(i.id() == 0);
+      return _fixedPose;
+    }
+  }
+
+  int numFixedParameters() const override {
+    return 1;
+  }
+
+  const std::vector<int>& parameterSize() const override {
+    return _sizes;
+  }
+
+  void oplus(const typename SingleSectionBase::HessianVecType& inc) {
+    for (int i = 0; i < this->numParameters(); i++) {
+      _poses[i].oplus(inc.segment(i));
+    }
+  }
+
+};
+
+using SE2PoseSectionVD_BlockDense = SE2PoseSectionVD<mat::BlockDense>;
+using SE2PoseSectionVD_BlockDiagonal = SE2PoseSectionVD<mat::BlockDiagonal>;
+using SE2PoseSectionVD_BlockSparse = SE2PoseSectionVD<mat::BlockSparse>;
+using SE2PoseSectionVD_BlockCoeffSparse = SE2PoseSectionVD<mat::BlockCoeffSparse>;
+//-----------------------------------------------------------------------------------------------------------------
 TEMPLATE_TEST_CASE("GaussNewton", "[GaussNewton]",
-  SE2PoseSectionFF_BlockDense, SE2PoseSectionFF_BlockDiagonal, SE2PoseSectionFF_BlockSparse, SE2PoseSectionFF_BlockCoeffSparse
+  SE2PoseSectionFF_BlockDense, SE2PoseSectionFF_BlockDiagonal, SE2PoseSectionFF_BlockSparse, SE2PoseSectionFF_BlockCoeffSparse,
+  SE2PoseSectionFD_BlockDense, SE2PoseSectionFD_BlockDiagonal, SE2PoseSectionFD_BlockSparse, SE2PoseSectionFD_BlockCoeffSparse,
+  SE2PoseSectionDF_BlockDense, SE2PoseSectionDF_BlockDiagonal, SE2PoseSectionDF_BlockSparse, SE2PoseSectionDF_BlockCoeffSparse,
+  SE2PoseSectionDD_BlockDense, SE2PoseSectionDD_BlockDiagonal, SE2PoseSectionDD_BlockSparse, SE2PoseSectionDD_BlockCoeffSparse,
+  SE2PoseSectionVF_BlockDense, SE2PoseSectionVF_BlockDiagonal, SE2PoseSectionVF_BlockSparse, SE2PoseSectionVF_BlockCoeffSparse,
+  SE2PoseSectionVD_BlockDense, SE2PoseSectionVD_BlockDiagonal, SE2PoseSectionVD_BlockSparse, SE2PoseSectionVD_BlockCoeffSparse
 )
 {
   std::cout << "-------------------------------------------------------" << std::endl;
