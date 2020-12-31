@@ -82,6 +82,7 @@ namespace nelson {
   public:
 
     using Hessian = SingleSectionHessian<matTypeV, T, B, NB>;
+    using HessianVecType = typename Hessian::VecType;
     using ParameterType = ParT;
   private:
 

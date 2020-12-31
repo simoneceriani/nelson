@@ -133,6 +133,8 @@ template<int matType>
 class SE2PoseSectionFF : public nelson::SingleSection<SE2PoseSectionFF<matType>, SE2Pose, matType, double, constants::poseParSize, constants::numPoses> {
   std::array<SE2Pose, constants::numPoses> _poses;
   SE2Pose _fixedPose;
+
+  using SingleSectionBase = nelson::SingleSection<SE2PoseSectionFF<matType>, SE2Pose, matType, double, constants::poseParSize, constants::numPoses>;
 public:
   SE2PoseSectionFF() {
     this->parametersReady();
@@ -157,7 +159,7 @@ public:
     return 1;
   }
 
-  void oplus(const typename Hessian::VecType& inc) {
+  void oplus(const typename SingleSectionBase::HessianVecType& inc) {
     for (int i = 0; i < this->numParameters(); i++) {
       _poses[i].oplus(inc.segment(i));
     }

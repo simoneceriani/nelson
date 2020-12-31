@@ -8,17 +8,22 @@
 
 namespace nelson {
 
+  template<int matTypeV, class Tv, int Bv, int NBv> 
+  struct SingleSectionHessianTraits {
+      static constexpr int matType = matTypeV;
+      using Type = Tv;
+      static constexpr int B = Bv;
+      static constexpr int NB = NBv;
+
+  };
+
+
   template<int matTypeV, class T, int B, int NB = mat::Dynamic>
   class SingleSectionHessian {
   public:
     using MatTraits = mat::MatrixBlockIterableTypeTraits<matTypeV, T, mat::ColMajor, B, B, NB, NB>;
 
-    struct Traits {
-      static constexpr int matType = matTypeV;
-      using Type = T;
-      static constexpr int B = B;
-      static constexpr int NB = NB;
-    };
+    using Traits = SingleSectionHessianTraits<matTypeV, T, B, NB>;
 
     
     using MatType = typename MatTraits::MatrixType;
