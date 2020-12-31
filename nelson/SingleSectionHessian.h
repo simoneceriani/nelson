@@ -8,11 +8,19 @@
 
 namespace nelson {
 
-  template<int matType, class T, int B, int NB = mat::Dynamic>
+  template<int matTypeV, class T, int B, int NB = mat::Dynamic>
   class SingleSectionHessian {
   public:
-    using MatTraits = mat::MatrixBlockIterableTypeTraits<matType, T, mat::ColMajor, B, B, NB, NB>;
+    using MatTraits = mat::MatrixBlockIterableTypeTraits<matTypeV, T, mat::ColMajor, B, B, NB, NB>;
 
+    struct Traits {
+      static constexpr int matType = matTypeV;
+      using Type = T;
+      static constexpr int B = B;
+      static constexpr int NB = NB;
+    };
+
+    
     using MatType = typename MatTraits::MatrixType;
     using VecType = mat::VectorBlock<T, B, NB>;
 
@@ -21,7 +29,7 @@ namespace nelson {
   private:
     MatType _H;
     VecType _b;
-    T _chi2;
+    double _chi2;
 
   public:
     SingleSectionHessian();
@@ -29,11 +37,11 @@ namespace nelson {
 
     void resize(BlockSizeTypePar blockSizes, int nBlocks, const mat::SparsityPattern<mat::ColMajor>::CSPtr& sp);
 
-    inline void clearChi2() {
-      this->_chi2 = 0;
+    inline void setChi2(double chi2) {
+      this->_chi2 = chi2;
     }
 
-    inline T chi2() const {
+    inline double chi2() const {
       return _chi2;
     }
 
@@ -54,6 +62,8 @@ namespace nelson {
     }
 
     void clearAll();
+
+    T maxAbsValBVect() const;
 
   };
 }

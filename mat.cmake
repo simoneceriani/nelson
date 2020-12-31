@@ -3,5 +3,5 @@ include_guard(GLOBAL)
 
 # generated with CMakeBaseBuildSystem
 
-set(mat_HASH "e10653eaf54ae655f2317060826d89829e4038cc")
-set(mat_LOG "2020-12-30T13:07:46+01:00 fix-linux")
+set(mat_HASH "543f7e9c99887a58490016df09f4f9b45c6b816e")
+set(mat_LOG "2020-12-31T13:34:30+01:00 FIX-setZero-in-mat-SparseCoeffMatrixBlock.hpp")

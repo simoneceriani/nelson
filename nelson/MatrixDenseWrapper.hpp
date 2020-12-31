@@ -27,6 +27,7 @@ namespace nelson {
   void DenseWrapper<mat::BlockDiagonal, T, Ordering, BR, BC, NBR, NBC>::set(MatType* matrix) {
     this->_matrix = matrix;
     this->_matCopy.resize(this->_matrix->blockDescriptor());
+    this->_matCopy.setZero();
     this->refresh();
   }
 
@@ -50,6 +51,7 @@ namespace nelson {
   void DenseWrapper<mat::BlockSparse, T, Ordering, BR, BC, NBR, NBC>::set(MatType* matrix) {
     this->_matrix = matrix;
     this->_matCopy.resize(this->_matrix->blockDescriptor());
+    this->_matCopy.setZero();
     this->refresh();
   }
 

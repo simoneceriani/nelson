@@ -19,6 +19,8 @@ namespace nelson {
 
   public:
 
+    using MatOutputType = typename MatType::StorageType;
+
     DenseWrapper() : _matrix(nullptr) {
 
     }
@@ -33,12 +35,7 @@ namespace nelson {
       // no need, direct pointing to matrix
     }
 
-    typename MatType::StorageType& mat() {
-      assert(_matrix != nullptr);
-      return _matrix->mat();
-    }
-
-    const typename MatType::StorageType& mat() const {
+    const MatOutputType & mat() const {
       assert(_matrix != nullptr);
       return _matrix->mat();
     }
@@ -59,6 +56,8 @@ namespace nelson {
 
   public:
 
+    using MatOutputType = MatCopyType;
+
     DenseWrapper() : _matrix(nullptr) {
 
     }
@@ -67,17 +66,13 @@ namespace nelson {
 
     void set(MatType* matrix) {
       this->_matrix = matrix;
+      _matCopy.setZero(this->_matrix->mat().rows(), this->_matrix->mat().cols());
       this->refresh();
     }
 
     void refresh() {
       assert(this->_matrix != nullptr);
       _matCopy = MatCopyType(_matrix->mat());
-    }
-
-    MatCopyType& mat() {
-      assert(_matrix != nullptr);
-      return _matCopy;
     }
 
     const MatCopyType& mat() const {
@@ -100,6 +95,8 @@ namespace nelson {
     MatCopyType _matCopy;
 
   public:
+    
+    using MatOutputType = typename MatCopyType::StorageType;
 
     DenseWrapper() : _matrix(nullptr) {
 
@@ -110,11 +107,6 @@ namespace nelson {
     void set(MatType* matrix);
 
     void refresh();
-
-    typename MatCopyType::StorageType& mat() {
-      assert(_matrix != nullptr);
-      return _matCopy.mat();
-    }
 
     const typename MatCopyType::StorageType& mat() const {
       assert(_matrix != nullptr);
@@ -137,6 +129,8 @@ namespace nelson {
 
   public:
 
+    using MatOutputType = typename MatCopyType::StorageType;
+
     DenseWrapper() : _matrix(nullptr) {
 
     }
@@ -146,11 +140,6 @@ namespace nelson {
     void set(MatType* matrix);
 
     void refresh();
-
-    typename MatCopyType::StorageType& mat() {
-      assert(_matrix != nullptr);
-      return _matCopy.mat();
-    }
 
     const typename MatCopyType::StorageType& mat() const {
       assert(_matrix != nullptr);

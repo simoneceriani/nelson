@@ -66,7 +66,6 @@ TEMPLATE_TEST_CASE_SIG("SingleSectionHessian", "[SingleSectionHessian]",
   nelson::SingleSectionHessian<matType, double, B, NB> sec;
   sec.resize(SecType<B>::secSize, numBlocks, sp);
   sec.clearAll();
-  sec.clearChi2();
   REQUIRE(sec.chi2() == 0);
 }
 

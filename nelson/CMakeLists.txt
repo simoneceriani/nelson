@@ -44,6 +44,10 @@ target_sources_wrapper(nelson
     MatrixDenseWrapper.hpp
     MatrixSparseWrapper.h
     MatrixSparseWrapper.hpp
+    GaussNewton.h
+    GaussNewton.hpp
+    SolverCholeskyDense.h
+    SolverCholeskyDense.hpp
 	PRIVATE
     Global.cpp
     SingleSectionHessian.cpp
@@ -54,6 +58,8 @@ target_sources_wrapper(nelson
     EdgeBinary.cpp
     MatrixDenseWrapper.cpp
     MatrixSparseWrapper.cpp
+    GaussNewton.cpp
+    SolverCholeskyDense.cpp
 )
 
 # if you do not want to have nelsond.{dll,lib,so} in debug disable this 

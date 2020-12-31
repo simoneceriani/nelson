@@ -68,13 +68,11 @@ TEMPLATE_TEST_CASE_SIG("DenseWrapper", "[MatrixSparseDenseWrapper]",
   nelson::SingleSectionHessian<matType, double, B, NB> sec;
   sec.resize(SecType<B>::secSize, numBlocks, sp);
   sec.clearAll();
-  sec.clearChi2();
   REQUIRE(sec.chi2() == 0);
 
   nelson::DenseWrapper<matType, double, mat::ColMajor, B, B, NB, NB> wrapperDense;
   wrapperDense.set(&sec.H());
 
-  wrapperDense.mat().setConstant(1);
   {
     const auto& wr = wrapperDense;
     auto mat2 = wr.mat() * 2;
@@ -83,7 +81,6 @@ TEMPLATE_TEST_CASE_SIG("DenseWrapper", "[MatrixSparseDenseWrapper]",
   nelson::SparseWrapper<matType, double, mat::ColMajor, B, B, NB, NB> wrapperSparse;
   wrapperSparse.set(&sec.H());
 
-  wrapperSparse.mat().coeffs().setConstant(1);
   {
     const auto& wr = wrapperSparse;
     auto mat2 = wr.mat() * 2;

@@ -36,3 +36,25 @@ foreach(s ${TESTS_LIST})
   # add to tests
   catch_discover_tests(nelsonTest_${sn})
 endforeach()
+
+
+######################################################################
+
+find_package_wrapper(lie REQUIRED CONFIG)
+
+set(TESTS_LIST 
+  testGaussNewton2DScansAlign.cpp
+)
+
+foreach(s ${TESTS_LIST})
+	get_filename_component(sn "${s}" NAME_WE)
+	add_executable(nelsonTest_${sn})
+	target_sources_wrapper(nelsonTest_${sn} PRIVATE ${s})
+	if (WIN32)
+		set_target_properties(nelsonTest_${sn} PROPERTIES FOLDER nelson/test)
+	endif()	
+	target_link_libraries(nelsonTest_${sn} PRIVATE nelson::nelson Catch2::Catch2WithMain lie::lie)
+  
+  # add to tests
+  catch_discover_tests(nelsonTest_${sn})
+endforeach()

@@ -137,6 +137,11 @@ namespace nelson {
       return _hessian;
     }
 
+    // friend only for gauss newton??
+    Hessian& hessian() {
+      return _hessian;
+    }
+
     typename Hessian::MatTraits::MatrixType::BlockType hessianBlockByUID(int uid) {
       return _hessian.H().blockByUID(uid);
     }

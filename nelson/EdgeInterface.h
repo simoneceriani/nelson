@@ -4,10 +4,21 @@ namespace nelson {
 
   class EdgeInterface {
 
+    double _chi2;
+
+  protected:
+    inline void setChi2(double v) {
+      _chi2 = v;
+    }
   public:
+
     EdgeInterface();
     virtual ~EdgeInterface();
     virtual void update(bool updateHessians) = 0;
+
+    inline double chi2() const {
+      return _chi2;
+    }
 
   };
 

@@ -128,19 +128,21 @@ namespace nelson {
     if (hessian) {
       this->_hessian.clearAll();
     }
-    else {
-      this->_hessian.clearChi2();
-    }
 
     // dummy implementation so far
+    double chi2 = 0;
     for (auto& e : _edges) {
       e->update(hessian);
+      chi2 += e->chi2();
     }
+    this->_hessian.setChi2(chi2);
 
-    // test hessian updatee
-    for (int j = 0; j < this->_computationUnits.size(); j++) {
-      for (auto& set : this->_computationUnits[j]) {
-        set->updateH();
+    // test hessian update
+    if (hessian) {
+      for (int j = 0; j < this->_computationUnits.size(); j++) {
+        for (auto& set : this->_computationUnits[j]) {
+          set->updateH();
+        }
       }
     }
 
