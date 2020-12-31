@@ -521,7 +521,8 @@ TEMPLATE_TEST_CASE_SIG("GaussNewton", "[GaussNewton]", ((class ProblemType, int 
   //std::cout << "H MATRIX BEFORE (native)" << std::endl <<
   //  optProblem.hessian().H().mat().coeffs() << std::endl << std::endl;
 
-  nelson::GaussNewton <solverType, ProblemType::Hessian::Traits::matType, typename ProblemType::Hessian::Traits::Type, ProblemType::Hessian::Traits::B, ProblemType::Hessian::Traits::NB > gn;
+  //nelson::GaussNewton <solverType, ProblemType::Hessian::Traits::matType, typename ProblemType::Hessian::Traits::Type, ProblemType::Hessian::Traits::B, ProblemType::Hessian::Traits::NB > gn;
+  nelson::GaussNewtonHessianTraits < solverType, ProblemType::Hessian::Traits> gn;
   auto tc = gn.solve(optProblem);
   std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
 

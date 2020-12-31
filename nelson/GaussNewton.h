@@ -62,4 +62,7 @@ namespace nelson {
     GaussNewtonTerminationReason solve(OptimizationProblem& op);
   };
 
+  template<int solverTypeV, class HessianTraits>
+  using GaussNewtonHessianTraits = GaussNewton< solverTypeV, HessianTraits::matType, typename HessianTraits::Type, HessianTraits::B, HessianTraits::NB>;
+
 }
