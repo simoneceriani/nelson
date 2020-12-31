@@ -1,16 +1,17 @@
 #pragma once
 #include "Global.h"
 
-#include "MatrixDenseWrapper.h"
+#include "MatrixSparseWrapper.h"
 #include "mat/MatrixTypeTraits.h"
 #include "mat/VectorBlock.h"
 
-#include <Eigen/Dense>
+#include <Eigen/Sparse>
+#include<Eigen/SparseCholesky>	
 
 namespace nelson {
 
   template<int matTypeV, class T, int B, int NB = mat::Dynamic>
-  class SolverCholeskyDense {
+  class SolverCholeskySparse {
 
   public:
 
@@ -18,13 +19,13 @@ namespace nelson {
     using MatType = typename MatTraits::MatrixType;
     using VecType = mat::VectorBlock<T, B, NB>;
 
-    using DenseWrapperT = DenseWrapper<matTypeV, T, mat::ColMajor, B, B, NB, NB>;
+    using SparseWrapperT = SparseWrapper<matTypeV, T, mat::ColMajor, B, B, NB, NB>;
 
   private:
 
-    DenseWrapperT _denseWrapper;
+    SparseWrapperT _sparseWrapper;
     VecType _incVector;
-    Eigen::LDLT<typename DenseWrapperT::MatOutputType, Eigen::Upper> _ldlt;
+    Eigen::SimplicialLDLT<Eigen::SparseMatrix<T>, Eigen::Upper> _ldlt;
 
   public:
 

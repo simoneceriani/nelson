@@ -426,19 +426,26 @@ using SE2PoseSectionVD_BlockDiagonal = SE2PoseSectionVD<mat::BlockDiagonal>;
 using SE2PoseSectionVD_BlockSparse = SE2PoseSectionVD<mat::BlockSparse>;
 using SE2PoseSectionVD_BlockCoeffSparse = SE2PoseSectionVD<mat::BlockCoeffSparse>;
 //-----------------------------------------------------------------------------------------------------------------
-TEMPLATE_TEST_CASE("GaussNewton", "[GaussNewton]",
-  SE2PoseSectionFF_BlockDense, SE2PoseSectionFF_BlockDiagonal, SE2PoseSectionFF_BlockSparse, SE2PoseSectionFF_BlockCoeffSparse,
-  SE2PoseSectionFD_BlockDense, SE2PoseSectionFD_BlockDiagonal, SE2PoseSectionFD_BlockSparse, SE2PoseSectionFD_BlockCoeffSparse,
-  SE2PoseSectionDF_BlockDense, SE2PoseSectionDF_BlockDiagonal, SE2PoseSectionDF_BlockSparse, SE2PoseSectionDF_BlockCoeffSparse,
-  SE2PoseSectionDD_BlockDense, SE2PoseSectionDD_BlockDiagonal, SE2PoseSectionDD_BlockSparse, SE2PoseSectionDD_BlockCoeffSparse,
-  SE2PoseSectionVF_BlockDense, SE2PoseSectionVF_BlockDiagonal, SE2PoseSectionVF_BlockSparse, SE2PoseSectionVF_BlockCoeffSparse,
-  SE2PoseSectionVD_BlockDense, SE2PoseSectionVD_BlockDiagonal, SE2PoseSectionVD_BlockSparse, SE2PoseSectionVD_BlockCoeffSparse
+TEMPLATE_TEST_CASE_SIG("GaussNewton", "[GaussNewton]", ((class ProblemType, int solverType), ProblemType, solverType),
+  (SE2PoseSectionFF_BlockDense, nelson::solverCholeskyDense), (SE2PoseSectionFF_BlockDiagonal, nelson::solverCholeskyDense), (SE2PoseSectionFF_BlockSparse, nelson::solverCholeskyDense), (SE2PoseSectionFF_BlockCoeffSparse, nelson::solverCholeskyDense),
+  (SE2PoseSectionFD_BlockDense, nelson::solverCholeskyDense), (SE2PoseSectionFD_BlockDiagonal, nelson::solverCholeskyDense), (SE2PoseSectionFD_BlockSparse, nelson::solverCholeskyDense), (SE2PoseSectionFD_BlockCoeffSparse, nelson::solverCholeskyDense),
+  (SE2PoseSectionDF_BlockDense, nelson::solverCholeskyDense), (SE2PoseSectionDF_BlockDiagonal, nelson::solverCholeskyDense), (SE2PoseSectionDF_BlockSparse, nelson::solverCholeskyDense), (SE2PoseSectionDF_BlockCoeffSparse, nelson::solverCholeskyDense),
+  (SE2PoseSectionDD_BlockDense, nelson::solverCholeskyDense), (SE2PoseSectionDD_BlockDiagonal, nelson::solverCholeskyDense), (SE2PoseSectionDD_BlockSparse, nelson::solverCholeskyDense), (SE2PoseSectionDD_BlockCoeffSparse, nelson::solverCholeskyDense),
+  (SE2PoseSectionVF_BlockDense, nelson::solverCholeskyDense), (SE2PoseSectionVF_BlockDiagonal, nelson::solverCholeskyDense), (SE2PoseSectionVF_BlockSparse, nelson::solverCholeskyDense), (SE2PoseSectionVF_BlockCoeffSparse, nelson::solverCholeskyDense),
+  (SE2PoseSectionVD_BlockDense, nelson::solverCholeskyDense), (SE2PoseSectionVD_BlockDiagonal, nelson::solverCholeskyDense), (SE2PoseSectionVD_BlockSparse, nelson::solverCholeskyDense), (SE2PoseSectionVD_BlockCoeffSparse, nelson::solverCholeskyDense),
+//---------------------------------------------------------------------------------------------------------------------
+  (SE2PoseSectionFF_BlockDense, nelson::solverCholeskySparse), (SE2PoseSectionFF_BlockDiagonal, nelson::solverCholeskySparse), (SE2PoseSectionFF_BlockSparse, nelson::solverCholeskySparse), (SE2PoseSectionFF_BlockCoeffSparse, nelson::solverCholeskySparse),
+  (SE2PoseSectionFD_BlockDense, nelson::solverCholeskySparse), (SE2PoseSectionFD_BlockDiagonal, nelson::solverCholeskySparse), (SE2PoseSectionFD_BlockSparse, nelson::solverCholeskySparse), (SE2PoseSectionFD_BlockCoeffSparse, nelson::solverCholeskySparse),
+  (SE2PoseSectionDF_BlockDense, nelson::solverCholeskySparse), (SE2PoseSectionDF_BlockDiagonal, nelson::solverCholeskySparse), (SE2PoseSectionDF_BlockSparse, nelson::solverCholeskySparse), (SE2PoseSectionDF_BlockCoeffSparse, nelson::solverCholeskySparse),
+  (SE2PoseSectionDD_BlockDense, nelson::solverCholeskySparse), (SE2PoseSectionDD_BlockDiagonal, nelson::solverCholeskySparse), (SE2PoseSectionDD_BlockSparse, nelson::solverCholeskySparse), (SE2PoseSectionDD_BlockCoeffSparse, nelson::solverCholeskySparse),
+  (SE2PoseSectionVF_BlockDense, nelson::solverCholeskySparse), (SE2PoseSectionVF_BlockDiagonal, nelson::solverCholeskySparse), (SE2PoseSectionVF_BlockSparse, nelson::solverCholeskySparse), (SE2PoseSectionVF_BlockCoeffSparse, nelson::solverCholeskySparse),
+  (SE2PoseSectionVD_BlockDense, nelson::solverCholeskySparse), (SE2PoseSectionVD_BlockDiagonal, nelson::solverCholeskySparse), (SE2PoseSectionVD_BlockSparse, nelson::solverCholeskySparse), (SE2PoseSectionVD_BlockCoeffSparse, nelson::solverCholeskySparse)
 )
 {
   std::cout << "-------------------------------------------------------" << std::endl;
 
-  //SE2PoseSectionFF_BlockDense optProblem; assert(false); // change me to TestType
-  TestType optProblem;
+  //SE2PoseSectionFF_BlockDense optProblem; assert(false); // change me to ProblemType
+  ProblemType optProblem;
   //  REQUIRE(pss.parameterSize() == secSizeFix);
   REQUIRE(optProblem.numParameters() == constants::numPoses);
 
@@ -486,17 +493,17 @@ TEMPLATE_TEST_CASE("GaussNewton", "[GaussNewton]",
     for (int i = 0; i < scanPoses.size(); i++) {
       for (int j = i + 1; j < scanPoses.size(); j++) {
         if (i == 0) {
-          optProblem.addEdge(nelson::NodeId::fixed(0), j - 1, new PointLineEdge<TestType>(scans[i], normals[i], scans[j]));
+          optProblem.addEdge(nelson::NodeId::fixed(0), j - 1, new PointLineEdge<ProblemType>(scans[i], normals[i], scans[j]));
         }
         else {
-          optProblem.addEdge(i - 1, j - 1, new PointLineEdge<TestType>(scans[i], normals[i], scans[j]));
+          optProblem.addEdge(i - 1, j - 1, new PointLineEdge<ProblemType>(scans[i], normals[i], scans[j]));
         }
       }
     }
   }
   else {
     for (int i = 1; i < scanPoses.size(); i++) {
-      optProblem.addEdge(nelson::NodeId::fixed(0), i - 1, new PointLineEdge<TestType>(scans[0], normals[0], scans[i]));
+      optProblem.addEdge(nelson::NodeId::fixed(0), i - 1, new PointLineEdge<ProblemType>(scans[0], normals[0], scans[i]));
     }
   }
 
@@ -505,7 +512,7 @@ TEMPLATE_TEST_CASE("GaussNewton", "[GaussNewton]",
   optProblem.update(true);
   std::cout << "chi2 BEFORE " << optProblem.hessian().chi2() << std::endl;
 
-  // typename nelson::SolverCholeskyDense< TestType::Hessian::Traits::matType, typename TestType::Hessian::Traits::Type, TestType::Hessian::Traits::B, TestType::Hessian::Traits::NB>::DenseWrapperT wrap;
+  // typename nelson::SolverCholeskyDense< ProblemType::Hessian::Traits::matType, typename ProblemType::Hessian::Traits::Type, ProblemType::Hessian::Traits::B, ProblemType::Hessian::Traits::NB>::DenseWrapperT wrap;
   // wrap.set(&optProblem.hessian().H());
   // 
   // std::cout << "H MATRIX BEFORE " << std::endl <<
@@ -514,7 +521,7 @@ TEMPLATE_TEST_CASE("GaussNewton", "[GaussNewton]",
   //std::cout << "H MATRIX BEFORE (native)" << std::endl <<
   //  optProblem.hessian().H().mat().coeffs() << std::endl << std::endl;
 
-  nelson::GaussNewton<TestType::Hessian::Traits::matType, typename TestType::Hessian::Traits::Type, TestType::Hessian::Traits::B, TestType::Hessian::Traits::NB>  gn;
+  nelson::GaussNewton <solverType, ProblemType::Hessian::Traits::matType, typename ProblemType::Hessian::Traits::Type, ProblemType::Hessian::Traits::B, ProblemType::Hessian::Traits::NB > gn;
   auto tc = gn.solve(optProblem);
   std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
 

@@ -2,31 +2,31 @@
 #include "GaussNewton.h"
 
 #include "SolverCholeskyDense.hpp"
-
+#include "SolverCholeskySparse.hpp"
 
 namespace nelson {
 
-  template<int matTypeV, class T, int B, int NB>
-  GaussNewton<matTypeV, T, B, NB>::GaussNewton() {
+  template<int solverTypeV, int matTypeV, class T, int B, int NB>
+  GaussNewton<solverTypeV, matTypeV, T, B, NB>::GaussNewton() {
 
   }
 
-  template<int matTypeV, class T, int B, int NB>
-  GaussNewton<matTypeV, T, B, NB>::GaussNewton(const GaussNewtonSettings& settings)
+  template<int solverTypeV, int matTypeV, class T, int B, int NB>
+  GaussNewton<solverTypeV, matTypeV, T, B, NB>::GaussNewton(const GaussNewtonSettings& settings)
     : _settings(settings)
   {
 
   }
 
-  template<int matTypeV, class T, int B, int NB>
-  GaussNewton<matTypeV, T, B, NB>::~GaussNewton() {
+  template<int solverTypeV, int matTypeV, class T, int B, int NB>
+  GaussNewton<solverTypeV, matTypeV, T, B, NB>::~GaussNewton() {
 
   }
 
 
-  template<int matTypeV, class T, int B, int NB>
+  template<int solverTypeV, int matTypeV, class T, int B, int NB>
   template<class OptimizationProblem>
-  GaussNewtonTerminationReason GaussNewton<matTypeV, T, B, NB>::solve(OptimizationProblem& op) {
+  GaussNewtonTerminationReason GaussNewton<solverTypeV, matTypeV, T, B, NB>::solve(OptimizationProblem& op) {
 
     // compute initial error
     op.update(true);

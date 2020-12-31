@@ -3,6 +3,8 @@
 
 #include "mat/Global.h"
 #include "SolverCholeskyDense.h"
+#include "SolverCholeskySparse.h"
+#include "SolverTraits.h"
 
 #include <vector>
 #include <string>
@@ -41,10 +43,10 @@ namespace nelson {
 
   };
 
-  template<int matTypeV, class T, int B, int NB = mat::Dynamic>
+  template<int solverTypeV, int matTypeV, class T, int B, int NB = mat::Dynamic>
   class GaussNewton {
 
-    SolverCholeskyDense<matTypeV, T, B, NB> _solver;
+    typename SolverTraits<solverTypeV>::template Solver<matTypeV, T, B, NB> _solver;
 
     GaussNewtonSettings _settings;
   public:
