@@ -433,7 +433,7 @@ TEMPLATE_TEST_CASE_SIG("GaussNewton", "[GaussNewton]", ((class ProblemType, int 
   (SE2PoseSectionDD_BlockDense, nelson::solverCholeskyDense), (SE2PoseSectionDD_BlockDiagonal, nelson::solverCholeskyDense), (SE2PoseSectionDD_BlockSparse, nelson::solverCholeskyDense), (SE2PoseSectionDD_BlockCoeffSparse, nelson::solverCholeskyDense),
   (SE2PoseSectionVF_BlockDense, nelson::solverCholeskyDense), (SE2PoseSectionVF_BlockDiagonal, nelson::solverCholeskyDense), (SE2PoseSectionVF_BlockSparse, nelson::solverCholeskyDense), (SE2PoseSectionVF_BlockCoeffSparse, nelson::solverCholeskyDense),
   (SE2PoseSectionVD_BlockDense, nelson::solverCholeskyDense), (SE2PoseSectionVD_BlockDiagonal, nelson::solverCholeskyDense), (SE2PoseSectionVD_BlockSparse, nelson::solverCholeskyDense), (SE2PoseSectionVD_BlockCoeffSparse, nelson::solverCholeskyDense),
-//---------------------------------------------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------------------------------------------
   (SE2PoseSectionFF_BlockDense, nelson::solverCholeskySparse), (SE2PoseSectionFF_BlockDiagonal, nelson::solverCholeskySparse), (SE2PoseSectionFF_BlockSparse, nelson::solverCholeskySparse), (SE2PoseSectionFF_BlockCoeffSparse, nelson::solverCholeskySparse),
   (SE2PoseSectionFD_BlockDense, nelson::solverCholeskySparse), (SE2PoseSectionFD_BlockDiagonal, nelson::solverCholeskySparse), (SE2PoseSectionFD_BlockSparse, nelson::solverCholeskySparse), (SE2PoseSectionFD_BlockCoeffSparse, nelson::solverCholeskySparse),
   (SE2PoseSectionDF_BlockDense, nelson::solverCholeskySparse), (SE2PoseSectionDF_BlockDiagonal, nelson::solverCholeskySparse), (SE2PoseSectionDF_BlockSparse, nelson::solverCholeskySparse), (SE2PoseSectionDF_BlockCoeffSparse, nelson::solverCholeskySparse),
@@ -476,29 +476,67 @@ TEMPLATE_TEST_CASE_SIG("GaussNewton", "[GaussNewton]", ((class ProblemType, int 
 
 
   Eigen::Vector3d noiseSigma;
-  SECTION("NO NOISE") {
+  bool fullEdges;
+  SECTION("NO NOISE - FULL") {
     noiseSigma.setZero();
+    fullEdges = true;
   }
-  SECTION("WITH NOISE") {
+  SECTION("WITH NOISE - FULL") {
     noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
+    fullEdges = true;
   }
+  if (optProblem.matType() != mat::BlockDiagonal) {
+    SECTION("NO NOISE - SPARSE") {
+      noiseSigma.setZero();
+      fullEdges = false;
+    }
+    SECTION("WITH NOISE - SPARSE") {
+      noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
+      fullEdges = false;
+    }
+  }
+  else fullEdges = false;
 
   optProblem.parameter(nelson::NodeId::fixed(0)).pose = scanPoses[0];
   for (int i = 1; i < scanPoses.size(); i++) {
     optProblem.parameter(i - 1).pose = lie::exp(lie::SE2Algd(noiseSigma.asDiagonal() * Eigen::Vector3d::Random())) * scanPoses[i];
   }
 
+
   // add edges
   if (optProblem.matType() != mat::BlockDiagonal) {
-    for (int i = 0; i < scanPoses.size(); i++) {
-      for (int j = i + 1; j < scanPoses.size(); j++) {
-        if (i == 0) {
-          optProblem.addEdge(nelson::NodeId::fixed(0), j - 1, new PointLineEdge<ProblemType>(scans[i], normals[i], scans[j]));
-        }
-        else {
-          optProblem.addEdge(i - 1, j - 1, new PointLineEdge<ProblemType>(scans[i], normals[i], scans[j]));
+    if (fullEdges) {
+      for (int i = 0; i < scanPoses.size(); i++) {
+        for (int j = i + 1; j < scanPoses.size(); j++) {
+          if (i == 0) {
+            optProblem.addEdge(nelson::NodeId::fixed(0), j - 1, new PointLineEdge<ProblemType>(scans[i], normals[i], scans[j]));
+          }
+          else {
+            optProblem.addEdge(i - 1, j - 1, new PointLineEdge<ProblemType>(scans[i], normals[i], scans[j]));
+          }
         }
       }
+    }
+    else {
+
+      for (int i = 1; i < scanPoses.size(); i++) {
+        optProblem.addEdge(nelson::NodeId::fixed(0), i - 1, new PointLineEdge<ProblemType>(scans[0], normals[0], scans[i]));
+      }
+      
+      for (int i = 1; i < scanPoses.size() - 1; i++) {
+        int nj = rand() % (scanPoses.size() - i - 1);
+        for (int cj = 0; cj < nj; cj++) {
+          int j = rand() % (scanPoses.size() - i - 1);
+          j += i + 1;
+          if (i == 0) {
+            optProblem.addEdge(nelson::NodeId::fixed(0), j - 1, new PointLineEdge<ProblemType>(scans[i], normals[i], scans[j]));
+          }
+          else {
+            optProblem.addEdge(i - 1, j - 1, new PointLineEdge<ProblemType>(scans[i], normals[i], scans[j]));
+          }
+        }
+      }
+      
     }
   }
   else {
@@ -512,11 +550,11 @@ TEMPLATE_TEST_CASE_SIG("GaussNewton", "[GaussNewton]", ((class ProblemType, int 
   optProblem.update(true);
   std::cout << "chi2 BEFORE " << optProblem.hessian().chi2() << std::endl;
 
-  // typename nelson::SolverCholeskyDense< ProblemType::Hessian::Traits::matType, typename ProblemType::Hessian::Traits::Type, ProblemType::Hessian::Traits::B, ProblemType::Hessian::Traits::NB>::DenseWrapperT wrap;
-  // wrap.set(&optProblem.hessian().H());
-  // 
-  // std::cout << "H MATRIX BEFORE " << std::endl <<
-  //   wrap.mat() << std::endl << std::endl;
+  //typename nelson::SolverCholeskyDense< ProblemType::Hessian::Traits::matType, typename ProblemType::Hessian::Traits::Type, ProblemType::Hessian::Traits::B, ProblemType::Hessian::Traits::NB>::DenseWrapperT wrap;
+  //wrap.set(&optProblem.hessian().H());
+  //
+  //std::cout << "H MATRIX BEFORE " << std::endl <<
+  //  wrap.mat() << std::endl << std::endl;
 
   //std::cout << "H MATRIX BEFORE (native)" << std::endl <<
   //  optProblem.hessian().H().mat().coeffs() << std::endl << std::endl;
