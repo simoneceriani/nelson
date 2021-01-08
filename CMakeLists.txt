@@ -94,7 +94,7 @@ add_subdirectory(nelson)
 # NONE ALL or custom list are accepted
 # note: if I am not the main project skip (submodule)
 if(nelsonSol STREQUAL ${CMAKE_PROJECT_NAME})
-	createGlobalConfigFile(mat ALL)
+	createGlobalConfigFile(nelson ALL)
 endif()
 
 # install other cross dependent dll/so if requested
