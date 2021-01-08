@@ -9,7 +9,7 @@ include(Catch)
 
 # add these lines block for each test, or if you need more complex structure, create a subfolder
 #add_executable(<<TARGET_NAME>>)
-#target_sources(<<TARGET_NAME>> PRIVATE <<...>>)
+#target_sources_wrapper(<<TARGET_NAME>> PRIVATE <<...>>)
 #if (WIN32)
 #	set_target_properties(<<TARGET_NAME>> PROPERTIES FOLDER nelson/test)
 #endif()
@@ -21,16 +21,42 @@ include(Catch)
 set(TESTS_LIST 
   testSingleSectionHessian.cpp
   testSingleSection.cpp
+  testMatrixSparseDenseWrapper.cpp
 )
 
 foreach(s ${TESTS_LIST})
 	get_filename_component(sn "${s}" NAME_WE)
 	add_executable(nelsonTest_${sn})
-	target_sources(nelsonTest_${sn} PRIVATE ${s})
+	target_sources_wrapper(nelsonTest_${sn} PRIVATE ${s})
 	if (WIN32)
 		set_target_properties(nelsonTest_${sn} PROPERTIES FOLDER nelson/test)
 	endif()	
 	target_link_libraries(nelsonTest_${sn} PRIVATE nelson::nelson Catch2::Catch2WithMain )
+  
+  # add to tests
+  catch_discover_tests(nelsonTest_${sn})
+endforeach()
+
+
+######################################################################
+
+find_package_wrapper(lie REQUIRED CONFIG)
+
+set(TESTS_LIST 
+  testGaussNewton2DScansAlign.cpp
+)
+
+foreach(s ${TESTS_LIST})
+	get_filename_component(sn "${s}" NAME_WE)
+	add_executable(nelsonTest_${sn})
+	target_sources_wrapper(nelsonTest_${sn} PRIVATE ${s})
+	if (WIN32)
+		set_target_properties(nelsonTest_${sn} PROPERTIES FOLDER nelson/test)
+	endif()	
+	if(MSVC)
+		target_compile_options(nelsonTest_${sn} PRIVATE /bigobj)
+	endif()
+	target_link_libraries(nelsonTest_${sn} PRIVATE nelson::nelson Catch2::Catch2WithMain lie::lie)
   
   # add to tests
   catch_discover_tests(nelsonTest_${sn})

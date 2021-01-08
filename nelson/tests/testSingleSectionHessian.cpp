@@ -53,20 +53,19 @@ TEMPLATE_TEST_CASE_SIG("SingleSectionHessian", "[SingleSectionHessian]",
   (mat::BlockCoeffSparse, mat::Variable, mat::Dynamic)
 )
 {
-  mat::SparsityPatternColMajor sp(numBlocks, numBlocks);
-  sp.setDiagonal();
+  auto sp = std::make_shared<mat::SparsityPatternColMajor>(numBlocks, numBlocks);
+  sp->setDiagonal();
   if (matType != mat::BlockDiagonal) {
     for (int i = 0; i < 10;i++) {
       int r = rand() % numBlocks;
       int c = rand() % numBlocks;
-      sp.add(r, c);
+      sp->add(r, c);
     }
   }
 
   nelson::SingleSectionHessian<matType, double, B, NB> sec;
   sec.resize(SecType<B>::secSize, numBlocks, sp);
   sec.clearAll();
-  sec.clearChi2();
   REQUIRE(sec.chi2() == 0);
 }
 
@@ -74,8 +73,6 @@ TEMPLATE_TEST_CASE_SIG("SingleSectionHessian", "[SingleSectionHessian]",
 
 TEST_CASE("temp", "temp") {
   // just compilation test
-
-  mat::SparsityPatternColMajor sp(numBlocks, numBlocks);
 
   nelson::SingleSectionHessian<mat::BlockDense, double, secSizeFix, numBlocks>       sec_01;
   nelson::SingleSectionHessian<mat::BlockDense, double, secSizeFix, mat::Dynamic>    sec_02;
