@@ -7,13 +7,13 @@
 namespace nelson {
 
   template<int solverTypeV, int matTypeV, class T, int B, int NB>
-  GaussNewton<solverTypeV, matTypeV, T, B, NB>::GaussNewton() {
+  GaussNewton<solverTypeV, matTypeV, T, B, NB>::GaussNewton() : iter(-1) {
 
   }
 
   template<int solverTypeV, int matTypeV, class T, int B, int NB>
   GaussNewton<solverTypeV, matTypeV, T, B, NB>::GaussNewton(const GaussNewtonSettings& settings)
-    : _settings(settings)
+    : _settings(settings), iter(-1)
   {
 
   }
@@ -39,7 +39,7 @@ namespace nelson {
     // create the solver
     _solver.init(op.hessian().H(), op.hessian().b());
 
-    int iter = 0;
+    iter = 0;
     while (iter < _settings.maxNumIt) {
 
       bool solveOk = _solver.computeIncrement(op.hessian().H(), op.hessian().b(), _settings.relLambda, _settings.absLambda);
