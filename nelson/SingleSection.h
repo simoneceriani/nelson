@@ -7,6 +7,7 @@
 #include "mat/VectorBlock.h"
 
 #include "SingleSectionHessian.h"
+#include "ParallelExecHelper.h"
 
 #include "EdgeInterface.h"
 #include "EdgeUnary.h"
@@ -77,6 +78,11 @@ namespace nelson {
 
   //--------------------------------------------------------------------------------
 
+  struct SingleSectionSettings {
+    ParallelExecSettings edgeEvalParallelSettings;
+    ParallelExecSettings hessianUpdateParallelSettings;
+  };
+
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB = mat::Dynamic>
   class SingleSection : public BaseNumSizeParameters<B, NB> {
   public:
@@ -97,15 +103,31 @@ namespace nelson {
       SetterComputer(){}
     };
 
-    std::vector<std::map<int, std::forward_list<SetterComputer>>> _edgeSetterComputer;
+    struct ListWithCount {
+      std::forward_list<SetterComputer> list;
+      int size;
+      ListWithCount() : size(0) {
+
+      }
+    };
+
+    std::vector<std::map<int, ListWithCount>> _edgeSetterComputer;
 
     Hessian _hessian;
 
 
     std::forward_list<std::unique_ptr<EdgeInterface>> _edges;
+    int _edgesCount;
 
-    // outer size is the number of independent computation, safe to be computed in parallel, inside they have to go sequential or parallel but with reduction
-    std::vector<std::forward_list<std::unique_ptr<EdgeHessianUpdater>>> _computationUnits;
+    std::vector<std::unique_ptr<EdgeInterface>> _edgesVector;
+
+    // outer size is the number of independent computation, safe to be computed in parallel, inside they have to go sequential (or parallel but with reduction)
+    std::vector<std::vector<std::unique_ptr<EdgeHessianUpdater>>> _computationUnits;
+
+    SingleSectionSettings _settings;
+
+    void updateHessianBlocks();
+    void evaluateEdges(bool hessian);
 
   public:
 
@@ -158,6 +180,13 @@ namespace nelson {
     //void addEdge(const std::array<int, N>& ids/*, EdgeNAry * e*/);
 
     void update(bool hessian);
+
+    SingleSectionSettings& settings() {
+      return _settings;
+    }
+    const SingleSectionSettings& settings() const {
+      return _settings;
+    }
   };
 
 }

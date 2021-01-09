@@ -442,131 +442,146 @@ TEMPLATE_TEST_CASE_SIG("GaussNewton", "[GaussNewton]", ((class ProblemType, int 
   (SE2PoseSectionVD_BlockDense, nelson::solverCholeskySparse), (SE2PoseSectionVD_BlockDiagonal, nelson::solverCholeskySparse), (SE2PoseSectionVD_BlockSparse, nelson::solverCholeskySparse), (SE2PoseSectionVD_BlockCoeffSparse, nelson::solverCholeskySparse)
 )
 {
-  std::cout << "-------------------------------------------------------" << std::endl;
+  for (int repeat = 0; repeat < 2; repeat++) {
+    SECTION("repeat test for time " + std::to_string(repeat)) {
+      std::cout << " *********** repeat " << repeat << " *************" << std::endl;
+      auto startTime = std::chrono::steady_clock::now();
+      //SE2PoseSectionFF_BlockDense optProblem; assert(false); // change me to ProblemType
+      ProblemType optProblem;
 
-  //SE2PoseSectionFF_BlockDense optProblem; assert(false); // change me to ProblemType
-  ProblemType optProblem;
-  //  REQUIRE(pss.parameterSize() == secSizeFix);
-  REQUIRE(optProblem.numParameters() == constants::numPoses);
-
-  std::cout << "Create World Points ..." << std::endl;
-  Eigen::Matrix2Xd worldPoints = Eigen::Vector2d(100, 100).asDiagonal() * Eigen::Matrix2Xd::Random(2, constants::pointsPerScan);
-  std::cout << " ... done!" << std::endl;
-
-  std::cout << "Create World Normals ..." << std::endl;
-  Eigen::Matrix2Xd worldNormals = Eigen::Matrix2Xd::Zero(2, constants::pointsPerScan);
-  for (int i = 0; i < constants::pointsPerScan; i++) {
-    do {
-      worldNormals.col(i).setRandom();
-    } while (worldNormals.col(i).squaredNorm() < 1e-3);
-    worldNormals.col(i).normalize();
-  }
-  std::cout << " ... done!" << std::endl;
-
-  std::cout << "Create Local Scans ..." << std::endl;
-  std::vector<lie::Pose2Dd> scanPoses(constants::numPoses + 1);
-  std::vector<Eigen::Matrix2Xd>  scans(constants::numPoses + 1);
-  std::vector<Eigen::Matrix2Xd>  normals(constants::numPoses + 1);
-  for (int i = 0; i < constants::numPoses + 1; i++) {
-    scanPoses[i] = lie::exp(lie::SE2Algd(Eigen::Vector3d(10, 10, M_PI).asDiagonal() * Eigen::Vector3d::Random()));
-    scans[i] = scanPoses[i].inverse() * worldPoints; // +Eigen::Vector2d(0.1, 0.1).asDiagonal() * Eigen::Matrix2Xd::Random(2, nPoints);
-    normals[i] = scanPoses[i].linear().transpose() * worldNormals;
-  }
-  std::cout << " ... done!" << std::endl;
+      if (repeat == 1) {
+        optProblem.settings().hessianUpdateParallelSettings.setNumThreadsMax();
+        optProblem.settings().edgeEvalParallelSettings.setNumThreadsMax();
+      }
 
 
-  Eigen::Vector3d noiseSigma;
-  bool fullEdges;
-  SECTION("NO NOISE - FULL") {
-    noiseSigma.setZero();
-    fullEdges = true;
-  }
-  SECTION("WITH NOISE - FULL") {
-    noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
-    fullEdges = true;
-  }
-  if (optProblem.matType() != mat::BlockDiagonal) {
-    SECTION("NO NOISE - SPARSE") {
-      noiseSigma.setZero();
-      fullEdges = false;
-    }
-    SECTION("WITH NOISE - SPARSE") {
-      noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
-      fullEdges = false;
-    }
-  }
-  else fullEdges = false;
+      //  REQUIRE(pss.parameterSize() == secSizeFix);
+      REQUIRE(optProblem.numParameters() == constants::numPoses);
 
-  optProblem.parameter(nelson::NodeId::fixed(0)).pose = scanPoses[0];
-  for (int i = 1; i < scanPoses.size(); i++) {
-    optProblem.parameter(i - 1).pose = lie::exp(lie::SE2Algd(noiseSigma.asDiagonal() * Eigen::Vector3d::Random())) * scanPoses[i];
-  }
+      std::cout << "Create World Points ..." << std::endl;
+      Eigen::Matrix2Xd worldPoints = Eigen::Vector2d(100, 100).asDiagonal() * Eigen::Matrix2Xd::Random(2, constants::pointsPerScan);
+      std::cout << " ... done!" << std::endl;
+
+      std::cout << "Create World Normals ..." << std::endl;
+      Eigen::Matrix2Xd worldNormals = Eigen::Matrix2Xd::Zero(2, constants::pointsPerScan);
+      for (int i = 0; i < constants::pointsPerScan; i++) {
+        do {
+          worldNormals.col(i).setRandom();
+        } while (worldNormals.col(i).squaredNorm() < 1e-3);
+        worldNormals.col(i).normalize();
+      }
+      std::cout << " ... done!" << std::endl;
+
+      std::cout << "Create Local Scans ..." << std::endl;
+      std::vector<lie::Pose2Dd> scanPoses(constants::numPoses + 1);
+      std::vector<Eigen::Matrix2Xd>  scans(constants::numPoses + 1);
+      std::vector<Eigen::Matrix2Xd>  normals(constants::numPoses + 1);
+      for (int i = 0; i < constants::numPoses + 1; i++) {
+        scanPoses[i] = lie::exp(lie::SE2Algd(Eigen::Vector3d(10, 10, M_PI).asDiagonal() * Eigen::Vector3d::Random()));
+        scans[i] = scanPoses[i].inverse() * worldPoints; // +Eigen::Vector2d(0.1, 0.1).asDiagonal() * Eigen::Matrix2Xd::Random(2, nPoints);
+        normals[i] = scanPoses[i].linear().transpose() * worldNormals;
+      }
+      std::cout << " ... done!" << std::endl;
 
 
-  // add edges
-  if (optProblem.matType() != mat::BlockDiagonal) {
-    if (fullEdges) {
-      for (int i = 0; i < scanPoses.size(); i++) {
-        for (int j = i + 1; j < scanPoses.size(); j++) {
-          if (i == 0) {
-            optProblem.addEdge(nelson::NodeId::fixed(0), j - 1, new PointLineEdge<ProblemType>(scans[i], normals[i], scans[j]));
-          }
-          else {
-            optProblem.addEdge(i - 1, j - 1, new PointLineEdge<ProblemType>(scans[i], normals[i], scans[j]));
-          }
+      Eigen::Vector3d noiseSigma;
+      bool fullEdges;
+      SECTION("NO NOISE - FULL") {
+        noiseSigma.setZero();
+        fullEdges = true;
+      }
+      SECTION("WITH NOISE - FULL") {
+        noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
+        fullEdges = true;
+      }
+      if (optProblem.matType() != mat::BlockDiagonal) {
+        SECTION("NO NOISE - SPARSE") {
+          noiseSigma.setZero();
+          fullEdges = false;
+        }
+        SECTION("WITH NOISE - SPARSE") {
+          noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
+          fullEdges = false;
         }
       }
-    }
-    else {
+      else fullEdges = false;
 
+      optProblem.parameter(nelson::NodeId::fixed(0)).pose = scanPoses[0];
       for (int i = 1; i < scanPoses.size(); i++) {
-        optProblem.addEdge(nelson::NodeId::fixed(0), i - 1, new PointLineEdge<ProblemType>(scans[0], normals[0], scans[i]));
+        optProblem.parameter(i - 1).pose = lie::exp(lie::SE2Algd(noiseSigma.asDiagonal() * Eigen::Vector3d::Random())) * scanPoses[i];
       }
-      
-      for (int i = 1; i < scanPoses.size() - 1; i++) {
-        int nj = rand() % (scanPoses.size() - i - 1);
-        for (int cj = 0; cj < nj; cj++) {
-          int j = rand() % (scanPoses.size() - i - 1);
-          j += i + 1;
-          if (i == 0) {
-            optProblem.addEdge(nelson::NodeId::fixed(0), j - 1, new PointLineEdge<ProblemType>(scans[i], normals[i], scans[j]));
-          }
-          else {
-            optProblem.addEdge(i - 1, j - 1, new PointLineEdge<ProblemType>(scans[i], normals[i], scans[j]));
+
+
+      // add edges
+      if (optProblem.matType() != mat::BlockDiagonal) {
+        if (fullEdges) {
+          for (int i = 0; i < scanPoses.size(); i++) {
+            for (int j = i + 1; j < scanPoses.size(); j++) {
+              if (i == 0) {
+                optProblem.addEdge(nelson::NodeId::fixed(0), j - 1, new PointLineEdge<ProblemType>(scans[i], normals[i], scans[j]));
+              }
+              else {
+                optProblem.addEdge(i - 1, j - 1, new PointLineEdge<ProblemType>(scans[i], normals[i], scans[j]));
+              }
+            }
           }
         }
+        else {
+
+          for (int i = 1; i < scanPoses.size(); i++) {
+            optProblem.addEdge(nelson::NodeId::fixed(0), i - 1, new PointLineEdge<ProblemType>(scans[0], normals[0], scans[i]));
+          }
+
+          for (int i = 1; i < scanPoses.size() - 1; i++) {
+            int nj = rand() % (scanPoses.size() - i - 1);
+            for (int cj = 0; cj < nj; cj++) {
+              int j = rand() % (scanPoses.size() - i - 1);
+              j += i + 1;
+              if (i == 0) {
+                optProblem.addEdge(nelson::NodeId::fixed(0), j - 1, new PointLineEdge<ProblemType>(scans[i], normals[i], scans[j]));
+              }
+              else {
+                optProblem.addEdge(i - 1, j - 1, new PointLineEdge<ProblemType>(scans[i], normals[i], scans[j]));
+              }
+            }
+          }
+
+        }
       }
-      
+      else {
+        for (int i = 1; i < scanPoses.size(); i++) {
+          optProblem.addEdge(nelson::NodeId::fixed(0), i - 1, new PointLineEdge<ProblemType>(scans[0], normals[0], scans[i]));
+        }
+      }
+
+      optProblem.structureReady();
+
+      optProblem.update(true);
+      std::cout << "chi2 BEFORE " << optProblem.hessian().chi2() << std::endl;
+
+      //typename nelson::SolverCholeskyDense< ProblemType::Hessian::Traits::matType, typename ProblemType::Hessian::Traits::Type, ProblemType::Hessian::Traits::B, ProblemType::Hessian::Traits::NB>::DenseWrapperT wrap;
+      //wrap.set(&optProblem.hessian().H());
+      //
+      //std::cout << "H MATRIX BEFORE " << std::endl <<
+      //  wrap.mat() << std::endl << std::endl;
+
+      //std::cout << "H MATRIX BEFORE (native)" << std::endl <<
+      //  optProblem.hessian().H().mat().coeffs() << std::endl << std::endl;
+
+      //nelson::GaussNewton <solverType, ProblemType::Hessian::Traits::matType, typename ProblemType::Hessian::Traits::Type, ProblemType::Hessian::Traits::B, ProblemType::Hessian::Traits::NB > gn;
+      nelson::GaussNewtonHessianTraits < solverType, typename ProblemType::Hessian::Traits> gn;
+      auto tc = gn.solve(optProblem);
+      std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
+
+      optProblem.update(true);
+      std::cout << "chi2 AFTER " << optProblem.hessian().chi2() << std::endl;
+
+      REQUIRE(optProblem.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
+
+      auto endTime = std::chrono::steady_clock::now();
+      std::cout << "TOTAL TIME " << std::chrono::duration<double>(endTime - startTime).count() << std::endl;
     }
+
   }
-  else {
-    for (int i = 1; i < scanPoses.size(); i++) {
-      optProblem.addEdge(nelson::NodeId::fixed(0), i - 1, new PointLineEdge<ProblemType>(scans[0], normals[0], scans[i]));
-    }
-  }
-
-  optProblem.structureReady();
-
-  optProblem.update(true);
-  std::cout << "chi2 BEFORE " << optProblem.hessian().chi2() << std::endl;
-
-  //typename nelson::SolverCholeskyDense< ProblemType::Hessian::Traits::matType, typename ProblemType::Hessian::Traits::Type, ProblemType::Hessian::Traits::B, ProblemType::Hessian::Traits::NB>::DenseWrapperT wrap;
-  //wrap.set(&optProblem.hessian().H());
-  //
-  //std::cout << "H MATRIX BEFORE " << std::endl <<
-  //  wrap.mat() << std::endl << std::endl;
-
-  //std::cout << "H MATRIX BEFORE (native)" << std::endl <<
-  //  optProblem.hessian().H().mat().coeffs() << std::endl << std::endl;
-
-  //nelson::GaussNewton <solverType, ProblemType::Hessian::Traits::matType, typename ProblemType::Hessian::Traits::Type, ProblemType::Hessian::Traits::B, ProblemType::Hessian::Traits::NB > gn;
-  nelson::GaussNewtonHessianTraits < solverType, typename ProblemType::Hessian::Traits> gn;
-  auto tc = gn.solve(optProblem);
-  std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
-
-  optProblem.update(true);
-  std::cout << "chi2 AFTER " << optProblem.hessian().chi2() << std::endl;
-
-  REQUIRE(optProblem.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
 
 }
