@@ -49,6 +49,7 @@ namespace nelson {
     typename SolverTraits<solverTypeV>::template Solver<matTypeV, T, B, NB> _solver;
 
     GaussNewtonSettings _settings;
+    int iter;
   public:
     GaussNewton();
     GaussNewton(const GaussNewtonSettings & settings);
@@ -60,6 +61,10 @@ namespace nelson {
 
     template<class OptimizationProblem>
     GaussNewtonTerminationReason solve(OptimizationProblem& op);
+
+    int numIterations() const {
+      return iter;
+    }
   };
 
   template<int solverTypeV, class HessianTraits>
