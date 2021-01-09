@@ -243,6 +243,8 @@ TEMPLATE_TEST_CASE_SIG("TestTiming", "[TestTiming]", ((class ProblemType, int so
 
       // add edges
       if (optProblem.matType() != mat::BlockDiagonal) {
+        int nEdgesFull = (scanPoses.size() * scanPoses.size() - scanPoses.size()) / 2;
+        optProblem.reserveEdges(nEdgesFull);
         if (fullEdges) {
           for (int i = 0; i < scanPoses.size(); i++) {
             for (int j = i + 1; j < scanPoses.size(); j++) {
@@ -254,9 +256,9 @@ TEMPLATE_TEST_CASE_SIG("TestTiming", "[TestTiming]", ((class ProblemType, int so
               }
             }
           }
+          REQUIRE(optProblem.numEdges() == nEdgesFull);
         }
         else {
-
           for (int i = 1; i < scanPoses.size(); i++) {
             optProblem.addEdge(nelson::NodeId::fixed(0), i - 1, new PointLineEdge<ProblemType>(scans[0], normals[0], scans[i]));
           }
@@ -278,6 +280,8 @@ TEMPLATE_TEST_CASE_SIG("TestTiming", "[TestTiming]", ((class ProblemType, int so
         }
       }
       else {
+        // diagonal
+        optProblem.reserveEdges(scanPoses.size());
         for (int i = 1; i < scanPoses.size(); i++) {
           optProblem.addEdge(nelson::NodeId::fixed(0), i - 1, new PointLineEdge<ProblemType>(scans[0], normals[0], scans[i]));
         }

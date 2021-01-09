@@ -116,9 +116,6 @@ namespace nelson {
     Hessian _hessian;
 
 
-    std::forward_list<std::unique_ptr<EdgeInterface>> _edges;
-    int _edgesCount;
-
     std::vector<std::unique_ptr<EdgeInterface>> _edgesVector;
 
     // outer size is the number of independent computation, safe to be computed in parallel, inside they have to go sequential (or parallel but with reduction)
@@ -178,6 +175,14 @@ namespace nelson {
     //void addEdge(int i, int j, int k/*, EdgeTernary* e*/);
     //template<int N>
     //void addEdge(const std::array<int, N>& ids/*, EdgeNAry * e*/);
+
+    void reserveEdges(int n) {
+      _edgesVector.reserve(n);
+    }
+
+    int numEdges() const {
+      return int(_edgesVector.size());
+    }
 
     void update(bool hessian);
 

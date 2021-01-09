@@ -9,7 +9,7 @@
 namespace nelson {
 
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
-  SingleSection<Derived, ParT, matTypeV, T, B, NB>::SingleSection() : _edgesCount(0) {
+  SingleSection<Derived, ParT, matTypeV, T, B, NB>::SingleSection()  {
 
   }
 
@@ -69,19 +69,6 @@ namespace nelson {
       }
     }
 
-    // copy the edges on the vector, to allow fast 
-    this->_edgesVector.resize(_edgesCount);
-    int c = 0;
-    for (auto& e : _edges) {
-      this->_edgesVector[c++] = std::move(e);
-    }
-    assert(c == _edgesCount);
-
-    // edges is no more required
-    _edges.clear();
-    _edgesCount = -1; // invalid
-
-
     // the _edgeSetter is no more required
     this->_edgeSetterComputer.clear();
 
@@ -95,8 +82,7 @@ namespace nelson {
     // add to edges
     e->setParId(i);
     e->setSection(static_cast<Derived*>(this));
-    this->_edges.push_front(std::unique_ptr<EdgeInterface>(e));
-    this->_edgesCount++;
+    this->_edgesVector.push_back(std::unique_ptr<EdgeInterface>(e));
 
     // add setters
     if (i.type() == NodeType::Variable) {
@@ -112,8 +98,7 @@ namespace nelson {
     e->setPar_1_Id(i);
     e->setPar_2_Id(j);
     e->setSection(static_cast<Derived*>(this));
-    this->_edges.push_front(std::unique_ptr<EdgeInterface>(e));
-    this->_edgesCount++;
+    this->_edgesVector.push_back(std::unique_ptr<EdgeInterface>(e));
 
     // add setters
     if (i.type() == NodeType::Variable) {
