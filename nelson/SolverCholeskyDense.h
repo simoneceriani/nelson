@@ -18,11 +18,14 @@ namespace nelson {
     using MatType = typename MatTraits::MatrixType;
     using VecType = mat::VectorBlock<T, B, NB>;
 
-    using DenseWrapperT = DenseWrapper<matTypeV, T, mat::ColMajor, B, B, NB, NB>;
+    using DenseWrapperT = DenseSquareWrapper<matTypeV, T, mat::ColMajor, B, NB>;
+    using DiagType = typename DenseWrapperT::DiagType;
 
   private:
 
     DenseWrapperT _denseWrapper;
+    DiagType _diagBackup;
+
     VecType _incVector;
     Eigen::LDLT<typename DenseWrapperT::MatOutputType, Eigen::Upper> _ldlt;
 

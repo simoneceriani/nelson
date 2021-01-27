@@ -487,26 +487,53 @@ TEMPLATE_TEST_CASE_SIG("GaussNewton", "[GaussNewton]", ((class ProblemType, int 
 
       Eigen::Vector3d noiseSigma;
       bool fullEdges;
-      SECTION("NO NOISE - FULL") {
+      bool changeDiagInSolver;
+      SECTION("NO NOISE - FULL - PURE GN") {
         noiseSigma.setZero();
         fullEdges = true;
+        changeDiagInSolver = false;
       }
-      SECTION("WITH NOISE - FULL") {
+      SECTION("WITH NOISE - FULL - PURE GN") {
         noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
         fullEdges = true;
+        changeDiagInSolver = false;
       }
       if (optProblem.matType() != mat::BlockDiagonal) {
-        SECTION("NO NOISE - SPARSE") {
+        SECTION("NO NOISE - SPARSE - PURE GN") {
           noiseSigma.setZero();
           fullEdges = false;
+          changeDiagInSolver = false;
         }
-        SECTION("WITH NOISE - SPARSE") {
+        SECTION("WITH NOISE - SPARSE - PURE GN") {
           noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
           fullEdges = false;
+          changeDiagInSolver = false;
         }
       }
       else fullEdges = false;
-
+      SECTION("NO NOISE - FULL - DAMPED GN") {
+        noiseSigma.setZero();
+        fullEdges = true;
+        changeDiagInSolver = true;
+      }
+      SECTION("WITH NOISE - FULL - DAMPED GN") {
+        noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
+        fullEdges = true;
+        changeDiagInSolver = true;
+      }
+      if (optProblem.matType() != mat::BlockDiagonal) {
+        SECTION("NO NOISE - SPARSE - DAMPED GN") {
+          noiseSigma.setZero();
+          fullEdges = false;
+          changeDiagInSolver = true;
+        }
+        SECTION("WITH NOISE - SPARSE - DAMPED GN") {
+          noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
+          fullEdges = false;
+          changeDiagInSolver = true;
+        }
+      }
+      else fullEdges = false;
       optProblem.parameter(nelson::NodeId::fixed(0)).pose = scanPoses[0];
       for (int i = 1; i < scanPoses.size(); i++) {
         optProblem.parameter(i - 1).pose = lie::exp(lie::SE2Algd(noiseSigma.asDiagonal() * Eigen::Vector3d::Random())) * scanPoses[i];
@@ -565,6 +592,10 @@ TEMPLATE_TEST_CASE_SIG("GaussNewton", "[GaussNewton]", ((class ProblemType, int 
       std::cout << "chi2 BEFORE " << optProblem.hessian().chi2() << std::endl;
 
       nelson::GaussNewtonHessianTraits < solverType, typename ProblemType::Hessian::Traits> gn;
+      if (changeDiagInSolver) {
+        gn.settings().relLambda = 0.01;
+        gn.settings().absLambda = 0;
+      }      
       auto tc = gn.solve(optProblem);
       std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
 

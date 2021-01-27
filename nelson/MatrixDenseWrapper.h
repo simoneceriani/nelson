@@ -12,14 +12,17 @@ namespace nelson {
 
   template<class T, int Ordering, int BR, int BC, int NBR, int NBC>
   class DenseWrapper<mat::BlockDense, T, Ordering, BR, BC, NBR, NBC> {
+  public:
 
     using MatType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockDense, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
+    using MatOutputType = typename MatType::StorageType;
+
+  private:
 
     MatType* _matrix;
 
   public:
 
-    using MatOutputType = typename MatType::StorageType;
 
     DenseWrapper() : _matrix(nullptr) {
 
@@ -35,7 +38,11 @@ namespace nelson {
       // no need, direct pointing to matrix
     }
 
-    const MatOutputType & mat() const {
+    const MatOutputType& mat() const {
+      assert(_matrix != nullptr);
+      return _matrix->mat();
+    }
+    MatOutputType& mat() {
       assert(_matrix != nullptr);
       return _matrix->mat();
     }
@@ -44,14 +51,16 @@ namespace nelson {
 
   template<class T, int Ordering, int BR, int BC, int NBR, int NBC>
   class DenseWrapper<mat::BlockCoeffSparse, T, Ordering, BR, BC, NBR, NBC> {
+  public:
 
     using MatType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockCoeffSparse, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
+    using MatCopyType = typename mat::MatrixBlockTypeTraits<mat::BlockDense, T, BR, BC, NBR, NBC>::StorageType;
 
+  private:
     // the original matrix
     MatType* _matrix;
 
     // the eigen dense copy
-    using MatCopyType = typename mat::MatrixBlockTypeTraits<mat::BlockDense, T, BR, BC, NBR, NBC>::StorageType;
     MatCopyType _matCopy;
 
   public:
@@ -79,19 +88,25 @@ namespace nelson {
       assert(_matrix != nullptr);
       return _matCopy;
     }
+    MatCopyType& mat() {
+      assert(_matrix != nullptr);
+      return _matCopy;
+    }
 
   };
 
   template<class T, int Ordering, int BR, int BC, int NBR, int NBC>
   class DenseWrapper<mat::BlockDiagonal, T, Ordering, BR, BC, NBR, NBC> {
+  public:
 
     using MatType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockDiagonal, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
+    using MatCopyType = mat::DenseMatrixBlock<T, BR, BC, NBR, NBC>;
 
+  private:
     // the original matrix
     MatType* _matrix;
 
     // the eigen dense copy
-    using MatCopyType = mat::DenseMatrixBlock<T, BR, BC, NBR, NBC>;
     MatCopyType _matCopy;
 
   public:
@@ -112,19 +127,27 @@ namespace nelson {
       assert(_matrix != nullptr);
       return _matCopy.mat();
     }
+    typename MatCopyType::StorageType& mat() {
+      assert(_matrix != nullptr);
+      return _matCopy.mat();
+    }
+
 
   };
 
   template<class T, int Ordering, int BR, int BC, int NBR, int NBC>
   class DenseWrapper<mat::BlockSparse, T, Ordering, BR, BC, NBR, NBC> {
+  public:
 
     using MatType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockSparse, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
+    using MatCopyType = mat::DenseMatrixBlock<T, BR, BC, NBR, NBC>;
+
+  private:
 
     // the original matrix
     MatType* _matrix;
 
     // the eigen dense copy
-    using MatCopyType = mat::DenseMatrixBlock<T, BR, BC, NBR, NBC>;
     MatCopyType _matCopy;
 
   public:
@@ -145,7 +168,34 @@ namespace nelson {
       assert(_matrix != nullptr);
       return _matCopy.mat();
     }
+    typename MatCopyType::StorageType& mat() {
+      assert(_matrix != nullptr);
+      return _matCopy.mat();
+    }
 
   };
+
+  //----------------------------------------------------------------------------------
+
+  template<int matType, class T, int Ordering, int BR, int NBR = mat::Dynamic>
+  class DenseSquareWrapper : public DenseWrapper<matType, T, Ordering, BR, BR, NBR, NBR> {
+  public:
+
+    using MatType = typename DenseWrapper<matType, T, Ordering, BR, BR, NBR, NBR>::MatType;
+    using DiagType = typename mat::VectorBlockTraits<T, BR, NBR>::StorageType;
+
+    DenseSquareWrapper();
+    virtual ~DenseSquareWrapper();
+
+    DiagType diagonal() const;
+
+    template<class Derived>
+    void diagonalCopy(Eigen::DenseBase<Derived>& dest) const;
+
+    template<class Derived>
+    void setDiagonal(const Eigen::DenseBase<Derived>& values);
+
+  };
+
 
 }

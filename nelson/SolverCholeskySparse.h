@@ -19,7 +19,7 @@ namespace nelson {
     using MatType = typename MatTraits::MatrixType;
     using VecType = mat::VectorBlock<T, B, NB>;
 
-    using SparseWrapperT = SparseWrapper<matTypeV, T, mat::ColMajor, B, B, NB, NB>;
+    using SparseWrapperT = SparseSquareWrapper<matTypeV, T, mat::ColMajor, B, NB>;
 
   private:
 

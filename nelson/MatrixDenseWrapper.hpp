@@ -64,4 +64,35 @@ namespace nelson {
       }
     }
   }
+
+  //------------------------------------------------------------------------------------------------------------
+  template<int matType, class T, int Ordering, int BR, int NBR>
+  DenseSquareWrapper<matType, T, Ordering, BR, NBR>::DenseSquareWrapper() :
+    DenseWrapper<matType, T, Ordering, BR, BR, NBR, NBR>()
+  {
+
+  }
+  template<int matType, class T, int Ordering, int BR, int NBR>
+  DenseSquareWrapper<matType, T, Ordering, BR, NBR>::~DenseSquareWrapper() {
+
+  }
+
+  template<int matType, class T, int Ordering, int BR, int NBR>
+  typename DenseSquareWrapper<matType, T, Ordering, BR, NBR>::DiagType DenseSquareWrapper<matType, T, Ordering, BR, NBR>::diagonal() const {
+    return this->mat().diagonal();
+  }
+
+  template<int matType, class T, int Ordering, int BR, int NBR>
+  template<class Derived>
+  void DenseSquareWrapper<matType, T, Ordering, BR, NBR>::diagonalCopy(Eigen::DenseBase<Derived>& dest) const {
+    assert(dest.size() == this->mat().diagonal().size());
+    dest = this->mat().diagonal();
+  }
+
+  template<int matType, class T, int Ordering, int BR, int NBR>
+  template<class Derived>
+  void DenseSquareWrapper<matType, T, Ordering, BR, NBR>::setDiagonal(const Eigen::DenseBase<Derived>& values) {
+    this->mat().diagonal() = values;
+  }
+
 }

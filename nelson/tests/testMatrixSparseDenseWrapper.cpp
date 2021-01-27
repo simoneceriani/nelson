@@ -27,7 +27,7 @@ const std::vector<int> SecType<mat::Variable>::secSize = { 1, 2, 3, 4, 5 }; // s
 
 static constexpr int numBlocks = 5;
 
-TEMPLATE_TEST_CASE_SIG("DenseWrapper", "[MatrixSparseDenseWrapper]",
+TEMPLATE_TEST_CASE_SIG("DenseSparseWrapper", "[MatrixSparseDenseWrapper]",
   ((int matType, int B, int NB), matType, B, NB),
   (mat::BlockDense, secSizeFix, numBlocks),
   (mat::BlockDense, secSizeFix, mat::Dynamic),
@@ -70,20 +70,54 @@ TEMPLATE_TEST_CASE_SIG("DenseWrapper", "[MatrixSparseDenseWrapper]",
   sec.clearAll();
   REQUIRE(sec.chi2() == 0);
 
-  nelson::DenseWrapper<matType, double, mat::ColMajor, B, B, NB, NB> wrapperDense;
-  wrapperDense.set(&sec.H());
-
   {
-    const auto& wr = wrapperDense;
-    auto mat2 = wr.mat() * 2;
+    nelson::DenseWrapper<matType, double, mat::ColMajor, B, B, NB, NB> wrapperDense;
+    wrapperDense.set(&sec.H());
+
+    {
+      const auto& wr = wrapperDense;
+      auto mat2 = wr.mat() * 2;
+    }
+
+    nelson::SparseWrapper<matType, double, mat::ColMajor, B, B, NB, NB> wrapperSparse;
+    wrapperSparse.set(&sec.H());
+
+    {
+      const auto& wr = wrapperSparse;
+      auto mat2 = wr.mat() * 2;
+    }
   }
 
-  nelson::SparseWrapper<matType, double, mat::ColMajor, B, B, NB, NB> wrapperSparse;
-  wrapperSparse.set(&sec.H());
-
+  // dense square
   {
-    const auto& wr = wrapperSparse;
-    auto mat2 = wr.mat() * 2;
+    nelson::DenseSquareWrapper<matType, double, mat::ColMajor, B, NB> wrapperSquareDense;
+    wrapperSquareDense.set(&sec.H());
+
+    nelson::DenseSquareWrapper<matType, double, mat::ColMajor, B, NB>::DiagType diagonal = wrapperSquareDense.diagonal();
+    diagonal.setConstant(3);
+    wrapperSquareDense.setDiagonal(diagonal);
+    wrapperSquareDense.diagonalCopy(diagonal);
+    REQUIRE((diagonal.array() == wrapperSquareDense.mat().diagonal().array()).all());
+
+    wrapperSquareDense.mat().diagonal().setRandom();
+    wrapperSquareDense.diagonalCopy(diagonal);
+    REQUIRE((diagonal.array() == wrapperSquareDense.mat().diagonal().array()).all());
+
+  }
+  // sparse square
+  {
+    nelson::SparseSquareWrapper<matType, double, mat::ColMajor, B, NB> wrapperSquareSparse;
+    wrapperSquareSparse.set(&sec.H());
+
+    nelson::SparseSquareWrapper<matType, double, mat::ColMajor, B, NB>::DiagType diagonal = wrapperSquareSparse.diagonal();
+    diagonal.setConstant(3);
+    wrapperSquareSparse.setDiagonal(diagonal);
+    wrapperSquareSparse.diagonalCopy(diagonal);
+    REQUIRE((diagonal.array() == wrapperSquareSparse.mat().diagonal().array()).all());
+
+    wrapperSquareSparse.mat().diagonal().setRandom();
+    wrapperSquareSparse.diagonalCopy(diagonal);
+    REQUIRE((diagonal.array() == wrapperSquareSparse.mat().diagonal().array()).all());
   }
 
 }
