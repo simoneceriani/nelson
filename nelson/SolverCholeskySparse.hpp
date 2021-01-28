@@ -15,6 +15,11 @@ namespace nelson {
   }
 
   template<int matTypeV, class T, int B, int NB>
+  T SolverCholeskySparse<matTypeV, T, B, NB>::maxAbsHDiag() const {
+    return _sparseWrapper.maxAbsDiag();
+  }
+
+  template<int matTypeV, class T, int B, int NB>
   bool SolverCholeskySparse<matTypeV, T, B, NB>::computeIncrement(MatType& input, const mat::VectorBlock<T, B, NB>& b, T relLambda, T absLambda) {
     // TODO relLambda relLambda
 

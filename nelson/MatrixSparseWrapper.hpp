@@ -137,6 +137,11 @@ namespace nelson {
   }
 
   template<int matType, class T, int Ordering, int BR, int NBR>
+  T SparseSquareWrapper<matType, T, Ordering, BR, NBR>::maxAbsDiag() const {
+    return diagonal().cwiseAbs().maxCoeff();
+  }
+
+  template<int matType, class T, int Ordering, int BR, int NBR>
   template<class Derived>
   void SparseSquareWrapper<matType, T, Ordering, BR, NBR>::diagonalCopy(Eigen::DenseBase<Derived>& dest) const {
     initDiagonalCoefficients(); // lazy

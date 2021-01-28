@@ -1,5 +1,6 @@
 #include "GaussNewton.h"
 #include "GaussNewton.hpp"
+#include <sstream>
 
 namespace nelson {
 
@@ -28,7 +29,7 @@ namespace nelson {
   "SuccessSmallIncrement",
   "SuccessEpsB",
   "SuccessSmallResiduals",
-  "CholeskyFailure",
+  "SolverFailure",
   "MaxIterationReached"
   };
 
@@ -43,6 +44,29 @@ namespace nelson {
   std::string GaussNewtonUtils::toString(GaussNewtonTerminationReason lm) {
     return _terminationReasonStrings[int(lm)];
   }
+
+  //------------------------------------------------------------------------------------------------------
+  
+  GaussNewtownStats::GaussNewtownStats(int reserve) {
+    _stats.reserve(reserve);
+  }
+
+  GaussNewtownStats::~GaussNewtownStats() {
+
+  }
+
+  void GaussNewtownStats::addIteration(int it, double chi2) {
+    _stats.push_back(Stats{ it,chi2 });
+  }
+
+  std::string GaussNewtownStats::toString() const {
+    std::ostringstream s;
+    for (int i = 0; i < _stats.size(); i++) {
+      s << "it = " << _stats[i].it << ", chi2 = " << _stats[i].chi2 << std::endl;
+    }
+    return s.str();
+  }
+
 
 
 }

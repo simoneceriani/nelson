@@ -188,6 +188,7 @@ namespace nelson {
     virtual ~DenseSquareWrapper();
 
     DiagType diagonal() const;
+    T maxAbsDiag() const;
 
     template<class Derived>
     void diagonalCopy(Eigen::DenseBase<Derived>& dest) const;

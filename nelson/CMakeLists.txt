@@ -52,6 +52,8 @@ target_sources_wrapper(nelson
     SolverCholeskySparse.hpp
     SolverTraits.h
     ParallelExecHelper.h
+    LevenbergMarquardt.h
+    LevenbergMarquardt.hpp
 	PRIVATE
     Global.cpp
     SingleSectionHessian.cpp
@@ -66,6 +68,7 @@ target_sources_wrapper(nelson
     SolverCholeskyDense.cpp
     SolverCholeskySparse.cpp
     ParallelExecHelper.cpp
+    LevenbergMarquardt.cpp
 )
 
 # if you do not want to have nelsond.{dll,lib,so} in debug disable this 

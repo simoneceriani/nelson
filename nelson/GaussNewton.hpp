@@ -7,13 +7,13 @@
 namespace nelson {
 
   template<int solverTypeV, int matTypeV, class T, int B, int NB>
-  GaussNewton<solverTypeV, matTypeV, T, B, NB>::GaussNewton() : iter(-1) {
+  GaussNewton<solverTypeV, matTypeV, T, B, NB>::GaussNewton() : iter(-1), _stats(_settings.maxNumIt) {
 
   }
 
   template<int solverTypeV, int matTypeV, class T, int B, int NB>
   GaussNewton<solverTypeV, matTypeV, T, B, NB>::GaussNewton(const GaussNewtonSettings& settings)
-    : _settings(settings), iter(-1)
+    : _settings(settings), iter(-1), _stats(settings.maxNumIt)
   {
 
   }
@@ -30,6 +30,7 @@ namespace nelson {
 
     // compute initial error
     op.update(true);
+    _stats.addIteration(iter, op.hessian().chi2());
 
     // check termination criterion on bVector
     if (op.hessian().maxAbsValBVect() <= _settings.epsBVector) {
@@ -59,6 +60,7 @@ namespace nelson {
 
       // compute error and jacobian with this solution, prepare for next iteration
       op.update(true);
+      _stats.addIteration(iter, op.hessian().chi2());
 
       // check termination criterion on b vector
       if (iter > _settings.minNumIt && op.hessian().maxAbsValBVect() <= _settings.epsBVector) {

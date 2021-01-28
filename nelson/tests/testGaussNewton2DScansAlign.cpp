@@ -6,6 +6,7 @@
 
 #include "nelson/SingleSection.hpp"
 #include "nelson/GaussNewton.hpp"
+#include "nelson/LevenbergMarquardt.hpp"
 #include "nelson/EdgeBinary.hpp"
 
 
@@ -134,11 +135,20 @@ public:
 template<int matTypeV>
 class SE2PoseSectionFF : public nelson::SingleSection<SE2PoseSectionFF<matTypeV>, SE2Pose, matTypeV, double, constants::poseParSize, constants::numPoses> {
   std::array<SE2Pose, constants::numPoses> _poses;
+  std::array<SE2Pose, constants::numPoses> _bckposes;
   SE2Pose _fixedPose;
   using SingleSectionBase = nelson::SingleSection<SE2PoseSectionFF<matTypeV>, SE2Pose, matTypeV, double, constants::poseParSize, constants::numPoses>;
 public:
   SE2PoseSectionFF() {
     this->parametersReady();
+  }
+
+  void backupSolution() {
+    _bckposes = _poses;
+  }
+
+  void rollbackSolution() {
+    _poses = _bckposes;
   }
 
   virtual const SE2Pose& parameter(nelson::NodeId i) const {
@@ -178,12 +188,21 @@ using SE2PoseSectionFF_BlockCoeffSparse = SE2PoseSectionFF<mat::BlockCoeffSparse
 template<int matTypeV>
 class SE2PoseSectionFD : public nelson::SingleSection<SE2PoseSectionFD<matTypeV>, SE2Pose, matTypeV, double, constants::poseParSize, mat::Dynamic> {
   std::vector<SE2Pose> _poses;
+  std::vector<SE2Pose> _bckposes;
   SE2Pose _fixedPose;
   using SingleSectionBase = nelson::SingleSection<SE2PoseSectionFD<matTypeV>, SE2Pose, matTypeV, double, constants::poseParSize, mat::Dynamic>;
 public:
   SE2PoseSectionFD() {
     _poses.resize(constants::numPoses);
     this->parametersReady();
+  }
+
+  void backupSolution() {
+    _bckposes = _poses;
+  }
+
+  void rollbackSolution() {
+    _poses = _bckposes;
   }
 
   virtual const SE2Pose& parameter(nelson::NodeId i) const {
@@ -226,12 +245,21 @@ using SE2PoseSectionFD_BlockCoeffSparse = SE2PoseSectionFD<mat::BlockCoeffSparse
 template<int matTypeV>
 class SE2PoseSectionDF : public nelson::SingleSection<SE2PoseSectionDF<matTypeV>, SE2Pose, matTypeV, double, mat::Dynamic, constants::numPoses> {
   std::array<SE2Pose, constants::numPoses> _poses;
+  std::array<SE2Pose, constants::numPoses> _bckposes;
   SE2Pose _fixedPose;
 
   using SingleSectionBase = nelson::SingleSection<SE2PoseSectionDF<matTypeV>, SE2Pose, matTypeV, double, mat::Dynamic, constants::numPoses>;
 public:
   SE2PoseSectionDF() {
     this->parametersReady();
+  }
+
+  void backupSolution() {
+    _bckposes = _poses;
+  }
+
+  void rollbackSolution() {
+    _poses = _bckposes;
   }
 
   virtual const SE2Pose& parameter(nelson::NodeId i) const {
@@ -275,6 +303,7 @@ using SE2PoseSectionDF_BlockCoeffSparse = SE2PoseSectionDF<mat::BlockCoeffSparse
 template<int matTypeV>
 class SE2PoseSectionDD : public nelson::SingleSection<SE2PoseSectionDD<matTypeV>, SE2Pose, matTypeV, double, mat::Dynamic, mat::Dynamic> {
   std::vector<SE2Pose> _poses;
+  std::vector<SE2Pose> _bckposes;
   SE2Pose _fixedPose;
 
   using SingleSectionBase = nelson::SingleSection<SE2PoseSectionDD<matTypeV>, SE2Pose, matTypeV, double, mat::Dynamic, mat::Dynamic>;
@@ -282,6 +311,14 @@ public:
   SE2PoseSectionDD() {
     _poses.resize(constants::numPoses);
     this->parametersReady();
+  }
+
+  void backupSolution() {
+    _bckposes = _poses;
+  }
+
+  void rollbackSolution() {
+    _poses = _bckposes;
   }
 
   virtual const SE2Pose& parameter(nelson::NodeId i) const {
@@ -329,6 +366,7 @@ using SE2PoseSectionDD_BlockCoeffSparse = SE2PoseSectionDD<mat::BlockCoeffSparse
 template<int matTypeV>
 class SE2PoseSectionVF : public nelson::SingleSection<SE2PoseSectionVF<matTypeV>, SE2Pose, matTypeV, double, mat::Variable, constants::numPoses> {
   std::array<SE2Pose, constants::numPoses> _poses;
+  std::array<SE2Pose, constants::numPoses> _bckposes;
   std::vector<int> _sizes;
   SE2Pose _fixedPose;
 
@@ -336,6 +374,14 @@ class SE2PoseSectionVF : public nelson::SingleSection<SE2PoseSectionVF<matTypeV>
 public:
   SE2PoseSectionVF() : _sizes(constants::numPoses, constants::poseParSize) {
     this->parametersReady();
+  }
+
+  void backupSolution() {
+    _bckposes = _poses;
+  }
+
+  void rollbackSolution() {
+    _poses = _bckposes;
   }
 
   virtual const SE2Pose& parameter(nelson::NodeId i) const {
@@ -380,6 +426,7 @@ using SE2PoseSectionVF_BlockCoeffSparse = SE2PoseSectionVF<mat::BlockCoeffSparse
 template<int matTypeV>
 class SE2PoseSectionVD : public nelson::SingleSection<SE2PoseSectionVD<matTypeV>, SE2Pose, matTypeV, double, mat::Variable, mat::Dynamic> {
   std::vector<SE2Pose> _poses;
+  std::vector<SE2Pose> _bckposes;
   std::vector<int> _sizes;
   SE2Pose _fixedPose;
 
@@ -388,6 +435,14 @@ public:
   SE2PoseSectionVD() : _sizes(constants::numPoses, constants::poseParSize) {
     _poses.resize(constants::numPoses);
     this->parametersReady();
+  }
+
+  void backupSolution() {
+    _bckposes = _poses;
+  }
+
+  void rollbackSolution() {
+    _poses = _bckposes;
   }
 
   virtual const SE2Pose& parameter(nelson::NodeId i) const {
@@ -427,7 +482,7 @@ using SE2PoseSectionVD_BlockSparse = SE2PoseSectionVD<mat::BlockSparse>;
 using SE2PoseSectionVD_BlockCoeffSparse = SE2PoseSectionVD<mat::BlockCoeffSparse>;
 
 //-----------------------------------------------------------------------------------------------------------------
-TEMPLATE_TEST_CASE_SIG("GaussNewton", "[GaussNewton]", ((class ProblemType, int solverType), ProblemType, solverType),
+TEMPLATE_TEST_CASE_SIG("GaussNewton-LevenbergMarquardt", "[GaussNewton-LevenbergMarquardt]", ((class ProblemType, int solverType), ProblemType, solverType),
   (SE2PoseSectionFF_BlockDense, nelson::solverCholeskyDense), (SE2PoseSectionFF_BlockDiagonal, nelson::solverCholeskyDense), (SE2PoseSectionFF_BlockSparse, nelson::solverCholeskyDense), (SE2PoseSectionFF_BlockCoeffSparse, nelson::solverCholeskyDense),
   (SE2PoseSectionFD_BlockDense, nelson::solverCholeskyDense), (SE2PoseSectionFD_BlockDiagonal, nelson::solverCholeskyDense), (SE2PoseSectionFD_BlockSparse, nelson::solverCholeskyDense), (SE2PoseSectionFD_BlockCoeffSparse, nelson::solverCholeskyDense),
   (SE2PoseSectionDF_BlockDense, nelson::solverCholeskyDense), (SE2PoseSectionDF_BlockDiagonal, nelson::solverCholeskyDense), (SE2PoseSectionDF_BlockSparse, nelson::solverCholeskyDense), (SE2PoseSectionDF_BlockCoeffSparse, nelson::solverCholeskyDense),
@@ -488,49 +543,34 @@ TEMPLATE_TEST_CASE_SIG("GaussNewton", "[GaussNewton]", ((class ProblemType, int 
       Eigen::Vector3d noiseSigma;
       bool fullEdges;
       bool changeDiagInSolver;
+      bool solveGN = false;
+
+      //------------------------------- levenberg
+
       SECTION("NO NOISE - FULL - PURE GN") {
         noiseSigma.setZero();
         fullEdges = true;
         changeDiagInSolver = false;
+        solveGN = false;
       }
       SECTION("WITH NOISE - FULL - PURE GN") {
         noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
         fullEdges = true;
         changeDiagInSolver = false;
+        solveGN = false;
       }
       if (optProblem.matType() != mat::BlockDiagonal) {
         SECTION("NO NOISE - SPARSE - PURE GN") {
           noiseSigma.setZero();
           fullEdges = false;
           changeDiagInSolver = false;
+          solveGN = false;
         }
         SECTION("WITH NOISE - SPARSE - PURE GN") {
           noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
           fullEdges = false;
           changeDiagInSolver = false;
-        }
-      }
-      else fullEdges = false;
-      SECTION("NO NOISE - FULL - DAMPED GN") {
-        noiseSigma.setZero();
-        fullEdges = true;
-        changeDiagInSolver = true;
-      }
-      SECTION("WITH NOISE - FULL - DAMPED GN") {
-        noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
-        fullEdges = true;
-        changeDiagInSolver = true;
-      }
-      if (optProblem.matType() != mat::BlockDiagonal) {
-        SECTION("NO NOISE - SPARSE - DAMPED GN") {
-          noiseSigma.setZero();
-          fullEdges = false;
-          changeDiagInSolver = true;
-        }
-        SECTION("WITH NOISE - SPARSE - DAMPED GN") {
-          noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
-          fullEdges = false;
-          changeDiagInSolver = true;
+          solveGN = false;
         }
       }
       else fullEdges = false;
@@ -538,6 +578,62 @@ TEMPLATE_TEST_CASE_SIG("GaussNewton", "[GaussNewton]", ((class ProblemType, int 
       for (int i = 1; i < scanPoses.size(); i++) {
         optProblem.parameter(i - 1).pose = lie::exp(lie::SE2Algd(noiseSigma.asDiagonal() * Eigen::Vector3d::Random())) * scanPoses[i];
       }
+      //---------------------- GN
+      SECTION("NO NOISE - FULL - PURE GN") {
+        noiseSigma.setZero();
+        fullEdges = true;
+        changeDiagInSolver = false;
+        solveGN = true;
+      }
+      SECTION("WITH NOISE - FULL - PURE GN") {
+        noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
+        fullEdges = true;
+        changeDiagInSolver = false;
+        solveGN = true;
+      }
+      if (optProblem.matType() != mat::BlockDiagonal) {
+        SECTION("NO NOISE - SPARSE - PURE GN") {
+          noiseSigma.setZero();
+          fullEdges = false;
+          changeDiagInSolver = false;
+          solveGN = true;
+        }
+        SECTION("WITH NOISE - SPARSE - PURE GN") {
+          noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
+          fullEdges = false;
+          changeDiagInSolver = false;
+          solveGN = true;
+        }
+      }
+      else fullEdges = false;
+
+      SECTION("NO NOISE - FULL - DAMPED GN") {
+        noiseSigma.setZero();
+        fullEdges = true;
+        changeDiagInSolver = true;
+        solveGN = true;
+      }
+      SECTION("WITH NOISE - FULL - DAMPED GN") {
+        noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
+        fullEdges = true;
+        changeDiagInSolver = true;
+        solveGN = true;
+      }
+      if (optProblem.matType() != mat::BlockDiagonal) {
+        SECTION("NO NOISE - SPARSE - DAMPED GN") {
+          noiseSigma.setZero();
+          fullEdges = false;
+          changeDiagInSolver = true;
+          solveGN = true;
+        }
+        SECTION("WITH NOISE - SPARSE - DAMPED GN") {
+          noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
+          fullEdges = false;
+          changeDiagInSolver = true;
+          solveGN = true;
+        }
+      }
+      else fullEdges = false;
 
 
       // add edges
@@ -591,13 +687,22 @@ TEMPLATE_TEST_CASE_SIG("GaussNewton", "[GaussNewton]", ((class ProblemType, int 
       optProblem.update(true);
       std::cout << "chi2 BEFORE " << optProblem.hessian().chi2() << std::endl;
 
-      nelson::GaussNewtonHessianTraits < solverType, typename ProblemType::Hessian::Traits> gn;
-      if (changeDiagInSolver) {
-        gn.settings().relLambda = 0.01;
-        gn.settings().absLambda = 0;
-      }      
-      auto tc = gn.solve(optProblem);
-      std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
+      if (!solveGN) {
+        nelson::LevenbergMarquardtHessianTraits<solverType, typename ProblemType::Hessian::Traits> lm;
+        auto tc = lm.solve(optProblem);
+        std::cout << nelson::LevenbergMarquardtUtils::toString(tc) << std::endl;
+        std::cout << "stats " << lm.stats().toString() << std::endl;
+      }
+      else {
+        nelson::GaussNewtonHessianTraits < solverType, typename ProblemType::Hessian::Traits> gn;
+        if (changeDiagInSolver) {
+          gn.settings().relLambda = 0.01;
+          gn.settings().absLambda = 0;
+        }
+        auto tc = gn.solve(optProblem);
+        std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
+        std::cout << "stats " << gn.stats().toString() << std::endl;
+      }
 
       optProblem.update(true);
       std::cout << "chi2 AFTER " << optProblem.hessian().chi2() << std::endl;
@@ -606,6 +711,7 @@ TEMPLATE_TEST_CASE_SIG("GaussNewton", "[GaussNewton]", ((class ProblemType, int 
 
       auto endTime = std::chrono::steady_clock::now();
       std::cout << "TOTAL TIME " << std::chrono::duration<double>(endTime - startTime).count() << std::endl;
+      
     }
 
   }

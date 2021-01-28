@@ -31,6 +31,7 @@ namespace nelson {
 
     void init(MatType& input, const mat::VectorBlock<T, B, NB>& b);
 
+    T maxAbsHDiag() const;
     bool computeIncrement(MatType& input, const mat::VectorBlock<T, B, NB>& b, T relLambda, T absLambda);
 
     const VecType& incrementVector() const {
