@@ -47,11 +47,16 @@ namespace nelson {
 
   //------------------------------------------------------------------------------------------------------
 
-  LevenbergMarquardtStats::LevenbergMarquardtStats(int reserveOut, int reserveInStats) : _reserveInStats(reserveInStats) {
+  LevenbergMarquardtStats::LevenbergMarquardtStats() {
 
   }
   LevenbergMarquardtStats::~LevenbergMarquardtStats() {
 
+  }
+
+  void LevenbergMarquardtStats::reserve(int reserveOut, int reserveInStats) {
+    _reserveInStats = reserveOut;
+    _stats.reserve(reserveOut);
   }
 
   void LevenbergMarquardtStats::addIteration(int it) {

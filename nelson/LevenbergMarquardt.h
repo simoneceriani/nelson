@@ -69,8 +69,10 @@ namespace nelson {
     int _reserveInStats;
   
   public:
-    LevenbergMarquardtStats(int reserveOut, int reserveInStats);
+    LevenbergMarquardtStats();
     virtual ~LevenbergMarquardtStats();
+
+    void reserve(int reserveOut, int reserveInStats);
 
     void addIteration(int it);
     void addSubIteration(int subit, double chi2);

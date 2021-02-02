@@ -58,8 +58,10 @@ namespace nelson {
     std::vector<Stats> _stats;
     
   public:
-    GaussNewtownStats(int reserve);
+    GaussNewtownStats();
     virtual ~GaussNewtownStats();
+
+    void reserve(int n);
 
     void addIteration(int it, double chi2);
     std::string toString() const;

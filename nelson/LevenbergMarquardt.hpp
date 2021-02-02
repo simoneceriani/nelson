@@ -6,8 +6,7 @@ namespace nelson {
   template<int solverTypeV, int matTypeV, class T, int B, int NB>
   LevenbergMarquardt<solverTypeV, matTypeV, T, B, NB>::LevenbergMarquardt()
     : iter(-1),
-    subiter(-1),
-    _stats(_settings.maxNumIt, _settings.maxNumSubIt)
+    subiter(-1)
   {
 
   }
@@ -16,8 +15,7 @@ namespace nelson {
   LevenbergMarquardt<solverTypeV, matTypeV, T, B, NB>::LevenbergMarquardt(const LevenbergMarquardtSettings& settings)
     : _settings(settings),
     iter(-1),
-    subiter(-1),
-    _stats(settings.maxNumIt, settings.maxNumSubIt)
+    subiter(-1)
   {
 
   }
@@ -30,6 +28,8 @@ namespace nelson {
   template<int solverTypeV, int matTypeV, class T, int B, int NB>
   template<class OptimizationProblem>
   LevenbergMarquardtTerminationReason LevenbergMarquardt<solverTypeV, matTypeV, T, B, NB>::solve(OptimizationProblem& op) {
+
+    _stats.reserve(_settings.maxNumIt, _settings.maxNumSubIt);
 
     // compute initial error
     op.update(true);

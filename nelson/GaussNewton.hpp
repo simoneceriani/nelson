@@ -7,13 +7,13 @@
 namespace nelson {
 
   template<int solverTypeV, int matTypeV, class T, int B, int NB>
-  GaussNewton<solverTypeV, matTypeV, T, B, NB>::GaussNewton() : iter(-1), _stats(_settings.maxNumIt) {
+  GaussNewton<solverTypeV, matTypeV, T, B, NB>::GaussNewton() : iter(-1){
 
   }
 
   template<int solverTypeV, int matTypeV, class T, int B, int NB>
   GaussNewton<solverTypeV, matTypeV, T, B, NB>::GaussNewton(const GaussNewtonSettings& settings)
-    : _settings(settings), iter(-1), _stats(settings.maxNumIt)
+    : _settings(settings), iter(-1)
   {
 
   }
@@ -27,6 +27,8 @@ namespace nelson {
   template<int solverTypeV, int matTypeV, class T, int B, int NB>
   template<class OptimizationProblem>
   GaussNewtonTerminationReason GaussNewton<solverTypeV, matTypeV, T, B, NB>::solve(OptimizationProblem& op) {
+
+    _stats.reserve(_settings.maxNumIt);
 
     // compute initial error
     op.update(true);

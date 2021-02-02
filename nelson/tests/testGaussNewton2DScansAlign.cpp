@@ -24,8 +24,8 @@
 namespace constants {
   constexpr int poseParSize = 3;
 #ifdef NDEBUG
-  constexpr int pointsPerScan = 30000;
-  constexpr int numPoses = 20;
+  constexpr int pointsPerScan = 3000;
+  constexpr int numPoses = 15;
 #else
   constexpr int pointsPerScan = 30;
   constexpr int numPoses = 10;

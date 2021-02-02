@@ -47,12 +47,15 @@ namespace nelson {
 
   //------------------------------------------------------------------------------------------------------
   
-  GaussNewtownStats::GaussNewtownStats(int reserve) {
-    _stats.reserve(reserve);
+  GaussNewtownStats::GaussNewtownStats() {
   }
 
   GaussNewtownStats::~GaussNewtownStats() {
 
+  }
+
+  void GaussNewtownStats::reserve(int n) {
+    _stats.reserve(n);
   }
 
   void GaussNewtownStats::addIteration(int it, double chi2) {
