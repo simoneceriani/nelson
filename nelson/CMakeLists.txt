@@ -31,6 +31,8 @@ target_sources_wrapper(nelson
     Global.h
     SingleSectionHessian.h
     SingleSectionHessian.hpp
+    DoubleSectionHessian.h
+    DoubleSectionHessian.hpp
     SingleSection.h
     SingleSection.hpp
     EdgeInterface.h
@@ -57,6 +59,7 @@ target_sources_wrapper(nelson
 	PRIVATE
     Global.cpp
     SingleSectionHessian.cpp
+    DoubleSectionHessian.cpp
     SingleSection.cpp
     EdgeSingleSectionBase.cpp
     EdgeInterface.cpp

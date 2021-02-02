@@ -20,6 +20,7 @@ include(Catch)
 
 set(TESTS_LIST 
   testSingleSectionHessian.cpp
+  testDoubleSectionHessian.cpp
   testSingleSection.cpp
   testMatrixSparseDenseWrapper.cpp
 )
@@ -30,6 +31,7 @@ foreach(s ${TESTS_LIST})
 	target_sources_wrapper(nelsonTest_${sn} PRIVATE ${s})
 	if (WIN32)
 		set_target_properties(nelsonTest_${sn} PROPERTIES FOLDER nelson/test)
+		target_compile_options(nelsonTest_${sn} PUBLIC /bigobj)
 	endif()	
 	target_link_libraries(nelsonTest_${sn} PRIVATE nelson::nelson Catch2::Catch2WithMain )
   
