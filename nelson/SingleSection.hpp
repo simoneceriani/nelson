@@ -94,7 +94,8 @@ namespace nelson {
   }
 
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
-  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(NodeId i, NodeId j, EdgeBinarySingleSection<Derived>* e) {
+  template<class EdgeDerived>
+  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(NodeId i, NodeId j, EdgeBinary<EdgeDerived>* e) {
 
     // add to edges
     e->setPar_1_Id(i);
@@ -104,18 +105,18 @@ namespace nelson {
 
     // add setters
     if (i.type() == NodeType::Variable) {
-      this->_edgeSetterComputer[i.id()][i.id()].list.emplace_front(SetterComputer(new EdgeBinaryBase::EdgeUID_11_Setter(e), new typename EdgeBinarySingleSection<Derived>::HessianUpdater_11(e)));
+      this->_edgeSetterComputer[i.id()][i.id()].list.emplace_front(SetterComputer(new EdgeBinaryBase::EdgeUID_11_Setter(e), new typename EdgeBinarySectionBase<Derived>::HessianUpdater_11(e)));
       this->_edgeSetterComputer[i.id()][i.id()].size++;
     }
 
     if (i.type() == NodeType::Variable && j.type() == NodeType::Variable) {
       assert(i.id() < j.id());
-      this->_edgeSetterComputer[j.id()][i.id()].list.emplace_front(SetterComputer(new EdgeBinaryBase::EdgeUID_12_Setter(e), new typename EdgeBinarySingleSection<Derived>::HessianUpdater_12(e)));
+      this->_edgeSetterComputer[j.id()][i.id()].list.emplace_front(SetterComputer(new EdgeBinaryBase::EdgeUID_12_Setter(e), new typename EdgeBinarySectionBase<Derived>::HessianUpdater_12(e)));
       this->_edgeSetterComputer[j.id()][i.id()].size++;
     }
 
     if (j.type() == NodeType::Variable) {
-      this->_edgeSetterComputer[j.id()][j.id()].list.emplace_front(SetterComputer(new EdgeBinaryBase::EdgeUID_22_Setter(e), new typename EdgeBinarySingleSection<Derived>::HessianUpdater_22(e)));
+      this->_edgeSetterComputer[j.id()][j.id()].list.emplace_front(SetterComputer(new EdgeBinaryBase::EdgeUID_22_Setter(e), new typename EdgeBinarySectionBase<Derived>::HessianUpdater_22(e)));
       this->_edgeSetterComputer[j.id()][j.id()].size++;
     }
 

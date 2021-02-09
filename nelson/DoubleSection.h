@@ -319,7 +319,7 @@ namespace nelson {
 
     template<class EdgeUnaryAdapter, class EdgeDerived>
     void addEdge(NodeId i, EdgeUnary<EdgeUnaryAdapter, EdgeDerived>* e);
-    //void addEdge(NodeId i, NodeId j, EdgeBinarySingleSection<Derived>* e);
+    //void addEdge(NodeId i, NodeId j, EdgeBinarySectionBase<Derived>* e);
     //void addEdge(int i, int j, int k/*, EdgeTernary* e*/);
     //template<int N>
     //void addEdge(const std::array<int, N>& ids/*, EdgeNAry * e*/);

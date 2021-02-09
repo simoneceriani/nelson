@@ -34,7 +34,7 @@ namespace constants {
 
 
 template<class Section>
-class PointLineEdge : public nelson::EdgeBinarySingleSectionCRPT<Section, PointLineEdge<Section>> {
+class PointLineEdge : public nelson::EdgeBinarySectionBaseCRPT<Section, typename Section::EdgeBinaryAdapter, PointLineEdge<Section>> {
   // inputs, local coordinates
   Eigen::Matrix2Xd model_points;
   Eigen::Matrix2Xd model_normals;

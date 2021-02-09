@@ -187,6 +187,7 @@ namespace nelson {
       return _settings;
     }
 
+    //-------------------------------------------------------------------------------------------
     struct EdgeUnaryAdapter {
 
       using ParameterType = ParameterType;
@@ -211,8 +212,53 @@ namespace nelson {
     template<class EdgeDerived>
     void addEdge(NodeId i, EdgeUnary<EdgeDerived>* e);
 
-    
-    void addEdge(NodeId i, NodeId j, EdgeBinarySingleSection<Derived>* e);
+
+    //-------------------------------------------------------------------------------------------
+    struct EdgeBinaryAdapter {
+
+      using Parameter_1_Type = ParameterType;
+      using Parameter_2_Type = ParameterType;
+      
+      using H_11_BlockType = typename Hessian::MatTraits::MatrixType::BlockType;
+      using B_1_SegmentType = typename Hessian::VecType::SegmentType;
+
+      using H_12_BlockType = typename Hessian::MatTraits::MatrixType::BlockType;
+
+      using H_22_BlockType = typename Hessian::MatTraits::MatrixType::BlockType;
+      using B_2_SegmentType = typename Hessian::VecType::SegmentType;
+
+      static const Parameter_1_Type& parameter1(const Derived& section, NodeId id) {
+        return section.parameter(id);
+      }
+      static const Parameter_2_Type& parameter2(const Derived& section, NodeId id) {
+        return section.parameter(id);
+      }
+
+      static H_11_BlockType H_11_Block(Derived& section, int uid) {
+        return section.hessianBlockByUID(uid);
+      }
+      static B_1_SegmentType b_1_Segment(Derived& section, int par_id) {
+        return section.bVectorSegment(par_id);
+      }
+
+      static H_12_BlockType H_12_Block(Derived& section, int uid) {
+        return section.hessianBlockByUID(uid);
+      }
+
+      static H_22_BlockType H_22_Block(Derived& section, int uid) {
+        return section.hessianBlockByUID(uid);
+      }
+      static B_2_SegmentType b_2_Segment(Derived& section, int par_id) {
+        return section.bVectorSegment(par_id);
+      }
+
+    };
+
+    template<class EdgeDerived>
+    using EdgeBinary = EdgeBinarySectionBaseCRPT<Derived, EdgeBinaryAdapter, EdgeDerived>;
+
+    template<class EdgeDerived>
+    void addEdge(NodeId i, NodeId j, EdgeBinary<EdgeDerived>* e);
     //void addEdge(int i, int j, int k/*, EdgeTernary* e*/);
     //template<int N>
     //void addEdge(const std::array<int, N>& ids/*, EdgeNAry * e*/);

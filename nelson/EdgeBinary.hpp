@@ -4,7 +4,7 @@
 namespace nelson {
 
   template<class Section>
-  EdgeBinarySingleSection<Section>::EdgeBinarySingleSection() :
+  EdgeBinarySectionBase<Section>::EdgeBinarySectionBase() :
     EdgeBinaryBase(),
     EdgeSectionBase<Section>()
   {
@@ -12,7 +12,7 @@ namespace nelson {
   }
 
   template<class Section>
-  EdgeBinarySingleSection<Section>::~EdgeBinarySingleSection() {
+  EdgeBinarySectionBase<Section>::~EdgeBinarySectionBase() {
 
   }
 

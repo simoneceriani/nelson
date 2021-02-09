@@ -77,7 +77,7 @@ namespace nelson {
 
   public:
 
-    const typename SectionAdapter::ParameterType& parameter() const {
+    inline const typename SectionAdapter::ParameterType& parameter() const {
       //return this->section().parameter(this->parId());
       return SectionAdapter::parameter(this->section(), this->parId());
     }

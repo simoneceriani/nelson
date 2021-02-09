@@ -48,7 +48,7 @@ public:
 };
 
 template<class Section>
-class EdgeBinaryTest : public nelson::EdgeBinarySingleSectionCRPT<Section, EdgeBinaryTest<Section>> {
+class EdgeBinaryTest : public nelson::EdgeBinarySectionBaseCRPT<Section, typename Section::EdgeBinaryAdapter, EdgeBinaryTest<Section>> {
   int _par1Id, _par2Id;
 
 public:
