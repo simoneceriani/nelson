@@ -2,7 +2,7 @@
 #include "Global.h"
 
 #include "EdgeInterface.h"
-#include "EdgeSingleSectionBase.h"
+#include "EdgeSectionBase.h"
 
 namespace nelson {
 
@@ -68,7 +68,7 @@ namespace nelson {
   //--------------------------------------------------------------------------------------------------------
 
   template<class Section>
-  class EdgeBinarySingleSection : public EdgeBinaryBase, public EdgeSingleSectionBase<Section> {
+  class EdgeBinarySingleSection : public EdgeBinaryBase, public EdgeSectionBase<Section> {
 
     template<class Derived, class ParT, int matTypeV, class T, int B, int NB> friend class SingleSection;
 

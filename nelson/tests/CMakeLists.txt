@@ -22,6 +22,21 @@ set(TESTS_LIST
   testSingleSectionHessian.cpp
   testDoubleSectionHessian.cpp
   testSingleSection.cpp
+  #---------------------------
+  testDoubleSectionFFFF.cpp
+  testDoubleSectionFFFD.cpp
+  testDoubleSectionFFDF.cpp
+  testDoubleSectionFFDD.cpp
+  #---------------------------
+  testDoubleSectionFDFF.cpp
+  testDoubleSectionFDFD.cpp
+  testDoubleSectionFDDF.cpp
+  testDoubleSectionFDDD.cpp
+  #---------------------------
+  #testDoubleSectionFVFF.cpp
+  #testDoubleSectionFVFD.cpp
+  #testDoubleSectionFVDF.cpp
+  #testDoubleSectionFVDD.cpp
   testMatrixSparseDenseWrapper.cpp
 )
 

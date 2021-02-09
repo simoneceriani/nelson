@@ -83,7 +83,7 @@ namespace nelson {
     inline const MatTypeV& V() const {
       return _V;
     }
-    inline const MatTypeU& W() const {
+    inline const MatTypeW& W() const {
       return _W;
     }
 
@@ -93,7 +93,7 @@ namespace nelson {
     inline MatTypeV& V() {
       return _V;
     }
-    inline MatTypeU& W() {
+    inline MatTypeW& W() {
       return _W;
     }
 

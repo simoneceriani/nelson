@@ -170,12 +170,6 @@ namespace nelson {
       return _hessian.b().segment(pid);
     }
 
-    void addEdge(NodeId i, EdgeUnarySingleSection<Derived>* e);
-    void addEdge(NodeId i, NodeId j, EdgeBinarySingleSection<Derived>* e);
-    //void addEdge(int i, int j, int k/*, EdgeTernary* e*/);
-    //template<int N>
-    //void addEdge(const std::array<int, N>& ids/*, EdgeNAry * e*/);
-
     void reserveEdges(int n) {
       _edgesVector.reserve(n);
     }
@@ -192,6 +186,38 @@ namespace nelson {
     const SingleSectionSettings& settings() const {
       return _settings;
     }
+
+    struct EdgeUnaryAdapter {
+
+      using ParameterType = ParameterType;
+      using HBlockType = typename Hessian::MatTraits::MatrixType::BlockType;
+      using BSegmentType = typename Hessian::VecType::SegmentType;
+
+      static const ParameterType& parameter(const Derived& section, NodeId id) {
+        return section.parameter(id);
+      }
+      static HBlockType HBlock(Derived& section, int uid) {
+        return section.hessianBlockByUID(uid);
+      }
+      static BSegmentType bSegment(Derived& section, int par_id) {
+        return section.bVectorSegment(par_id);
+      }
+
+    };
+
+    template<class EdgeDerived>
+    using EdgeUnary = EdgeUnarySectionBaseCRPT<Derived, EdgeUnaryAdapter, EdgeDerived>;
+
+    template<class EdgeDerived>
+    void addEdge(NodeId i, EdgeUnary<EdgeDerived>* e);
+
+    
+    void addEdge(NodeId i, NodeId j, EdgeBinarySingleSection<Derived>* e);
+    //void addEdge(int i, int j, int k/*, EdgeTernary* e*/);
+    //template<int N>
+    //void addEdge(const std::array<int, N>& ids/*, EdgeNAry * e*/);
+
+
   };
 
 }

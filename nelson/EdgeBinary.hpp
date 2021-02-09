@@ -6,7 +6,7 @@ namespace nelson {
   template<class Section>
   EdgeBinarySingleSection<Section>::EdgeBinarySingleSection() :
     EdgeBinaryBase(),
-    EdgeSingleSectionBase<Section>()
+    EdgeSectionBase<Section>()
   {
 
   }

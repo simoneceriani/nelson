@@ -20,7 +20,7 @@ static constexpr int secSizeFix = 3;
 static constexpr int numBlocks = 10;
 
 template<class Section>
-class EdgeUnaryTest : public nelson::EdgeUnarySingleSectionCRPT<Section, EdgeUnaryTest<Section>> {
+class EdgeUnaryTest : public nelson::EdgeUnarySectionBaseCRPT<Section, typename Section::EdgeUnaryAdapter, EdgeUnaryTest<Section>> {
   int _parId;
 
 public:

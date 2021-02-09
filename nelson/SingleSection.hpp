@@ -5,6 +5,7 @@
 #include "SingleSectionHessian.hpp"
 
 #include "EdgeUnary.hpp"
+#include "EdgeBinary.hpp"
 
 namespace nelson {
 
@@ -76,7 +77,8 @@ namespace nelson {
   }
 
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
-  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(NodeId i, EdgeUnarySingleSection<Derived>* e) {
+  template<class EdgeDerived>
+  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(NodeId i, EdgeUnary<EdgeDerived> * e) {
     assert(e != nullptr);
 
     // add to edges
@@ -86,7 +88,7 @@ namespace nelson {
 
     // add setters
     if (i.type() == NodeType::Variable) {
-      this->_edgeSetterComputer[i.id()][i.id()].list.emplace_front(SetterComputer(new EdgeUnaryBase::EdgeUIDSetter(e), new typename EdgeUnarySingleSection<Derived>::HessianUpdater(e)));
+      this->_edgeSetterComputer[i.id()][i.id()].list.emplace_front(SetterComputer(new EdgeUnaryBase::EdgeUIDSetter(e), new typename EdgeUnarySectionBase<Derived>::HessianUpdater(e)));
       this->_edgeSetterComputer[i.id()][i.id()].size++;
     }
   }
