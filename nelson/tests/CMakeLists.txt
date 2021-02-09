@@ -23,20 +23,20 @@ set(TESTS_LIST
   testDoubleSectionHessian.cpp
   testSingleSection.cpp
   #---------------------------
-  testDoubleSectionFFFF.cpp
-  testDoubleSectionFFFD.cpp
-  testDoubleSectionFFDF.cpp
-  testDoubleSectionFFDD.cpp
+  testDoublesectionFFFF.cpp
+  testDoublesectionFFFD.cpp
+  testDoublesectionFFDF.cpp
+  testDoublesectionFFDD.cpp
   #---------------------------
-  testDoubleSectionFDFF.cpp
-  testDoubleSectionFDFD.cpp
-  testDoubleSectionFDDF.cpp
-  testDoubleSectionFDDD.cpp
+  testDoublesectionFDFF.cpp
+  testDoublesectionFDFD.cpp
+  testDoublesectionFDDF.cpp
+  testDoublesectionFDDD.cpp
   #---------------------------
-  #testDoubleSectionFVFF.cpp
-  #testDoubleSectionFVFD.cpp
-  #testDoubleSectionFVDF.cpp
-  #testDoubleSectionFVDD.cpp
+  #testDoublesectionFVFF.cpp
+  #testDoublesectionFVFD.cpp
+  #testDoublesectionFVDF.cpp
+  #testDoublesectionFVDD.cpp
   testMatrixSparseDenseWrapper.cpp
 )
 
