@@ -93,7 +93,7 @@ TEMPLATE_TEST_CASE_SIG("DenseSparseWrapper", "[MatrixSparseDenseWrapper]",
     nelson::DenseSquareWrapper<matType, double, mat::ColMajor, B, NB> wrapperSquareDense;
     wrapperSquareDense.set(&sec.H());
 
-    nelson::DenseSquareWrapper<matType, double, mat::ColMajor, B, NB>::DiagType diagonal = wrapperSquareDense.diagonal();
+    typename nelson::DenseSquareWrapper<matType, double, mat::ColMajor, B, NB>::DiagType diagonal = wrapperSquareDense.diagonal();
     diagonal.setConstant(3);
     wrapperSquareDense.setDiagonal(diagonal);
     wrapperSquareDense.diagonalCopy(diagonal);
@@ -109,7 +109,7 @@ TEMPLATE_TEST_CASE_SIG("DenseSparseWrapper", "[MatrixSparseDenseWrapper]",
     nelson::SparseSquareWrapper<matType, double, mat::ColMajor, B, NB> wrapperSquareSparse;
     wrapperSquareSparse.set(&sec.H());
 
-    nelson::SparseSquareWrapper<matType, double, mat::ColMajor, B, NB>::DiagType diagonal = wrapperSquareSparse.diagonal();
+    typename nelson::SparseSquareWrapper<matType, double, mat::ColMajor, B, NB>::DiagType diagonal = wrapperSquareSparse.diagonal();
     diagonal.setConstant(3);
     wrapperSquareSparse.setDiagonal(diagonal);
     wrapperSquareSparse.diagonalCopy(diagonal);

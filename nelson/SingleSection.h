@@ -190,7 +190,7 @@ namespace nelson {
     //-------------------------------------------------------------------------------------------
     struct EdgeUnaryAdapter {
 
-      using ParameterType = ParameterType;
+      using ParameterType = ParT;
       using HBlockType = typename Hessian::MatTraits::MatrixType::BlockType;
       using BSegmentType = typename Hessian::VecType::SegmentType;
 

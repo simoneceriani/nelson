@@ -45,11 +45,11 @@ namespace nelson {
       return _matCopy.mat();
     }
 
-    typename MatCopyType& matBlocks() {
+    MatCopyType& matBlocks() {
       assert(_matrix != nullptr);
       return _matCopy;
     }
-    const typename MatCopyType& matBlocks() const {
+    const MatCopyType& matBlocks() const {
       assert(_matrix != nullptr);
       return _matCopy;
     }
@@ -92,11 +92,11 @@ namespace nelson {
       return _matrix->mat();
     }
 
-    typename MatType& matBlocks() {
+    MatType& matBlocks() {
       assert(_matrix != nullptr);
       return *_matrix;
     }
-    const typename MatType& matBlocks() const {
+    const MatType& matBlocks() const {
       assert(_matrix != nullptr);
       return *_matrix;
     }
@@ -139,11 +139,11 @@ namespace nelson {
       return _matCopy.mat();
     }
 
-    typename MatCopyType& matBlocks() {
+    MatCopyType& matBlocks() {
       assert(_matrix != nullptr);
       return _matCopy;
     }
-    const typename MatCopyType& matBlocks() const {
+    const MatCopyType& matBlocks() const {
       assert(_matrix != nullptr);
       return _matCopy;
     }
@@ -185,11 +185,11 @@ namespace nelson {
       return _matCopy.mat();
     }
 
-    typename MatCopyType& matBlocks() {
+    MatCopyType& matBlocks() {
       assert(_matrix != nullptr);
       return _matCopy;
     }
-    const typename MatCopyType& matBlocks() const {
+    const MatCopyType& matBlocks() const {
       assert(_matrix != nullptr);
       return _matCopy;
     }

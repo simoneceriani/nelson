@@ -39,7 +39,7 @@ namespace nelson {
     _V.resize(blockDescriptorV, spV);
     _bV.resize(blockDescriptorV.rowDescriptionCSPtr());
 
-    auto blockDescriptorW = MatTypeW::BlockDescriptor(blockDescriptorU.rowDescriptionCSPtr(), blockDescriptorV.colDescriptionCSPtr());
+    auto blockDescriptorW = typename MatTypeW::BlockDescriptor(blockDescriptorU.rowDescriptionCSPtr(), blockDescriptorV.colDescriptionCSPtr());
     _W.resize(blockDescriptorW, spW);
 
   }
