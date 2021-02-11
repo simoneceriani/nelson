@@ -71,6 +71,7 @@ namespace nelson {
   class EdgeBinarySectionBase : public EdgeBinaryBase, public EdgeSectionBase<Section> {
 
     template<class Derived, class ParT, int matTypeV, class T, int B, int NB> friend class SingleSection;
+    template<class Derived, class ParUT, class ParVT, int matTypeUv, int matTypeVv, int matTypeWv, class Tv, int BUv, int BVv, int NBUv, int NBVv> friend class DoubleSection;
 
     class HessianUpdater_11 : public EdgeHessianUpdater {
       EdgeBinarySectionBase* _e;

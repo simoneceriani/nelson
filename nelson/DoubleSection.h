@@ -182,13 +182,14 @@ namespace nelson {
 
     DoubleSectionSettings _settings;
 
-    // void updateHessianBlocks();
-    // void evaluateEdges(bool hessian);
+    void updateHessianBlocks();
+    void evaluateEdges(bool hessian);
 
   public:
 
     constexpr int matTypeU() const { return matTypeUv; }
     constexpr int matTypeV() const { return matTypeVv; }
+    constexpr int matTypeW() const { return matTypeWv; }
 
     DoubleSection();
     virtual ~DoubleSection();
@@ -319,6 +320,165 @@ namespace nelson {
 
     template<class EdgeUnaryAdapter, class EdgeDerived>
     void addEdge(NodeId i, EdgeUnary<EdgeUnaryAdapter, EdgeDerived>* e);
+
+    //-------------------------------------------------------------------------------------------
+    struct EdgeBinaryParameter1_U {
+
+      using Parameter_1_Type = ParameterTypeU;
+      using H_11_BlockType = typename Hessian::MatTraitsU::MatrixType::BlockType;
+      using B_1_SegmentType = typename Hessian::VecTypeU::SegmentType;
+
+      static const Parameter_1_Type& parameter1(const Derived& section, NodeId id) {
+        return section.parameterU(id);
+      }
+      static H_11_BlockType H_11_Block(Derived& section, int uid) {
+        return section.hessianUBlockByUID(uid);
+      }
+      static B_1_SegmentType b_1_Segment(Derived& section, int par_id) {
+        return section.bUVectorSegment(par_id);
+      }
+
+      static std::vector<std::map<int, ListWithCount>>& edgeSetterComputer1(Derived& section) {
+        return section._edgeSetterComputerU;
+      }
+
+    };
+    struct EdgeBinaryParameter1_V {
+
+      using Parameter_1_Type = ParameterTypeV;
+      using H_11_BlockType = typename Hessian::MatTraitsV::MatrixType::BlockType;
+      using B_1_SegmentType = typename Hessian::VecTypeV::SegmentType;
+
+      static const Parameter_1_Type& parameter1(const Derived& section, NodeId id) {
+        return section.parameterV(id);
+      }
+      static H_11_BlockType H_11_Block(Derived& section, int uid) {
+        return section.hessianVBlockByUID(uid);
+      }
+      static B_1_SegmentType b_1_Segment(Derived& section, int par_id) {
+        return section.bVVectorSegment(par_id);
+      }
+
+      static std::vector<std::map<int, ListWithCount>>& edgeSetterComputer1(Derived& section) {
+        return section._edgeSetterComputerV;
+      }
+
+    };
+
+    struct EdgeBinaryParameter2_U {
+
+      using Parameter_2_Type = ParameterTypeU;
+      using H_22_BlockType = typename Hessian::MatTraitsU::MatrixType::BlockType;
+      using B_2_SegmentType = typename Hessian::VecTypeU::SegmentType;
+
+      static const Parameter_2_Type& parameter2(const Derived& section, NodeId id) {
+        return section.parameterU(id);
+      }
+      static H_22_BlockType H_22_Block(Derived& section, int uid) {
+        return section.hessianUBlockByUID(uid);
+      }
+      static B_2_SegmentType b_2_Segment(Derived& section, int par_id) {
+        return section.bUVectorSegment(par_id);
+      }
+
+      static std::vector<std::map<int, ListWithCount>>& edgeSetterComputer2(Derived& section) {
+        return section._edgeSetterComputerU;
+      }
+
+    };
+    struct EdgeBinaryParameter2_V {
+
+      using Parameter_2_Type = ParameterTypeV;
+      using H_22_BlockType = typename Hessian::MatTraitsV::MatrixType::BlockType;
+      using B_2_SegmentType = typename Hessian::VecTypeV::SegmentType;
+
+      static const Parameter_2_Type& parameter2(const Derived& section, NodeId id) {
+        return section.parameterV(id);
+      }
+      static H_22_BlockType H_22_Block(Derived& section, int uid) {
+        return section.hessianVBlockByUID(uid);
+      }
+      static B_2_SegmentType b_2_Segment(Derived& section, int par_id) {
+        return section.bVVectorSegment(par_id);
+      }
+
+      static std::vector<std::map<int, ListWithCount>>& edgeSetterComputer2(Derived& section) {
+        return section._edgeSetterComputerV;
+      }
+
+    };
+    struct EdgeBinaryHessian12_UU {
+
+      using H_12_BlockType = typename Hessian::MatTraitsU::MatrixType::BlockType;
+
+      static H_12_BlockType H_12_Block(Derived& section, int uid) {
+        return section.hessianUBlockByUID(uid);
+      }
+
+      static std::vector<std::map<int, ListWithCount>>& edgeSetterComputer12(Derived& section) {
+        return section._edgeSetterComputerU;
+      }
+
+    };
+    struct EdgeBinaryHessian12_UV {
+
+      using H_12_BlockType = typename Hessian::MatTraitsW::MatrixType::BlockType;
+
+      static H_12_BlockType H_12_Block(Derived& section, int uid) {
+        return section.hessianWBlockByUID(uid);
+      }
+
+      static std::vector<std::map<int, ListWithCount>>& edgeSetterComputer12(Derived& section) {
+        return section._edgeSetterComputerW;
+      }
+
+    };
+    struct EdgeBinaryHessian12_VV {
+
+      using H_12_BlockType = typename Hessian::MatTraitsV::MatrixType::BlockType;
+
+      static H_12_BlockType H_12_Block(Derived& section, int uid) {
+        return section.hessianVBlockByUID(uid);
+      }
+
+      static std::vector<std::map<int, ListWithCount>>& edgeSetterComputer12(Derived& section) {
+        return section._edgeSetterComputerV;
+      }
+
+    };
+
+    template<class EdgeBinaryParameter1_T, class EdgeBinaryParameter2_T>
+    struct EdgeSameSection {
+      static constexpr bool value = true;
+    };
+
+    template<>
+    struct EdgeSameSection< EdgeBinaryParameter1_U, EdgeBinaryParameter2_V> {
+      static constexpr bool value = false;
+    };
+
+    template<class EdgeBinaryParameter1_T, class EdgeBinaryParameter2_T, class EdgeBinaryHessian12_T>
+    struct EdgeBinaryAdapter : public EdgeBinaryParameter1_T, public EdgeBinaryParameter2_T, public EdgeBinaryHessian12_T {
+      static constexpr bool isEdgeAcrossSections = !EdgeSameSection<EdgeBinaryParameter1_T, EdgeBinaryParameter2_T>::value;
+    };
+    
+    template<class EdgeBinaryAdapterT, class EdgeDerived>
+    using EdgeBinary = EdgeBinarySectionBaseCRPT<Derived, EdgeBinaryAdapterT, EdgeDerived>;
+
+    using EdgeBinaryAdapterUU = EdgeBinaryAdapter<EdgeBinaryParameter1_U, EdgeBinaryParameter2_U, EdgeBinaryHessian12_UU>;
+    using EdgeBinaryAdapterUV = EdgeBinaryAdapter<EdgeBinaryParameter1_U, EdgeBinaryParameter2_V, EdgeBinaryHessian12_UV>;
+    using EdgeBinaryAdapterVV = EdgeBinaryAdapter<EdgeBinaryParameter1_V, EdgeBinaryParameter2_V, EdgeBinaryHessian12_VV>;
+
+    template<class EdgeDerived>
+    using EdgeBinaryUU = EdgeBinary<EdgeBinaryAdapterUU, EdgeDerived>;
+    template<class EdgeDerived>
+    using EdgeBinaryUV = EdgeBinary<EdgeBinaryAdapterUV, EdgeDerived>;
+    template<class EdgeDerived>
+    using EdgeBinaryVV = EdgeBinary<EdgeBinaryAdapterVV, EdgeDerived>;
+
+    template<class EdgeBinaryAdapterT, class EdgeDerived>
+    void addEdge(NodeId i, NodeId j, EdgeBinary<EdgeBinaryAdapterT, EdgeDerived>* e);
+
     //void addEdge(NodeId i, NodeId j, EdgeBinarySectionBase<Derived>* e);
     //void addEdge(int i, int j, int k/*, EdgeTernary* e*/);
     //template<int N>
