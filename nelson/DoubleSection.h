@@ -133,6 +133,17 @@ namespace nelson {
 
   //-----------------------------------------------------------------------------------------------------
 
+  template<class DoubleSection, class EdgeBinaryParameter1_T, class EdgeBinaryParameter2_T>
+  struct EdgeSameSection {
+    static constexpr bool value = true;
+  };
+
+  template<class DoubleSection>
+  struct EdgeSameSection<DoubleSection, typename DoubleSection::EdgeBinaryParameter1_U, typename DoubleSection::EdgeBinaryParameter2_V> {
+    static constexpr bool value = false;
+  };
+
+  //-----------------------------------------------------------------------------------------------------
   template<class Derived, class ParUT, class ParVT, int matTypeUv, int matTypeVv, int matTypeWv, class Tv, int BUv, int BVv, int NBUv = mat::Dynamic, int NBVv = mat::Dynamic>
   class DoubleSection : public BaseNumSizeParametersU<BUv, NBUv>, public BaseNumSizeParametersV<BVv, NBVv>, public BaseSection {
 
@@ -415,19 +426,9 @@ namespace nelson {
 
     };
 
-    template<class EdgeBinaryParameter1_T, class EdgeBinaryParameter2_T>
-    struct EdgeSameSection {
-      static constexpr bool value = true;
-    };
-
-    template<>
-    struct EdgeSameSection< EdgeBinaryParameter1_U, EdgeBinaryParameter2_V> {
-      static constexpr bool value = false;
-    };
-
     template<class EdgeBinaryParameter1_T, class EdgeBinaryParameter2_T, class EdgeBinaryHessian12_T>
     struct EdgeBinaryAdapter : public EdgeBinaryParameter1_T, public EdgeBinaryParameter2_T, public EdgeBinaryHessian12_T {
-      static constexpr bool isEdgeAcrossSections = !EdgeSameSection<EdgeBinaryParameter1_T, EdgeBinaryParameter2_T>::value;
+      static constexpr bool isEdgeAcrossSections = !EdgeSameSection<Derived, EdgeBinaryParameter1_T, EdgeBinaryParameter2_T>::value;
     };
     
     template<class EdgeBinaryAdapterT, class EdgeDerived>
