@@ -7,7 +7,7 @@
 #include "mat/VectorBlock.h"
 
 #include "DoubleSectionHessian.h"
-#include "ParallelExecHelper.h"
+#include "BaseSection.h"
 
 #include "EdgeInterface.h"
 #include "EdgeUnary.h"
@@ -16,7 +16,6 @@
 #include <memory>
 #include <vector>
 #include <map>
-#include <forward_list>
 
 namespace nelson {
 
@@ -134,13 +133,8 @@ namespace nelson {
 
   //-----------------------------------------------------------------------------------------------------
 
-  struct DoubleSectionSettings {
-    ParallelExecSettings edgeEvalParallelSettings;
-    ParallelExecSettings hessianUpdateParallelSettings;
-  };
-
   template<class Derived, class ParUT, class ParVT, int matTypeUv, int matTypeVv, int matTypeWv, class Tv, int BUv, int BVv, int NBUv = mat::Dynamic, int NBVv = mat::Dynamic>
-  class DoubleSection : public BaseNumSizeParametersU<BUv, NBUv>, public BaseNumSizeParametersV<BVv, NBVv> {
+  class DoubleSection : public BaseNumSizeParametersU<BUv, NBUv>, public BaseNumSizeParametersV<BVv, NBVv>, public BaseSection {
 
   public:
 
@@ -154,36 +148,18 @@ namespace nelson {
     // once the number of params is known (parametersReady() called), _sparsityPattern is allocated and _edgeSetter too, ready to receive edges
     std::shared_ptr<mat::SparsityPattern<mat::ColMajor>> _sparsityPatternU, _sparsityPatternV, _sparsityPatternW;
 
-    struct SetterComputer {
-      std::unique_ptr<EdgeUIDSetterInterface> setter;
-      std::unique_ptr<EdgeHessianUpdater> computer;
-      SetterComputer(EdgeUIDSetterInterface* s, EdgeHessianUpdater* c) : setter(s), computer(c) {
-      }
-      SetterComputer() {}
-    };
-
-    struct ListWithCount {
-      std::forward_list<SetterComputer> list;
-      int size;
-      ListWithCount() : size(0) {
-
-      }
-    };
-
     std::vector<std::map<int, ListWithCount>> _edgeSetterComputerU, _edgeSetterComputerV, _edgeSetterComputerW;
 
-    Hessian _hessian;
+    Hessian _hessian;  
 
-
-    std::vector<std::unique_ptr<EdgeInterface>> _edgesVector;
-
-    // outer size is the number of independent computation, safe to be computed in parallel, inside they have to go sequential (or parallel but with reduction)
-    std::vector<std::vector<std::unique_ptr<EdgeHessianUpdater>>> _computationUnits;
-
-    DoubleSectionSettings _settings;
+    BaseSectionSettings _settings;
 
     void updateHessianBlocks();
     void evaluateEdges(bool hessian);
+
+    void setChi2(double v) override {
+      _hessian.setChi2(v);
+    }
 
   public:
 
@@ -250,20 +226,12 @@ namespace nelson {
       return _hessian.bV().segment(pid);
     }
    
-    void reserveEdges(int n) {
-      _edgesVector.reserve(n);
-    }
-
-    int numEdges() const {
-      return int(_edgesVector.size());
-    }
-
     void update(bool hessian);
 
-    DoubleSectionSettings& settings() {
+    BaseSectionSettings& settings() {
       return _settings;
     }
-    const DoubleSectionSettings& settings() const {
+    const BaseSectionSettings& settings() const {
       return _settings;
     }
 

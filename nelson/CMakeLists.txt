@@ -29,6 +29,7 @@ add_library(nelson STATIC)
 target_sources_wrapper(nelson
 	PUBLIC 
     Global.h
+    BaseSection.h
     SingleSectionHessian.h
     SingleSectionHessian.hpp
     DoubleSectionHessian.h
@@ -60,6 +61,7 @@ target_sources_wrapper(nelson
     LevenbergMarquardt.hpp
 	PRIVATE
     Global.cpp
+    BaseSection.cpp
     SingleSectionHessian.cpp
     DoubleSectionHessian.cpp
     SingleSection.cpp

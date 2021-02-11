@@ -7,7 +7,7 @@
 #include "mat/VectorBlock.h"
 
 #include "SingleSectionHessian.h"
-#include "ParallelExecHelper.h"
+#include "BaseSection.h"
 
 #include "EdgeInterface.h"
 #include "EdgeUnary.h"
@@ -16,7 +16,6 @@
 #include <memory>
 #include <vector>
 #include <map>
-#include <forward_list>
 
 namespace nelson {
 
@@ -78,13 +77,8 @@ namespace nelson {
 
   //--------------------------------------------------------------------------------
 
-  struct SingleSectionSettings {
-    ParallelExecSettings edgeEvalParallelSettings;
-    ParallelExecSettings hessianUpdateParallelSettings;
-  };
-
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB = mat::Dynamic>
-  class SingleSection : public BaseNumSizeParameters<B, NB> {
+  class SingleSection : public BaseNumSizeParameters<B, NB>, public BaseSection {
   public:
 
     using Hessian = SingleSectionHessian<matTypeV, T, B, NB>;
@@ -95,36 +89,19 @@ namespace nelson {
     // once the number of params is known (parametersReady() called), _sparsityPattern is allocated and _edgeSetter too, ready to receive edges
     std::shared_ptr<mat::SparsityPattern<mat::ColMajor>> _sparsityPattern;
 
-    struct SetterComputer {
-      std::unique_ptr<EdgeUIDSetterInterface> setter;
-      std::unique_ptr<EdgeHessianUpdater> computer;
-      SetterComputer(EdgeUIDSetterInterface* s, EdgeHessianUpdater* c) : setter(s), computer(c) {     
-      }
-      SetterComputer(){}
-    };
-
-    struct ListWithCount {
-      std::forward_list<SetterComputer> list;
-      int size;
-      ListWithCount() : size(0) {
-
-      }
-    };
-
     std::vector<std::map<int, ListWithCount>> _edgeSetterComputer;
 
     Hessian _hessian;
 
 
-    std::vector<std::unique_ptr<EdgeInterface>> _edgesVector;
-
-    // outer size is the number of independent computation, safe to be computed in parallel, inside they have to go sequential (or parallel but with reduction)
-    std::vector<std::vector<std::unique_ptr<EdgeHessianUpdater>>> _computationUnits;
-
-    SingleSectionSettings _settings;
+    BaseSectionSettings _settings;
 
     void updateHessianBlocks();
     void evaluateEdges(bool hessian);
+
+    void setChi2(double v) override {
+      _hessian.setChi2(v);
+    }
 
   public:
 
@@ -170,20 +147,12 @@ namespace nelson {
       return _hessian.b().segment(pid);
     }
 
-    void reserveEdges(int n) {
-      _edgesVector.reserve(n);
-    }
-
-    int numEdges() const {
-      return int(_edgesVector.size());
-    }
-
     void update(bool hessian);
 
-    SingleSectionSettings& settings() {
+    BaseSectionSettings& settings() {
       return _settings;
     }
-    const SingleSectionSettings& settings() const {
+    const BaseSectionSettings& settings() const {
       return _settings;
     }
 
