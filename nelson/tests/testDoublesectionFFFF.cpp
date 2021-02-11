@@ -284,7 +284,7 @@ public:
     const auto& par1 = this->parameter_1();
     const auto& par2 = this->parameter_2();
 
-    _err = (par1.p2d - par2.p3d.head<2>()) - _meas_distPoints2d;
+    _err = (par1.p2d - par2.p3d.template head<2>()) - _meas_distPoints2d;
     this->setChi2(_err.squaredNorm());
   }
 
@@ -331,7 +331,7 @@ public:
     Eigen::Matrix3Xd groundThruthPoints;
     groundThruthPoints.setRandom(3, std::max(numPoints2d, numPoints3d));
 
-    for (int i = 0; i < numPoints2d; i++) { _points2d[i].p2d = groundThruthPoints.col(i).head<2>(); }
+    for (int i = 0; i < numPoints2d; i++) { _points2d[i].p2d = groundThruthPoints.col(i).template head<2>(); }
     for (int i = 0; i < numPoints3d; i++) { _points3d[i].p3d = groundThruthPoints.col(i); }
     _fixedPoint2d.p2d.setRandom();
     _fixedPoint3d.p3d.setRandom();
@@ -557,13 +557,13 @@ TEMPLATE_TEST_CASE("DoubleSection-FFFF", "[DoubleSection-FFFF]",
   if (pss.matTypeW() != mat::BlockDiagonal) {
     for (int i = 0; i < numPoints2d; i++) {
       for (int j = 0; j < numPoints3d; j++) {
-        pss.addEdge(i, j, new EdgeBinaryPoint2d3d<TestType>(i, j, pss.parameterU(i).p2d - pss.parameterV(j).p3d.head<2>()));
+        pss.addEdge(i, j, new EdgeBinaryPoint2d3d<TestType>(i, j, pss.parameterU(i).p2d - pss.parameterV(j).p3d.template head<2>()));
       }
     }
   }
   else {
     for (int i = 0; i < std::min(numPoints2d, numPoints3d); i++) {
-      pss.addEdge(i, i, new EdgeBinaryPoint2d3d<TestType>(i, i, pss.parameterU(i).p2d - pss.parameterV(i).p3d.head<2>()));
+      pss.addEdge(i, i, new EdgeBinaryPoint2d3d<TestType>(i, i, pss.parameterU(i).p2d - pss.parameterV(i).p3d.template head<2>()));
     }
   }
 
