@@ -24,19 +24,19 @@ set(TESTS_LIST
   testSingleSection.cpp
   #---------------------------
   testDoublesectionFFFF.cpp
-  testDoublesectionFFFD.cpp
-  testDoublesectionFFDF.cpp
-  testDoublesectionFFDD.cpp
+  # testDoublesectionFFFD.cpp
+  # testDoublesectionFFDF.cpp
+  # testDoublesectionFFDD.cpp
   #---------------------------
-  testDoublesectionFDFF.cpp
-  testDoublesectionFDFD.cpp
-  testDoublesectionFDDF.cpp
-  testDoublesectionFDDD.cpp
+  # testDoublesectionFDFF.cpp
+  # testDoublesectionFDFD.cpp
+  # testDoublesectionFDDF.cpp
+  # testDoublesectionFDDD.cpp
   #---------------------------
-  #testDoublesectionFVFF.cpp
-  #testDoublesectionFVFD.cpp
-  #testDoublesectionFVDF.cpp
-  #testDoublesectionFVDD.cpp
+  # testDoublesectionFVFF.cpp
+  # testDoublesectionFVFD.cpp
+  # testDoublesectionFVDF.cpp
+  # testDoublesectionFVDD.cpp
   testMatrixSparseDenseWrapper.cpp
 )
 

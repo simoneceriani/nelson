@@ -27,7 +27,7 @@ namespace nelson {
     auto newV = std::vector<std::map<int, ListWithCount>>(this->numParametersV());
     this->_edgeSetterComputerV.swap(newV);
 
-    auto newW = std::vector<std::map<int, ListWithCount>>(this->numParametersU());
+    auto newW = std::vector<std::map<int, ListWithCount>>(this->numParametersV());
     this->_edgeSetterComputerW.swap(newW);
 
   }

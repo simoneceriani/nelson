@@ -19,6 +19,10 @@ struct Point3d {
   static constexpr int blockSize = 3;
 };
 
+static constexpr int numPoints2d = 5; // totsize = 10
+static constexpr int numPoints3d = 3; // totsize = 9
+
+
 template<class Section>
 class EdgeUnaryPoint2d : public nelson::EdgeUnarySectionBaseCRPT<Section, typename Section::EdgeUnaryUAdapter, EdgeUnaryPoint2d<Section>> {
   int _parId;
@@ -315,9 +319,6 @@ public:
 
 };
 
-
-static constexpr int numPoints2d = 5; // totsize = 10
-static constexpr int numPoints3d = 3; // totsize = 9
 
 template<int matTypeU, int matTypeV, int matTypeW>
 class Points2d3dFFFF : public nelson::DoubleSection< Points2d3dFFFF<matTypeU, matTypeV, matTypeW>, Point2d, Point3d, matTypeU, matTypeV, matTypeW, double, Point2d::blockSize, Point3d::blockSize, numPoints2d, numPoints3d> {
