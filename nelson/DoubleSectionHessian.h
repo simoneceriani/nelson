@@ -13,6 +13,51 @@ namespace nelson {
   W' V
   */
 
+  template<int matTypeUv, int matTypeVv, int matTypeWv, class Tv, int BUv, int BVv, int NBUv = mat::Dynamic, int NBVv = mat::Dynamic>
+  class DoubleSectionHessianMatrices {
+  public:
+    using MatTraitsU = mat::MatrixBlockIterableTypeTraits<matTypeUv, Tv, mat::ColMajor, BUv, BUv, NBUv, NBUv>;
+    using MatTraitsV = mat::MatrixBlockIterableTypeTraits<matTypeVv, Tv, mat::ColMajor, BVv, BVv, NBVv, NBVv>;
+    using MatTraitsW = mat::MatrixBlockIterableTypeTraits<matTypeWv, Tv, mat::ColMajor, BUv, BVv, NBUv, NBVv>;
+
+    using MatTypeU = typename MatTraitsU::MatrixType;
+    using MatTypeV = typename MatTraitsV::MatrixType;
+    using MatTypeW = typename MatTraitsW::MatrixType;
+  private:
+    MatTypeU _U;
+    MatTypeV _V;
+    MatTypeW _W;
+
+  public:
+    DoubleSectionHessianMatrices() {}
+    inline MatTypeU& U() { return _U; }
+    inline MatTypeV& V() { return _V; }
+    inline MatTypeW& W() { return _W; }
+    inline const MatTypeU& U() const { return _U; }
+    inline const MatTypeV& V() const { return _V; }
+    inline const MatTypeW& W() const { return _W; }
+
+  };
+
+  template<class Tv, int BUv, int BVv, int NBUv = mat::Dynamic, int NBVv = mat::Dynamic >
+  class DoubleSectionHessianVectors {
+  public:
+    using VecTypeU = mat::VectorBlock<Tv, BUv, NBUv>;
+    using VecTypeV = mat::VectorBlock<Tv, BVv, NBVv>;
+
+  private:
+    VecTypeU _bU;
+    VecTypeV _bV;
+
+  public:
+    DoubleSectionHessianVectors() {}
+    inline VecTypeU& bU() { return _bU; }
+    inline VecTypeV& bV() { return _bV; }
+    inline const VecTypeU& bU() const { return _bU; }
+    inline const VecTypeV& bV() const { return _bV; }
+
+  };
+
   template<int matTypeUv, int matTypeVv, int matTypeWv, class Tv, int BUv, int BVv, int NBUv, int NBVv>
   struct DoubleSectionHessianTraits {
     static constexpr int matTypeU = matTypeUv;
@@ -20,40 +65,46 @@ namespace nelson {
     static constexpr int matTypeV = matTypeVv;
 
     using Type = Tv;
-    
+
     static constexpr int BU = BUv;
     static constexpr int BV = BVv;
     static constexpr int NBU = NBUv;
     static constexpr int NBV = NBVv;
+
+    using HessianMatricesType = DoubleSectionHessianMatrices<matTypeUv, matTypeVv, matTypeWv, Tv, BUv, BVv, NBUv, NBVv>;
+    using HessianVectorsType = DoubleSectionHessianVectors<Tv, BUv, BVv, NBUv, NBVv>;
+
   };
 
 
   template<int matTypeUv, int matTypeVv, int matTypeWv, class Tv, int BUv, int BVv, int NBUv = mat::Dynamic, int NBVv = mat::Dynamic>
   class DoubleSectionHessian {
   public:
-    using MatTraitsU = mat::MatrixBlockIterableTypeTraits<matTypeUv, Tv, mat::ColMajor, BUv, BUv, NBUv, NBUv>;
-    using MatTraitsV = mat::MatrixBlockIterableTypeTraits<matTypeVv, Tv, mat::ColMajor, BVv, BVv, NBVv, NBVv>;
-    using MatTraitsW = mat::MatrixBlockIterableTypeTraits<matTypeWv, Tv, mat::ColMajor, BUv, BVv, NBUv, NBVv>;
-
     using Traits = DoubleSectionHessianTraits<matTypeUv, matTypeVv, matTypeWv, Tv, BUv, BVv, NBUv, NBVv>;
+
+    using HessianMatricesT = typename Traits::HessianMatricesType;
+    using HessianVectorsT = typename Traits::HessianVectorsType;;
+
+    using MatTraitsU = typename HessianMatricesT::MatTraitsU;
+    using MatTraitsV = typename HessianMatricesT::MatTraitsV;
+    using MatTraitsW = typename HessianMatricesT::MatTraitsW;
+
 
     using MatTypeU = typename MatTraitsU::MatrixType;
     using MatTypeV = typename MatTraitsV::MatrixType;
     using MatTypeW = typename MatTraitsW::MatrixType;
 
-    using VecTypeU = mat::VectorBlock<Tv, BUv, NBUv>;
-    using VecTypeV = mat::VectorBlock<Tv, BVv, NBVv>;
+    using VecTypeU = typename HessianVectorsT::VecTypeU;
+    using VecTypeV = typename HessianVectorsT::VecTypeV;
 
     using BlockSizeTypeParU = typename MatTypeU::RowTraits::BlockSizeTypePar;
     using BlockSizeTypeParV = typename MatTypeV::RowTraits::BlockSizeTypePar;
 
   private:
-    MatTypeU _U;
-    MatTypeV _V;
-    MatTypeW _W;
+    HessianMatricesT _H;
 
-    VecTypeU _bU;
-    VecTypeV _bV;
+    HessianVectorsT _b;
+
 
     double _chi2;
 
@@ -69,6 +120,20 @@ namespace nelson {
       const mat::SparsityPattern<mat::ColMajor>::CSPtr& spW
     );
 
+    HessianMatricesT& H() {
+      return _H;
+    }
+    const HessianMatricesT& H() const {
+      return _H;
+    }
+
+    HessianVectorsT& b() {
+      return _b;
+    }
+    const HessianVectorsT& b() const {
+      return _b;
+    }
+
     inline void setChi2(double chi2) {
       this->_chi2 = chi2;
     }
@@ -78,37 +143,37 @@ namespace nelson {
     }
 
     inline const MatTypeU& U() const {
-      return _U;
+      return _H.U();
     }
     inline const MatTypeV& V() const {
-      return _V;
+      return _H.V();
     }
     inline const MatTypeW& W() const {
-      return _W;
+      return _H.W();
     }
 
     inline MatTypeU& U() {
-      return _U;
+      return _H.U();
     }
     inline MatTypeV& V() {
-      return _V;
+      return _H.V();
     }
     inline MatTypeW& W() {
-      return _W;
+      return _H.W();
     }
 
     inline const VecTypeU& bU() const {
-      return _bU;
+      return _b.bU();
     }
     inline const VecTypeV& bV() const {
-      return _bV;
+      return _b.bV();
     }
 
     inline VecTypeU& bU() {
-      return _bU;
+      return _b.bU();
     }
     inline VecTypeV& bV() {
-      return _bV;
+      return _b.bV();
     }
 
 
@@ -117,5 +182,5 @@ namespace nelson {
     Tv maxAbsValBVect() const;
 
   };
-  
+
 }

@@ -688,13 +688,13 @@ TEMPLATE_TEST_CASE_SIG("GaussNewton-LevenbergMarquardt", "[GaussNewton-Levenberg
       std::cout << "chi2 BEFORE " << optProblem.hessian().chi2() << std::endl;
 
       if (!solveGN) {
-        nelson::LevenbergMarquardtHessianTraits<solverType, typename ProblemType::Hessian::Traits> lm;
+        nelson::LevenbergMarquardt<solverType, typename ProblemType::Hessian::Traits> lm;
         auto tc = lm.solve(optProblem);
         std::cout << nelson::LevenbergMarquardtUtils::toString(tc) << std::endl;
         std::cout << "stats " << lm.stats().toString() << std::endl;
       }
       else {
-        nelson::GaussNewtonHessianTraits < solverType, typename ProblemType::Hessian::Traits> gn;
+        nelson::GaussNewton < solverType, typename ProblemType::Hessian::Traits> gn;
         if (changeDiagInSolver) {
           gn.settings().relLambda = 0.01;
           gn.settings().absLambda = 0;

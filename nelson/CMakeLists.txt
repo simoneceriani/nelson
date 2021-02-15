@@ -53,6 +53,8 @@ target_sources_wrapper(nelson
     GaussNewton.hpp
     SolverCholeskyDense.h
     SolverCholeskyDense.hpp
+    SolverCholeskyDenseSchur.h
+    SolverCholeskyDenseSchur.hpp
     SolverCholeskySparse.h
     SolverCholeskySparse.hpp
     SolverTraits.h
@@ -74,6 +76,7 @@ target_sources_wrapper(nelson
     MatrixSparseWrapper.cpp
     GaussNewton.cpp
     SolverCholeskyDense.cpp
+    SolverCholeskyDenseSchur.cpp
     SolverCholeskySparse.cpp
     ParallelExecHelper.cpp
     LevenbergMarquardt.cpp

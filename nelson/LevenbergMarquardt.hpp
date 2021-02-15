@@ -3,16 +3,16 @@
 
 namespace nelson {
 
-  template<int solverTypeV, int matTypeV, class T, int B, int NB>
-  LevenbergMarquardt<solverTypeV, matTypeV, T, B, NB>::LevenbergMarquardt()
+  template<int solverTypeV, class HessianTraits>
+  LevenbergMarquardt<solverTypeV, HessianTraits>::LevenbergMarquardt()
     : iter(-1),
     subiter(-1)
   {
 
   }
 
-  template<int solverTypeV, int matTypeV, class T, int B, int NB>
-  LevenbergMarquardt<solverTypeV, matTypeV, T, B, NB>::LevenbergMarquardt(const LevenbergMarquardtSettings& settings)
+  template<int solverTypeV, class HessianTraits>
+  LevenbergMarquardt<solverTypeV, HessianTraits>::LevenbergMarquardt(const LevenbergMarquardtSettings& settings)
     : _settings(settings),
     iter(-1),
     subiter(-1)
@@ -20,14 +20,14 @@ namespace nelson {
 
   }
 
-  template<int solverTypeV, int matTypeV, class T, int B, int NB>
-  LevenbergMarquardt<solverTypeV, matTypeV, T, B, NB>::~LevenbergMarquardt() {
+  template<int solverTypeV, class HessianTraits>
+  LevenbergMarquardt<solverTypeV, HessianTraits>::~LevenbergMarquardt() {
 
   }
 
-  template<int solverTypeV, int matTypeV, class T, int B, int NB>
+  template<int solverTypeV, class HessianTraits>
   template<class OptimizationProblem>
-  LevenbergMarquardtTerminationReason LevenbergMarquardt<solverTypeV, matTypeV, T, B, NB>::solve(OptimizationProblem& op) {
+  LevenbergMarquardtTerminationReason LevenbergMarquardt<solverTypeV, HessianTraits>::solve(OptimizationProblem& op) {
 
     _stats.reserve(_settings.maxNumIt, _settings.maxNumSubIt);
 
@@ -69,7 +69,7 @@ namespace nelson {
         }
 
         // evaluate the effects of the iteration performed
-        T rho = -1;
+        typename HessianTraits::Type rho = -1;
         if (solveOk) {
 
           // apply the increment
@@ -101,8 +101,8 @@ namespace nelson {
           }
 
           // ok, we can go faster!
-          T fc = (2 * rho - 1);
-          T alpha = std::min(_settings.maxScaleFactor, 1 - fc * fc * fc);
+          typename HessianTraits::Type fc = (2 * rho - 1);
+          typename HessianTraits::Type alpha = std::min(_settings.maxScaleFactor, 1 - fc * fc * fc);
           alpha = std::max(_settings.minScaleFactor, alpha);
           mu = mu * alpha;
           curV = _settings.initV;

@@ -82,10 +82,10 @@ namespace nelson {
 
   //------------------------------------------------------------------------------------------------------
 
-  template<int solverTypeV, int matTypeV, class T, int B, int NB = mat::Dynamic>
+  template<int solverTypeV, class HessianTraits>
   class LevenbergMarquardt {
 
-    typename SolverTraits<solverTypeV>::template Solver<matTypeV, T, B, NB> _solver;
+    typename SolverTraits<solverTypeV>::template Solver<HessianTraits> _solver;
 
     LevenbergMarquardtSettings _settings;
     int iter;
@@ -112,9 +112,6 @@ namespace nelson {
       return subiter;
     }
   };
-
-  template<int solverTypeV, class HessianTraits>
-  using LevenbergMarquardtHessianTraits = LevenbergMarquardt< solverTypeV, HessianTraits::matType, typename HessianTraits::Type, HessianTraits::B, HessianTraits::NB>;
 
 
 }

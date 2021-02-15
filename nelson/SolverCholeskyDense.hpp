@@ -20,8 +20,6 @@ namespace nelson {
 
   template<int matTypeV, class T, int B, int NB>
   bool SolverCholeskyDense<matTypeV, T, B, NB>::computeIncrement(MatType& input, const mat::VectorBlock<T, B, NB>& b, T relLambda, T absLambda) {
-    // TODO relLambda relLambda
-
     _denseWrapper.refresh();
 
     if (relLambda != 0 || absLambda != 0) {

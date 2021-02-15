@@ -152,6 +152,11 @@ namespace nelson {
     using Hessian = DoubleSectionHessian<matTypeUv, matTypeVv, matTypeWv, Tv, BUv, BVv, NBUv, NBVv>;
     using HessianVecTypeU = typename Hessian::VecTypeU;
     using HessianVecTypeV = typename Hessian::VecTypeV;
+
+    using HessianMatricesT = typename Hessian::HessianMatricesT;
+    using HessianVectorsT = typename Hessian::HessianVectorsT;;
+
+
     using ParameterTypeU = ParUT;
     using ParameterTypeV = ParVT;
   private:

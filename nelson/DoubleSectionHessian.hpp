@@ -32,31 +32,31 @@ namespace nelson {
   )
   {
     auto blockDescriptorU = MatTypeU::BlockDescriptor::squareMatrix(blockSizesU, nBlocksU);
-    _U.resize(blockDescriptorU, spU);
-    _bU.resize(blockDescriptorU.rowDescriptionCSPtr());
+    _H.U().resize(blockDescriptorU, spU);
+    _b.bU().resize(blockDescriptorU.rowDescriptionCSPtr());
 
     auto blockDescriptorV = MatTypeV::BlockDescriptor::squareMatrix(blockSizesV, nBlocksV);
-    _V.resize(blockDescriptorV, spV);
-    _bV.resize(blockDescriptorV.rowDescriptionCSPtr());
+    _H.V().resize(blockDescriptorV, spV);
+    _b.bV().resize(blockDescriptorV.rowDescriptionCSPtr());
 
     auto blockDescriptorW = typename MatTypeW::BlockDescriptor(blockDescriptorU.rowDescriptionCSPtr(), blockDescriptorV.colDescriptionCSPtr());
-    _W.resize(blockDescriptorW, spW);
+    _H.W().resize(blockDescriptorW, spW);
 
   }
 
   template<int matTypeUv, int matTypeWv, int matTypeVv, class Tv, int BUv, int BVv, int NBUv, int NBVv>
   void DoubleSectionHessian<matTypeUv, matTypeWv, matTypeVv, Tv, BUv, BVv, NBUv, NBVv>::clearAll() {
     _chi2 = 0;
-    _U.setZero();
-    _V.setZero();
-    _W.setZero();
-    _bU.setZero();
-    _bV.setZero();
+    _H.U().setZero();
+    _H.V().setZero();
+    _H.W().setZero();
+    _b.bU().setZero();
+    _b.bV().setZero();
   }
 
   template<int matTypeUv, int matTypeWv, int matTypeVv, class Tv, int BUv, int BVv, int NBUv, int NBVv>
   Tv DoubleSectionHessian<matTypeUv, matTypeWv, matTypeVv, Tv, BUv, BVv, NBUv, NBVv>::maxAbsValBVect() const {
-    return std::max(_bU.mat().cwiseAbs().maxCoeff(), _bV.mat().cwiseAbs().maxCoeff());
+    return std::max(_b.bU().mat().cwiseAbs().maxCoeff(), _b.bV().mat().cwiseAbs().maxCoeff());
   }
   
 }

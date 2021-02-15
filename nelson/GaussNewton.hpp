@@ -6,27 +6,27 @@
 
 namespace nelson {
 
-  template<int solverTypeV, int matTypeV, class T, int B, int NB>
-  GaussNewton<solverTypeV, matTypeV, T, B, NB>::GaussNewton() : iter(-1){
+  template<int solverTypeV, class HessianTraits>
+  GaussNewton<solverTypeV, HessianTraits>::GaussNewton() : iter(-1){
 
   }
 
-  template<int solverTypeV, int matTypeV, class T, int B, int NB>
-  GaussNewton<solverTypeV, matTypeV, T, B, NB>::GaussNewton(const GaussNewtonSettings& settings)
+  template<int solverTypeV, class HessianTraits>
+  GaussNewton<solverTypeV, HessianTraits>::GaussNewton(const GaussNewtonSettings& settings)
     : _settings(settings), iter(-1)
   {
 
   }
 
-  template<int solverTypeV, int matTypeV, class T, int B, int NB>
-  GaussNewton<solverTypeV, matTypeV, T, B, NB>::~GaussNewton() {
+  template<int solverTypeV, class HessianTraits>
+  GaussNewton<solverTypeV, HessianTraits>::~GaussNewton() {
 
   }
 
 
-  template<int solverTypeV, int matTypeV, class T, int B, int NB>
+  template<int solverTypeV, class HessianTraits>
   template<class OptimizationProblem>
-  GaussNewtonTerminationReason GaussNewton<solverTypeV, matTypeV, T, B, NB>::solve(OptimizationProblem& op) {
+  GaussNewtonTerminationReason GaussNewton<solverTypeV, HessianTraits>::solve(OptimizationProblem& op) {
 
     _stats.reserve(_settings.maxNumIt);
 

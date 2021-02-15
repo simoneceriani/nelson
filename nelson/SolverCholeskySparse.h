@@ -20,10 +20,13 @@ namespace nelson {
     using VecType = mat::VectorBlock<T, B, NB>;
 
     using SparseWrapperT = SparseSquareWrapper<matTypeV, T, mat::ColMajor, B, NB>;
+    using DiagType = typename SparseWrapperT::DiagType;
 
   private:
 
     SparseWrapperT _sparseWrapper;
+    DiagType _diagBackup;
+
     VecType _incVector;
     Eigen::SimplicialLDLT<Eigen::SparseMatrix<T>, Eigen::Upper> _ldlt;
 

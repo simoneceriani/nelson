@@ -69,10 +69,10 @@ namespace nelson {
 
   //------------------------------------------------------------------------------------------------------
 
-  template<int solverTypeV, int matTypeV, class T, int B, int NB = mat::Dynamic>
+  template<int solverTypeV, class HessianTraits>
   class GaussNewton {
 
-    typename SolverTraits<solverTypeV>::template Solver<matTypeV, T, B, NB> _solver;
+    typename SolverTraits<solverTypeV>::template Solver<HessianTraits> _solver;
 
     GaussNewtonSettings _settings;
     int iter;
@@ -95,8 +95,5 @@ namespace nelson {
       return iter;
     }
   };
-
-  template<int solverTypeV, class HessianTraits>
-  using GaussNewtonHessianTraits = GaussNewton< solverTypeV, HessianTraits::matType, typename HessianTraits::Type, HessianTraits::B, HessianTraits::NB>;
 
 }

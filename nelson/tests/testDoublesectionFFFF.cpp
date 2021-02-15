@@ -6,6 +6,9 @@
 #include "nelson/EdgeUnary.hpp"
 #include "nelson/EdgeBinary.hpp"
 
+#include "nelson/GaussNewton.hpp"
+#include "nelson/LevenbergMarquardt.hpp"
+
 #include <array>
 #include <iostream>
 
@@ -61,8 +64,7 @@ public:
     // std::cout << "EdgeUnaryTest::updateHBlock " << this->parId().id() << "," << this->parId().id() << std::endl;
     H += Eigen::Matrix2d::Identity();
     b += _err;
-  }
-
+  }  
 
 };
 
@@ -320,13 +322,16 @@ public:
 };
 
 
-template<int matTypeU, int matTypeV, int matTypeW>
-class Points2d3dFFFF : public nelson::DoubleSection< Points2d3dFFFF<matTypeU, matTypeV, matTypeW>, Point2d, Point3d, matTypeU, matTypeV, matTypeW, double, Point2d::blockSize, Point3d::blockSize, numPoints2d, numPoints3d> {
+template<int matTypeUv, int matTypeVv, int matTypeWv>
+class Points2d3dFFFF : public nelson::DoubleSection< Points2d3dFFFF<matTypeUv, matTypeVv, matTypeWv>, Point2d, Point3d, matTypeUv, matTypeVv, matTypeWv, double, Point2d::blockSize, Point3d::blockSize, numPoints2d, numPoints3d> {
 
   std::array<Point2d, numPoints2d> _points2d;
   std::array<Point3d, numPoints3d> _points3d;
   Point2d _fixedPoint2d;
   Point3d _fixedPoint3d;
+
+  using DoubleSectionBase = nelson::DoubleSection< Points2d3dFFFF<matTypeUv, matTypeVv, matTypeWv>, Point2d, Point3d, matTypeUv, matTypeVv, matTypeWv, double, Point2d::blockSize, Point3d::blockSize, numPoints2d, numPoints3d>;
+
 public:
   Points2d3dFFFF() {
     Eigen::Matrix3Xd groundThruthPoints;
@@ -384,6 +389,11 @@ public:
   int numFixedParametersV() const override {
     return 1;
   }
+
+  void oplus(const typename DoubleSectionBase::HessianVectorsT& inc) {
+     //for(int i =0; i < )
+  }
+
 
 };
 
@@ -573,6 +583,12 @@ TEMPLATE_TEST_CASE("DoubleSection-FFFF", "[DoubleSection-FFFF]",
 
   pss.update(true);
   std::cout << "chi2 BEFORE " << pss.hessian().chi2() << std::endl;
+
+  nelson::GaussNewton < nelson::solverCholeskyDenseSchur, typename TestType::Hessian::Traits> gn;
+  auto tc = gn.solve(pss);
+  std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
+  std::cout << "stats " << gn.stats().toString() << std::endl;
+
 
   //std::cout << "U " << std::endl << pss.hessian().U().mat() << std::endl << std::endl;
   //std::cout << "V " << std::endl << pss.hessian().V().mat() << std::endl << std::endl;
