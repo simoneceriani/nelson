@@ -589,11 +589,18 @@ TEMPLATE_TEST_CASE("DoubleSection-FFFF", "[DoubleSection-FFFF]",
   pss.update(true);
   std::cout << "chi2 BEFORE " << pss.hessian().chi2() << std::endl;
 
-  nelson::GaussNewton < nelson::solverCholeskyDenseSchur, typename TestType::Hessian::Traits> gn;
-  auto tc = gn.solve(pss);
-  std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
-  std::cout << "stats " << gn.stats().toString() << std::endl;
-
+  {
+    nelson::GaussNewton < nelson::solverCholeskySchurDense, typename TestType::Hessian::Traits> gn;
+    auto tc = gn.solve(pss);
+    std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
+    std::cout << "stats " << gn.stats().toString() << std::endl;
+  }
+  {
+    nelson::GaussNewton < nelson::solverCholeskySchurSparse, typename TestType::Hessian::Traits> gn;
+    auto tc = gn.solve(pss);
+    std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
+    std::cout << "stats " << gn.stats().toString() << std::endl;
+  }
 
   //std::cout << "U " << std::endl << pss.hessian().U().mat() << std::endl << std::endl;
   //std::cout << "V " << std::endl << pss.hessian().V().mat() << std::endl << std::endl;

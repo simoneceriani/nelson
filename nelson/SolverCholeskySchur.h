@@ -15,9 +15,10 @@ namespace nelson {
     int matTypeU, int matTypeV, int matTypeW,
     class T,
     int BU, int BV,
-    int NBU, int NBV
+    int NBU, int NBV,
+    class SolverCholeskyU
   >
-  class SolverCholeskyDenseSchur {
+  class SolverCholeskySchur {
 
   public:
 
@@ -26,6 +27,8 @@ namespace nelson {
 
   private:
     DoubleSectionHessianVectorsT _incVector;
+
+    SolverCholeskyU _solverU;
 
   public:
 

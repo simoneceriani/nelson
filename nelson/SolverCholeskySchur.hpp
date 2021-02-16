@@ -1,5 +1,5 @@
 #pragma once
-#include "SolverCholeskyDenseSchur.h"
+#include "SolverCholeskySchur.h"
 
 #include "DoubleSectionHessianMatrices.hpp"
 

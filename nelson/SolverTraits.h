@@ -4,13 +4,14 @@
 
 #include "SolverCholeskyDense.h"
 #include "SolverCholeskySparse.h"
-#include "SolverCholeskyDenseSchur.h"
+#include "SolverCholeskySchur.h"
 
 namespace nelson {
 
   constexpr int solverCholeskyDense = 1;
   constexpr int solverCholeskySparse = 2;
-  constexpr int solverCholeskyDenseSchur = 3;
+  constexpr int solverCholeskySchurDense = 3;
+  constexpr int solverCholeskySchurSparse = 4;
 
   template<int solverType>
   struct SolverTraits
@@ -33,14 +34,28 @@ namespace nelson {
   };
 
   template<>
-  struct SolverTraits<solverCholeskyDenseSchur>
+  struct SolverTraits<solverCholeskySchurDense>
   {
     template<class HessianTraits>
-    using Solver = SolverCholeskyDenseSchur<
+    using Solver = SolverCholeskySchur<
       HessianTraits::matTypeU, HessianTraits::matTypeV, HessianTraits::matTypeW,
-      typename HessianTraits::Type, 
-      HessianTraits::BU, HessianTraits::BV, 
-      HessianTraits::NBU, HessianTraits::NBV
+      typename HessianTraits::Type,
+      HessianTraits::BU, HessianTraits::BV,
+      HessianTraits::NBU, HessianTraits::NBV,
+      SolverCholeskyDense<HessianTraits::matTypeU, typename HessianTraits::Type, HessianTraits::BU, HessianTraits::NBU>
+    >;
+  };
+
+  template<>
+  struct SolverTraits<solverCholeskySchurSparse>
+  {
+    template<class HessianTraits>
+    using Solver = SolverCholeskySchur<
+      HessianTraits::matTypeU, HessianTraits::matTypeV, HessianTraits::matTypeW,
+      typename HessianTraits::Type,
+      HessianTraits::BU, HessianTraits::BV,
+      HessianTraits::NBU, HessianTraits::NBV,
+      SolverCholeskySparse<HessianTraits::matTypeU, typename HessianTraits::Type, HessianTraits::BU, HessianTraits::NBU>
     >;
   };
 
