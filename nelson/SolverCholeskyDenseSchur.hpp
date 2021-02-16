@@ -1,7 +1,7 @@
 #pragma once
 #include "SolverCholeskyDenseSchur.h"
 
-#include "DoubleSectionHessian.hpp"
+#include "DoubleSectionHessianMatrices.hpp"
 
 #include "MatrixDenseWrapper.hpp"
 #include "mat/VectorBlock.hpp"

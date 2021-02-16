@@ -391,7 +391,12 @@ public:
   }
 
   void oplus(const typename DoubleSectionBase::HessianVectorsT& inc) {
-     //for(int i =0; i < )
+    for (int i = 0; i < numPoints2d; i++) {
+      _points2d[i].p2d += inc.bU().segment(i);
+    }
+    for (int i = 0; i < numPoints3d; i++) {
+      _points3d[i].p3d += inc.bV().segment(i);
+    }
   }
 
 

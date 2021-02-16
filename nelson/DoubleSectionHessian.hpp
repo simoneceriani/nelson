@@ -8,6 +8,8 @@
 
 #include "mat/VectorBlock.hpp"
 
+#include "DoubleSectionHessianMatrices.hpp"
+
 namespace nelson {
   
   template<int matTypeUv, int matTypeWv, int matTypeVv, class Tv, int BUv, int BVv, int NBUv, int NBVv>

@@ -32,6 +32,8 @@ target_sources_wrapper(nelson
     BaseSection.h
     SingleSectionHessian.h
     SingleSectionHessian.hpp
+    DoubleSectionHessianMatrices.h
+    DoubleSectionHessianMatrices.hpp
     DoubleSectionHessian.h
     DoubleSectionHessian.hpp
     SingleSection.h

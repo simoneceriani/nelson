@@ -5,7 +5,7 @@
 #include "mat/MatrixTypeTraits.h"
 #include "mat/VectorBlock.h"
 
-#include "DoubleSectionHessian.h"
+#include "DoubleSectionHessianMatrices.h"
 
 #include <Eigen/Dense>
 
