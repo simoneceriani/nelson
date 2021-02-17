@@ -2,60 +2,23 @@
 
 #include "mat/Global.h"
 
-#include "SolverCholeskyDense.h"
-#include "SolverCholeskySparse.h"
+#include "SolverTraitsBase.h"
 #include "SolverCholeskySchur.h"
 
 namespace nelson {
 
-  constexpr int solverCholeskyDense = 1;
-  constexpr int solverCholeskySparse = 2;
-  constexpr int solverCholeskySchurDense = 3;
-  constexpr int solverCholeskySchurSparse = 4;
-
-  template<int solverType>
-  struct SolverTraits
-  {
-
-  };
+  constexpr int solverCholeskySchur = 3;
 
   template<>
-  struct SolverTraits<solverCholeskyDense>
+  struct SolverTraits<solverCholeskySchur>
   {
-    template<class HessianTraits>
-    using Solver = SolverCholeskyDense<HessianTraits::matType, typename HessianTraits::Type, HessianTraits::B, HessianTraits::NB>;
-  };
-
-  template<>
-  struct SolverTraits<solverCholeskySparse>
-  {
-    template<class HessianTraits>
-    using Solver = SolverCholeskySparse<HessianTraits::matType, typename HessianTraits::Type, HessianTraits::B, HessianTraits::NB>;
-  };
-
-  template<>
-  struct SolverTraits<solverCholeskySchurDense>
-  {
-    template<class HessianTraits>
+    template<class HessianTraits, int solverVType>
     using Solver = SolverCholeskySchur<
       HessianTraits::matTypeU, HessianTraits::matTypeV, HessianTraits::matTypeW,
       typename HessianTraits::Type,
       HessianTraits::BU, HessianTraits::BV,
       HessianTraits::NBU, HessianTraits::NBV,
-      SolverCholeskyDense<HessianTraits::matTypeU, typename HessianTraits::Type, HessianTraits::BU, HessianTraits::NBU>
-    >;
-  };
-
-  template<>
-  struct SolverTraits<solverCholeskySchurSparse>
-  {
-    template<class HessianTraits>
-    using Solver = SolverCholeskySchur<
-      HessianTraits::matTypeU, HessianTraits::matTypeV, HessianTraits::matTypeW,
-      typename HessianTraits::Type,
-      HessianTraits::BU, HessianTraits::BV,
-      HessianTraits::NBU, HessianTraits::NBV,
-      SolverCholeskySparse<HessianTraits::matTypeU, typename HessianTraits::Type, HessianTraits::BU, HessianTraits::NBU>
+      solverVType
     >;
   };
 

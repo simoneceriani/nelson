@@ -59,6 +59,7 @@ target_sources_wrapper(nelson
     SolverCholeskySchur.hpp
     SolverCholeskySparse.h
     SolverCholeskySparse.hpp
+    SolverTraitsBase.h
     SolverTraits.h
     ParallelExecHelper.h
     LevenbergMarquardt.h

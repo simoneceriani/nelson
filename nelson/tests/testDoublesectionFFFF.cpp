@@ -590,13 +590,13 @@ TEMPLATE_TEST_CASE("DoubleSection-FFFF", "[DoubleSection-FFFF]",
   std::cout << "chi2 BEFORE " << pss.hessian().chi2() << std::endl;
 
   {
-    nelson::GaussNewton <typename nelson::SolverTraits<nelson::solverCholeskySchurDense>::Solver<typename TestType::Hessian::Traits> > gn;
+    nelson::GaussNewton <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskyDense> > gn;
     auto tc = gn.solve(pss);
     std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
     std::cout << "stats " << gn.stats().toString() << std::endl;
   }
   {
-    nelson::GaussNewton <typename nelson::SolverTraits<nelson::solverCholeskySchurSparse>::Solver<typename TestType::Hessian::Traits> > gn;
+    nelson::GaussNewton <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskySparse> > gn;
     auto tc = gn.solve(pss);
     std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
     std::cout << "stats " << gn.stats().toString() << std::endl;

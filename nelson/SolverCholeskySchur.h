@@ -7,6 +7,12 @@
 
 #include "DoubleSectionHessianMatrices.h"
 
+#include "SingleSectionHessian.h"
+#include "SolverCholeskyDense.h"
+#include "SolverCholeskySparse.h"
+
+#include "SolverTraitsBase.h"
+
 #include <Eigen/Dense>
 
 namespace nelson {
@@ -16,7 +22,7 @@ namespace nelson {
     class T,
     int BU, int BV,
     int NBU, int NBV,
-    class SolverCholeskyU
+    int solverVType
   >
   class SolverCholeskySchur {
 
@@ -28,7 +34,7 @@ namespace nelson {
   private:
     DoubleSectionHessianVectorsT _incVector;
 
-    SolverCholeskyU _solverU;
+    typename SolverTraits<solverVType>::template Solver<SingleSectionHessianTraits<matTypeV,T,BV,NBV>> _solverVMatrix;
 
   public:
 
