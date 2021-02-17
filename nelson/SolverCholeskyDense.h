@@ -21,6 +21,8 @@ namespace nelson {
     using DenseWrapperT = DenseSquareWrapper<matTypeV, T, mat::ColMajor, B, NB>;
     using DiagType = typename DenseWrapperT::DiagType;
 
+    using Type = T;
+
   private:
 
     DenseWrapperT _denseWrapper;

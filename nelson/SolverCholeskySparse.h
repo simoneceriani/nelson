@@ -22,6 +22,8 @@ namespace nelson {
     using SparseWrapperT = SparseSquareWrapper<matTypeV, T, mat::ColMajor, B, NB>;
     using DiagType = typename SparseWrapperT::DiagType;
 
+    using Type = T;
+
   private:
 
     SparseWrapperT _sparseWrapper;

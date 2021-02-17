@@ -69,10 +69,10 @@ namespace nelson {
 
   //------------------------------------------------------------------------------------------------------
 
-  template<int solverTypeV, class HessianTraits>
+  template<class Solver>
   class GaussNewton {
 
-    typename SolverTraits<solverTypeV>::template Solver<HessianTraits> _solver;
+    Solver _solver;
 
     GaussNewtonSettings _settings;
     int iter;

@@ -82,10 +82,10 @@ namespace nelson {
 
   //------------------------------------------------------------------------------------------------------
 
-  template<int solverTypeV, class HessianTraits>
+  template<class Solver>
   class LevenbergMarquardt {
 
-    typename SolverTraits<solverTypeV>::template Solver<HessianTraits> _solver;
+    Solver _solver;
 
     LevenbergMarquardtSettings _settings;
     int iter;

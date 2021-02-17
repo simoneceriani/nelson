@@ -3,16 +3,16 @@
 
 namespace nelson {
 
-  template<int solverTypeV, class HessianTraits>
-  LevenbergMarquardt<solverTypeV, HessianTraits>::LevenbergMarquardt()
+  template<class Solver>
+  LevenbergMarquardt<Solver>::LevenbergMarquardt()
     : iter(-1),
     subiter(-1)
   {
 
   }
 
-  template<int solverTypeV, class HessianTraits>
-  LevenbergMarquardt<solverTypeV, HessianTraits>::LevenbergMarquardt(const LevenbergMarquardtSettings& settings)
+  template<class Solver>
+  LevenbergMarquardt<Solver>::LevenbergMarquardt(const LevenbergMarquardtSettings& settings)
     : _settings(settings),
     iter(-1),
     subiter(-1)
@@ -20,14 +20,14 @@ namespace nelson {
 
   }
 
-  template<int solverTypeV, class HessianTraits>
-  LevenbergMarquardt<solverTypeV, HessianTraits>::~LevenbergMarquardt() {
+  template<class Solver>
+  LevenbergMarquardt<Solver>::~LevenbergMarquardt() {
 
   }
 
-  template<int solverTypeV, class HessianTraits>
+  template<class Solver>
   template<class OptimizationProblem>
-  LevenbergMarquardtTerminationReason LevenbergMarquardt<solverTypeV, HessianTraits>::solve(OptimizationProblem& op) {
+  LevenbergMarquardtTerminationReason LevenbergMarquardt<Solver>::solve(OptimizationProblem& op) {
 
     _stats.reserve(_settings.maxNumIt, _settings.maxNumSubIt);
 
@@ -69,7 +69,7 @@ namespace nelson {
         }
 
         // evaluate the effects of the iteration performed
-        typename HessianTraits::Type rho = -1;
+        typename Solver::Type rho = -1;
         if (solveOk) {
 
           // apply the increment
@@ -101,8 +101,8 @@ namespace nelson {
           }
 
           // ok, we can go faster!
-          typename HessianTraits::Type fc = (2 * rho - 1);
-          typename HessianTraits::Type alpha = std::min(_settings.maxScaleFactor, 1 - fc * fc * fc);
+          typename Solver::Type fc = (2 * rho - 1);
+          typename Solver::Type alpha = std::min(_settings.maxScaleFactor, 1 - fc * fc * fc);
           alpha = std::max(_settings.minScaleFactor, alpha);
           mu = mu * alpha;
           curV = _settings.initV;
