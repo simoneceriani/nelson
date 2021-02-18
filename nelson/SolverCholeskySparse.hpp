@@ -45,8 +45,8 @@ namespace nelson {
   }
 
   template<int matTypeV, class T, int B, int NB>
-  void SolverCholeskySparse<matTypeV, T, B, NB>::solve(const Eigen::SparseMatrix<T>& B) const {
-    this->_ldlt.solve(B);
+  void SolverCholeskySparse<matTypeV, T, B, NB>::solve(const Eigen::SparseMatrix<T>& b) const {
+    this->_ldlt.solve(b);
   }
 
 }

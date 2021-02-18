@@ -43,8 +43,8 @@ namespace nelson {
 
   template<int matTypeV, class T, int B, int NB>
   template<class Derived>
-  void SolverCholeskyDense<matTypeV, T, B, NB>::solve(const Eigen::MatrixBase<Derived>& B) const {
-    this->_ldlt.solve(B);
+  void SolverCholeskyDense<matTypeV, T, B, NB>::solve(const Eigen::MatrixBase<Derived>& b) const {
+    this->_ldlt.solve(b);
   }
 
 

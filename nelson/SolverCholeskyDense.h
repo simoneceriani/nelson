@@ -48,7 +48,7 @@ namespace nelson {
     }
 
     template<class Derived>
-    void solve(const Eigen::MatrixBase<Derived>& B) const;
+    void solve(const Eigen::MatrixBase<Derived>& b) const;
 
   };
 

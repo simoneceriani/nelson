@@ -47,7 +47,7 @@ namespace nelson {
       return _incVector.mat().squaredNorm();
     }
 
-    void solve(const Eigen::SparseMatrix<T>& B) const;
+    void solve(const Eigen::SparseMatrix<T>& b) const;
 
   };
 
