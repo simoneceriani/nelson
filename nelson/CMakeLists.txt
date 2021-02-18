@@ -47,6 +47,7 @@ target_sources_wrapper(nelson
     EdgeUnary.hpp
     EdgeBinary.h
     EdgeBinary.hpp
+    MatrixWrapperTraits.h
     MatrixDenseWrapper.h
     MatrixDenseWrapper.hpp
     MatrixSparseWrapper.h

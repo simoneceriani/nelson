@@ -47,6 +47,9 @@ namespace nelson {
       return _incVector.mat().squaredNorm();
     }
 
+    template<class Derived>
+    void solve(const Eigen::MatrixBase<Derived>& B) const;
+
   };
 
 }

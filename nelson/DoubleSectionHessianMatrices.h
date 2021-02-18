@@ -58,6 +58,11 @@ namespace nelson {
     inline const VecTypeU& bU() const { return _bU; }
     inline const VecTypeV& bV() const { return _bV; }
 
+    void setZero() { 
+      _bU.setZero(); 
+      _bV.setZero(); 
+    }
+
   };
 
 

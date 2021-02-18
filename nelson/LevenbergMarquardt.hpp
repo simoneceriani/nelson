@@ -1,6 +1,10 @@
 #pragma once
 #include "LevenbergMarquardt.h"
 
+#include "SolverCholeskyDense.hpp"
+#include "SolverCholeskySparse.hpp"
+#include "SolverCholeskySchur.hpp"
+
 namespace nelson {
 
   template<class Solver>

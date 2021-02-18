@@ -44,5 +44,9 @@ namespace nelson {
     return this->_ldlt.info() == Eigen::ComputationInfo::Success;
   }
 
+  template<int matTypeV, class T, int B, int NB>
+  void SolverCholeskySparse<matTypeV, T, B, NB>::solve(const Eigen::SparseMatrix<T>& B) const {
+    this->_ldlt.solve(B);
+  }
 
 }

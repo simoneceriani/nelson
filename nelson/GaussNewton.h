@@ -4,6 +4,8 @@
 #include "mat/Global.h"
 #include "SolverCholeskyDense.h"
 #include "SolverCholeskySparse.h"
+#include "SolverCholeskySchur.h"
+
 #include "SolverTraits.h"
 
 #include <vector>

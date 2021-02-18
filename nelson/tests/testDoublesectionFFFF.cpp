@@ -586,17 +586,31 @@ TEMPLATE_TEST_CASE("DoubleSection-FFFF", "[DoubleSection-FFFF]",
 
   pss.structureReady();
 
+  pss.addNoise(0.001);
+
   pss.update(true);
   std::cout << "chi2 BEFORE " << pss.hessian().chi2() << std::endl;
 
   {
-    nelson::GaussNewton <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskyDense> > gn;
+    nelson::GaussNewton <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskyDense, nelson::matrixWrapperDense> > gn;
     auto tc = gn.solve(pss);
     std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
     std::cout << "stats " << gn.stats().toString() << std::endl;
   }
+  //{
+  //  nelson::GaussNewton <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskyDense, nelson::matrixWrapperSparse> > gn;
+  //  auto tc = gn.solve(pss);
+  //  std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
+  //  std::cout << "stats " << gn.stats().toString() << std::endl;
+  //}
+  //{
+  //  nelson::GaussNewton <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskySparse, nelson::matrixWrapperDense> > gn;
+  //  auto tc = gn.solve(pss);
+  //  std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
+  //  std::cout << "stats " << gn.stats().toString() << std::endl;
+  //}
   {
-    nelson::GaussNewton <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskySparse> > gn;
+    nelson::GaussNewton <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskySparse, nelson::matrixWrapperSparse> > gn;
     auto tc = gn.solve(pss);
     std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
     std::cout << "stats " << gn.stats().toString() << std::endl;

@@ -12,13 +12,13 @@ namespace nelson {
   template<>
   struct SolverTraits<solverCholeskySchur>
   {
-    template<class HessianTraits, int solverVType>
+    template<class HessianTraits, int solverVType, int wrapperWType>
     using Solver = SolverCholeskySchur<
       HessianTraits::matTypeU, HessianTraits::matTypeV, HessianTraits::matTypeW,
       typename HessianTraits::Type,
       HessianTraits::BU, HessianTraits::BV,
       HessianTraits::NBU, HessianTraits::NBV,
-      solverVType
+      solverVType, wrapperWType
     >;
   };
 

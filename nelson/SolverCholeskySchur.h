@@ -12,6 +12,7 @@
 #include "SolverCholeskySparse.h"
 
 #include "SolverTraitsBase.h"
+#include "MatrixWrapperTraits.h"
 
 #include <Eigen/Dense>
 
@@ -22,7 +23,8 @@ namespace nelson {
     class T,
     int BU, int BV,
     int NBU, int NBV,
-    int solverVType
+    int solverVType,
+    int wrapperWType
   >
   class SolverCholeskySchur {
 
@@ -34,7 +36,10 @@ namespace nelson {
   private:
     DoubleSectionHessianVectorsT _incVector;
 
+    typename DoubleSectionHessianVectorsT::VecTypeU _bS;
+
     typename SolverTraits<solverVType>::template Solver<SingleSectionHessianTraits<matTypeV,T,BV,NBV>> _solverVMatrix;
+    typename MatrixWrapperTraits<wrapperWType>::template Wrapper<matTypeW, T, mat::ColMajor, BU, BV, NBU, NBV> _matrixW;
 
   public:
 
