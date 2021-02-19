@@ -15,7 +15,7 @@ class Points2d3d : public Points2d3dBase < Points2d3d<matTypeUv, matTypeVv, matT
   std::vector<int> u_sizes;
 public:
 
-  Points2d3d() : u_sizes(numPoints2d, Point2d::blockSize) { }
+  Points2d3d() : v_sizes(numPoints3d, Point3d::blockSize), u_sizes(numPoints2d, Point2d::blockSize) { }
   const std::vector<int>& parameterUSize(void) const override {
     return u_sizes;
   }
