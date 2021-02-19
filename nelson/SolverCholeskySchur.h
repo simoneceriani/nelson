@@ -46,7 +46,7 @@ namespace nelson {
     typename MatrixWrapperTraits<wrapperWType>::template Wrapper<matTypeW, T, mat::ColMajor, BU, BV, NBU, NBV> _matrixW;
 
     using MatrixUType = typename MatrixWrapperTraits<wrapperUType>::template Wrapper<matTypeU, T, mat::ColMajor, BU, BU, NBU, NBU>;
-    typename MatrixUType _matrixU;
+    MatrixUType _matrixU;
     typename MatrixUType::MatOutputType _matrixS;
 
     typename SolverTraits<wrapperUType>::template SolverEigen<typename MatrixUType::MatOutputType, choleskyOrderingS> _solverS;

@@ -152,8 +152,6 @@ namespace nelson {
 
   public:
 
-    using MatOutputType = typename MatCopyType::StorageType;
-
     DenseWrapper() : _matrix(nullptr) {
 
     }

@@ -1,6 +1,9 @@
 #pragma once
 #include "testDoubleSectionCommon.h"
 
+#include "nelson/GaussNewton.hpp"
+#include "nelson/LevenbergMarquardt.hpp"
+
 template<class TestType>
 void testFunction() {
   std::cout << "-------------------------------------------------------" << std::endl;
