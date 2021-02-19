@@ -10,7 +10,22 @@
 
 namespace nelson {
 
-  template<int matTypeV, class T, int B, int NB = mat::Dynamic>
+  template<class EigenMatType, class EigenOrderingMethod>
+  class SolverCholeskyEigenSparse {
+
+    Eigen::SimplicialLDLT<EigenMatType, Eigen::Upper, EigenOrderingMethod> _ldlt;
+
+  public:
+    void init(EigenMatType& mat);
+
+    bool factorize(EigenMatType& matInput);
+
+    template<class Derived1, class Derived2>
+    void solve(const Eigen::MatrixBase<Derived1>& b, Eigen::MatrixBase<Derived2>& x);
+  };
+
+
+  template<int matTypeV, class T, int B, int NB, class EigenOrderingMethod>
   class SolverCholeskySparse {
 
   public:
@@ -24,13 +39,15 @@ namespace nelson {
 
     using Type = T;
 
+    using SolverType = Eigen::SimplicialLDLT<Eigen::SparseMatrix<T>, Eigen::Upper, EigenOrderingMethod>;
+
   private:
 
     SparseWrapperT _sparseWrapper;
     DiagType _diagBackup;
 
     VecType _incVector;
-    Eigen::SimplicialLDLT<Eigen::SparseMatrix<T>, Eigen::Upper> _ldlt;
+    SolverType _ldlt;
 
   public:
 
@@ -47,7 +64,10 @@ namespace nelson {
       return _incVector.mat().squaredNorm();
     }
 
-    void solve(const Eigen::SparseMatrix<T>& b) const;
+    const Eigen::Solve<SolverType, Eigen::SparseMatrix<T>> solve(const Eigen::SparseMatrix<T>& b) const;
+
+    template<class Derived>
+    const Eigen::Solve<SolverType, Derived> solve(const Eigen::MatrixBase<Derived>& b) const;
 
   };
 

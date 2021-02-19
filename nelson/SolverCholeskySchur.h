@@ -23,8 +23,11 @@ namespace nelson {
     class T,
     int BU, int BV,
     int NBU, int NBV,
-    int solverVType,
-    int wrapperWType
+    int wrapperUType,
+    int wrapperWType,
+    int solverVType, 
+    int choleskyOrderingS,
+    int choleskyOrderingV
   >
   class SolverCholeskySchur {
 
@@ -36,12 +39,22 @@ namespace nelson {
   private:
     DoubleSectionHessianVectorsT _incVector;
 
-    typename DoubleSectionHessianVectorsT::VecTypeU _bS;
+    typename DoubleSectionHessianVectorsT::VecTypeU::StorageType _bS;
+    typename DoubleSectionHessianVectorsT::VecTypeV::StorageType _bVtilde;
 
-    typename SolverTraits<solverVType>::template Solver<SingleSectionHessianTraits<matTypeV,T,BV,NBV>> _solverVMatrix;
+    typename SolverTraits<solverVType>::template Solver<SingleSectionHessianTraits<matTypeV,T,BV,NBV>, choleskyOrderingV> _solverVMatrix;
     typename MatrixWrapperTraits<wrapperWType>::template Wrapper<matTypeW, T, mat::ColMajor, BU, BV, NBU, NBV> _matrixW;
 
+    using MatrixUType = typename MatrixWrapperTraits<wrapperUType>::template Wrapper<matTypeU, T, mat::ColMajor, BU, BU, NBU, NBU>;
+    typename MatrixUType _matrixU;
+    typename MatrixUType::MatOutputType _matrixS;
+
+    typename SolverTraits<wrapperUType>::template SolverEigen<typename MatrixUType::MatOutputType, choleskyOrderingS> _solverS;
+
+    bool _firstTime;
+
   public:
+    SolverCholeskySchur();
 
     void init(DoubleSectionHessianMatricesT& input, const DoubleSectionHessianVectorsT& b);
 

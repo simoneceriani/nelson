@@ -295,7 +295,7 @@ TEMPLATE_TEST_CASE_SIG("TestTiming", "[TestTiming]", ((class ProblemType, int so
       std::cout << "chi2 BEFORE " << optProblem.hessian().chi2() << std::endl;
 
       auto startSolveTime = std::chrono::steady_clock::now();
-      nelson::GaussNewton <typename nelson::SolverTraits<solverType>::template Solver<typename ProblemType::Hessian::Traits> > gn;
+      nelson::GaussNewton <typename nelson::SolverTraits<solverType>::template Solver<typename ProblemType::Hessian::Traits, nelson::choleskyAMDOrdering> > gn;
       gn.settings().minNumIt = 5;
       auto tc = gn.solve(optProblem);
       auto endSolveTime = std::chrono::steady_clock::now();

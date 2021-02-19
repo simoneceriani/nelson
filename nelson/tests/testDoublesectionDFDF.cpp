@@ -10,14 +10,17 @@
 #include <iostream>
 
 template<int matTypeUv, int matTypeVv, int matTypeWv>
-class Points2d3d : public Points2d3dBase < Points2d3d<matTypeUv, matTypeVv, matTypeWv>, matTypeUv, matTypeVv, matTypeWv, Point2d::blockSize, mat::Dynamic, numPoints2d, numPoints3d > {
+class Points2d3d : public Points2d3dBase < Points2d3d<matTypeUv, matTypeVv, matTypeWv>, matTypeUv, matTypeVv, matTypeWv, mat::Dynamic, Point3d::blockSize, mat::Dynamic, numPoints3d > {
 
 public:
 
-  int parameterVSize(void) const override {
-    return Point3d::blockSize;
+  int parameterUSize(void) const override {
+    return Point2d::blockSize;
   }
 
+  int numParametersU() const override {
+    return numPoints2d;
+  }
 
 };
 
@@ -88,7 +91,6 @@ using PointsSection_SpacoSpacoDense = Points2d3d<mat::BlockCoeffSparse, mat::Blo
 using PointsSection_SpacoSpacoDiago = Points2d3d<mat::BlockCoeffSparse, mat::BlockCoeffSparse, mat::BlockDiagonal>;
 using PointsSection_SpacoSpacoSpars = Points2d3d<mat::BlockCoeffSparse, mat::BlockCoeffSparse, mat::BlockSparse>;
 using PointsSection_SpacoSpacoSpaco = Points2d3d<mat::BlockCoeffSparse, mat::BlockCoeffSparse, mat::BlockCoeffSparse>;
-
 
 TEMPLATE_TEST_CASE("DoubleSection-", "[DoubleSection-]",
   PointsSection_DenseDenseDense,

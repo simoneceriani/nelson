@@ -10,12 +10,11 @@
 #include <iostream>
 
 template<int matTypeUv, int matTypeVv, int matTypeWv>
-class Points2d3d : public Points2d3dBase < Points2d3d<matTypeUv, matTypeVv, matTypeWv>, matTypeUv, matTypeVv, matTypeWv, Point2d::blockSize, mat::Dynamic, numPoints2d, numPoints3d > {
+class Points2d3d : public Points2d3dBase < Points2d3d<matTypeUv, matTypeVv, matTypeWv>, matTypeUv, matTypeVv, matTypeWv, mat::Dynamic, Point3d::blockSize, numPoints2d, numPoints3d > {
 
 public:
-
-  int parameterVSize(void) const override {
-    return Point3d::blockSize;
+  int parameterUSize(void) const override {
+    return Point2d::blockSize;
   }
 
 

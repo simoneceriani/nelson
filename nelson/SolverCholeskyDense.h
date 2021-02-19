@@ -8,6 +8,20 @@
 #include <Eigen/Dense>
 
 namespace nelson {
+  
+  template<class EigenMatType>
+  class SolverCholeskyEigenDense {
+    Eigen::LDLT<EigenMatType, Eigen::Upper> _ldlt;
+  public:
+    void init(EigenMatType& mat);
+
+    bool factorize(EigenMatType& matInput);
+
+    template<class Derived1, class Derived2>
+    void solve(const Eigen::MatrixBase<Derived1>& b, Eigen::MatrixBase<Derived2>& x);
+  };
+  
+  //--------------------------------------------------------------------------------------
 
   template<int matTypeV, class T, int B, int NB = mat::Dynamic>
   class SolverCholeskyDense {
@@ -48,7 +62,9 @@ namespace nelson {
     }
 
     template<class Derived>
-    void solve(const Eigen::MatrixBase<Derived>& b) const;
+    const Eigen::Solve<Eigen::LDLT<typename SolverCholeskyDense<matTypeV, T, B, NB>::DenseWrapperT::MatOutputType, Eigen::Upper>, Derived> solve(const Eigen::MatrixBase<Derived>& b) const;
+
+    Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> solve(const Eigen::SparseMatrix<T>& b) const;
 
   };
 

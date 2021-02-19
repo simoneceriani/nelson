@@ -60,7 +60,7 @@ namespace nelson {
   public:
     virtual const std::vector<int>& parameterUSize() const = 0;
     constexpr int numParametersU() const {
-      assert(this->parameterSize().size() == NB);
+      assert(this->parameterUSize().size() == NB);
       return NB;
     }
   };
@@ -117,7 +117,7 @@ namespace nelson {
   public:
     virtual const std::vector<int>& parameterVSize() const = 0;
     constexpr int numParametersV() const {
-      assert(this->parameterSize().size() == NB);
+      assert(this->parameterVSize().size() == NB);
       return NB;
     }
   };

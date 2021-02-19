@@ -65,6 +65,7 @@ target_sources_wrapper(nelson
     ParallelExecHelper.h
     LevenbergMarquardt.h
     LevenbergMarquardt.hpp
+    OrderingTraits.h
 	PRIVATE
     Global.cpp
     BaseSection.cpp
