@@ -64,31 +64,31 @@ set(TESTS_LIST
   testDoublesectionDFDF.cpp
   testDoublesectionDFDD.cpp
   #------------------------
-  # testDoublesectionDDFF.cpp
-  # testDoublesectionDDFD.cpp
-  # testDoublesectionDDDF.cpp
-  # testDoublesectionDDDD.cpp
-  # #------------------------
-  # testDoublesectionDVFF.cpp
-  # testDoublesectionDVFD.cpp
-  # testDoublesectionDVDF.cpp
-  # testDoublesectionDVDD.cpp
+  testDoublesectionDDFF.cpp
+  testDoublesectionDDFD.cpp
+  testDoublesectionDDDF.cpp
+  testDoublesectionDDDD.cpp
+  #------------------------
+  testDoublesectionDVFF.cpp
+  testDoublesectionDVFD.cpp
+  testDoublesectionDVDF.cpp
+  testDoublesectionDVDD.cpp
   #------------------------
   #------------------------
-  # testDoublesectionVFFF.cpp
-  # testDoublesectionVFFD.cpp
-  # testDoublesectionVFDF.cpp
-  # testDoublesectionVFDD.cpp
+  testDoublesectionVFFF.cpp
+  testDoublesectionVFFD.cpp
+  testDoublesectionVFDF.cpp
+  testDoublesectionVFDD.cpp
   #------------------------
-  # testDoublesectionVDFF.cpp
-  # testDoublesectionVDFD.cpp
-  # testDoublesectionVDDF.cpp
-  # testDoublesectionVDDD.cpp
-  # #------------------------
-  # testDoublesectionVVFF.cpp
-  # testDoublesectionVVFD.cpp
-  # testDoublesectionVVDF.cpp
-  # testDoublesectionVVDD.cpp
+  testDoublesectionVDFF.cpp
+  testDoublesectionVDFD.cpp
+  testDoublesectionVDDF.cpp
+  testDoublesectionVDDD.cpp
+  #------------------------
+  testDoublesectionVVFF.cpp
+  testDoublesectionVVFD.cpp
+  testDoublesectionVVDF.cpp
+  testDoublesectionVVDD.cpp
 )
 
 foreach(s ${TESTS_LIST})

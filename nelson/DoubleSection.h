@@ -69,7 +69,7 @@ namespace nelson {
   class BaseNumSizeParametersU<mat::Variable, mat::Dynamic> {
   public:
     virtual const std::vector<int>& parameterUSize() const = 0;
-    int numParametersu() const {
+    int numParametersU() const {
       return parameterUSize().size();
     }
   };
