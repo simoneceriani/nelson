@@ -14,10 +14,14 @@ struct Point2d {
   static constexpr int blockSize = 2;
 };
 
+ constexpr int Point2d::blockSize;
+
 struct Point3d {
   Eigen::Vector3d p3d;
   static constexpr int blockSize = 3;
 };
+
+constexpr int Point3d::blockSize;
 
 static constexpr int numPoints2d = 5; // totsize = 10
 static constexpr int numPoints3d = 3; // totsize = 9
