@@ -50,7 +50,10 @@ namespace nelson {
       // backup diagonal
       _sparseWrapper.diagonalCopy(_diagBackup);
       // change the diagonal values
-      _sparseWrapper.setDiagonal(((_diagBackup.array() * 1 + relLambda).array() + absLambda));
+      _sparseWrapper.setDiagonal(
+        (_diagBackup.array() * (1 + relLambda)).array() + absLambda
+      );
+
     }
 
     this->_ldlt.factorize(_sparseWrapper.mat());

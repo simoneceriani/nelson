@@ -47,7 +47,9 @@ namespace nelson {
       // backup diagonal
       _denseWrapper.diagonalCopy(_diagBackup);
       // change the diagonal values
-      _denseWrapper.setDiagonal(((_diagBackup.array() * 1 + relLambda).array() + absLambda));
+      _denseWrapper.setDiagonal(
+        (_diagBackup.array() * (1 + relLambda)).array() + absLambda
+      );
     }
 
 

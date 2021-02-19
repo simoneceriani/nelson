@@ -6,7 +6,7 @@
 #include "mat/VectorBlock.h"
 
 #include <Eigen/Sparse>
-#include<Eigen/SparseCholesky>	
+#include <Eigen/SparseCholesky>	
 
 namespace nelson {
 
