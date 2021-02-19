@@ -40,7 +40,7 @@ namespace nelson {
     using Traits = DoubleSectionHessianTraits<matTypeUv, matTypeVv, matTypeWv, Tv, BUv, BVv, NBUv, NBVv>;
 
     using HessianMatricesT = typename Traits::HessianMatricesType;
-    using HessianVectorsT = typename Traits::HessianVectorsType;;
+    using HessianVectorsT = typename Traits::HessianVectorsType;
 
     using MatTraitsU = typename HessianMatricesT::MatTraitsU;
     using MatTraitsV = typename HessianMatricesT::MatTraitsV;

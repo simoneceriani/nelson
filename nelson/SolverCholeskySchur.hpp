@@ -62,7 +62,7 @@ namespace nelson {
   >
   T SolverCholeskySchur <matTypeU, matTypeV, matTypeW, T, BU, BV, NBU, NBV, wrapperUType, wrapperWType, solverVType, choleskyOrderingS, choleskyOrderingV>::maxAbsHDiag() const
   {
-    return std::max(_solverVMatrix.maxAbsHDiag(), _matrixU.maxAbsHDiag());
+    return std::max(_solverVMatrix.maxAbsHDiag(), _matrixU.mat().diagonal().cwiseAbs().maxCoeff());
   }
 
   template<

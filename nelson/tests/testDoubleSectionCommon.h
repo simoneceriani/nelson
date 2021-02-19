@@ -6,7 +6,7 @@
 #include <array>
 #include <iostream>
 
-template<class TestType>
+template<class TestType, template<typename> class Solver >
 void testFunction();
 
 struct Point2d {
@@ -326,8 +326,8 @@ public:
 template<class Derived, int matTypeUv, int matTypeVv, int matTypeWv, int BU, int BV, int NBU, int NBV>
 class Points2d3dBase : public nelson::DoubleSection< Derived, Point2d, Point3d, matTypeUv, matTypeVv, matTypeWv, double, BU, BV, NBU, NBV> {
 
-  std::array<Point2d, numPoints2d> _points2d;
-  std::array<Point3d, numPoints3d> _points3d;
+  std::array<Point2d, numPoints2d> _points2d, _bck_points2d;
+  std::array<Point3d, numPoints3d> _points3d, _bck_points3d;
   Point2d _fixedPoint2d;
   Point3d _fixedPoint3d;
 
@@ -399,6 +399,16 @@ public:
     for (int i = 0; i < numPoints3d; i++) {
       _points3d[i].p3d += inc.bV().segment(i);
     }
+  }
+
+  void backupSolution() {
+    _bck_points2d = _points2d;
+    _bck_points3d = _points3d;
+  }
+
+  void rollbackSolution() {
+    _points2d = _bck_points2d;
+    _points3d = _bck_points3d;
   }
 
 

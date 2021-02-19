@@ -166,6 +166,7 @@ TEMPLATE_TEST_CASE("DoubleSection-", "[DoubleSection-]",
 )
 {
 
-  testFunction<TestType>();
+  testFunction<TestType, nelson::GaussNewton>();
+  testFunction<TestType, nelson::LevenbergMarquardt>();
 
 }

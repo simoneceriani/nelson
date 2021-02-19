@@ -84,11 +84,7 @@ namespace nelson {
           _stats.addSubIteration(subiter, op.hessian().chi2());
 
           // evaluate chi2 change
-          auto newChi2 = op.hessian().chi2();
-          auto num = (oldChi2 - newChi2);
-          auto den = _solver.incrementVector().mat().transpose() * (mu * _solver.incrementVector().mat() - op.hessian().b().mat());
-          //
-          rho = num / den;
+          rho = op.computeRhoChi2Change(mu, _solver.incrementVector(), oldChi2);
 
         }
 

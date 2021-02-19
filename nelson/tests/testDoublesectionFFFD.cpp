@@ -105,7 +105,7 @@ TEMPLATE_TEST_CASE("DoubleSection-", "[DoubleSection-]",
   PointsSection_DenseSpacoDiago,
   PointsSection_DenseSpacoSpars,
   PointsSection_DenseSpacoSpaco,
-//------------------------------------
+  //------------------------------------
   PointsSection_DiagoDenseDense,
   PointsSection_DiagoDenseDiago,
   PointsSection_DiagoDenseSpars,
@@ -155,10 +155,11 @@ TEMPLATE_TEST_CASE("DoubleSection-", "[DoubleSection-]",
   PointsSection_SpacoSpacoDense,
   PointsSection_SpacoSpacoDiago,
   PointsSection_SpacoSpacoSpars,
-  PointsSection_SpacoSpacoSpaco 
+  PointsSection_SpacoSpacoSpaco
 )
 {
 
-  testFunction<TestType>();
+  testFunction<TestType, nelson::GaussNewton>();
+  testFunction<TestType, nelson::LevenbergMarquardt>();
 
 }

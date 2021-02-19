@@ -156,6 +156,15 @@ namespace nelson {
       return _settings;
     }
 
+    T computeRhoChi2Change(T mu, const HessianVecType& incV, T oldChi2) const {
+      T newChi2 = hessian().chi2();
+      T num = (oldChi2 - newChi2);
+      T den = incV.mat().transpose() * (mu * incV.mat() - hessian().b().mat());
+      //
+      return num / den;
+
+    }
+
     //-------------------------------------------------------------------------------------------
     struct EdgeUnaryAdapter {
 

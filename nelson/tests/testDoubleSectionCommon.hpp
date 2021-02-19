@@ -4,7 +4,7 @@
 #include "nelson/GaussNewton.hpp"
 #include "nelson/LevenbergMarquardt.hpp"
 
-template<class TestType>
+template<class TestType, template<typename> class Solver>
 void testFunction() {
   std::cout << "-------------------------------------------------------" << std::endl;
   TestType pss;
@@ -59,64 +59,73 @@ void testFunction() {
   std::cout << "chi2 BEFORE " << pss.hessian().chi2() << std::endl;
 
   {
-    nelson::GaussNewton <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskyDense, nelson::matrixWrapperDense, nelson::matrixWrapperDense, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> > gn;
+    using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskyDense, nelson::matrixWrapperDense, nelson::matrixWrapperDense, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> >;
+    SolverAlgorithm gn;
     pss.addNoise(0.5);
     auto tc = gn.solve(pss);
-    std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
+    std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
+    std::cout << "stats " << gn.stats().toString() << std::endl;
+    REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
+  }
+
+  {
+    using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskyDense, nelson::matrixWrapperDense, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> >;
+    SolverAlgorithm gn; 
+    pss.addNoise(0.5);
+    auto tc = gn.solve(pss);
+    std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
     std::cout << "stats " << gn.stats().toString() << std::endl;
     REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
   }
   {
-    nelson::GaussNewton <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskyDense, nelson::matrixWrapperDense, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> > gn;
+    using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskyDense, nelson::matrixWrapperSparse, nelson::matrixWrapperDense, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> >;
+    SolverAlgorithm gn; 
     pss.addNoise(0.5);
     auto tc = gn.solve(pss);
-    std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
-    std::cout << "stats " << gn.stats().toString() << std::endl;
-    REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
-  }
-  {
-    nelson::GaussNewton <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskyDense, nelson::matrixWrapperSparse, nelson::matrixWrapperDense, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> > gn;
-    pss.addNoise(0.5);
-    auto tc = gn.solve(pss);
-    std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
+    std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
     std::cout << "stats " << gn.stats().toString() << std::endl;
     REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());  }
   {
-    nelson::GaussNewton <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskyDense, nelson::matrixWrapperSparse, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> > gn;
+    using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskyDense, nelson::matrixWrapperSparse, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> >;
+    SolverAlgorithm gn;
     pss.addNoise(0.5);
     auto tc = gn.solve(pss);
-    std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
+    std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
     std::cout << "stats " << gn.stats().toString() << std::endl;
     REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());  }
   {
-    nelson::GaussNewton <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskySparse, nelson::matrixWrapperDense, nelson::matrixWrapperDense, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> > gn;
+    using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskySparse, nelson::matrixWrapperDense, nelson::matrixWrapperDense, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> >;
+    SolverAlgorithm gn;
     pss.addNoise(0.5);
     auto tc = gn.solve(pss);
-    std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
+    std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
     std::cout << "stats " << gn.stats().toString() << std::endl;
     REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
   }
   {
-    nelson::GaussNewton <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskySparse, nelson::matrixWrapperDense, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> > gn;
+    using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskySparse, nelson::matrixWrapperDense, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> >;
+    SolverAlgorithm gn;
     pss.addNoise(0.5);
     auto tc = gn.solve(pss);
-    std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
+    std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
     std::cout << "stats " << gn.stats().toString() << std::endl;
     REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
   }
   {
-    nelson::GaussNewton <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskySparse, nelson::matrixWrapperSparse, nelson::matrixWrapperDense, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> > gn;
+    using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskySparse, nelson::matrixWrapperSparse, nelson::matrixWrapperDense, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> >;
+    SolverAlgorithm gn;
     pss.addNoise(0.5);
     auto tc = gn.solve(pss);
-    std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
+    std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
     std::cout << "stats " << gn.stats().toString() << std::endl;
     REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
   }
   {
-    nelson::GaussNewton <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskySparse, nelson::matrixWrapperSparse, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> > gn;
+    using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskySparse, nelson::matrixWrapperSparse, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> >;
+    SolverAlgorithm gn;
     pss.addNoise(0.5);
     auto tc = gn.solve(pss);
-    std::cout << nelson::GaussNewtonUtils::toString(tc) << std::endl;
+    std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
     std::cout << "stats " << gn.stats().toString() << std::endl;
     REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
   }

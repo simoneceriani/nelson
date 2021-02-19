@@ -95,6 +95,11 @@ namespace nelson {
 
     LevenbergMarquardtStats _stats;
   public:
+
+    using Utils = LevenbergMarquardtUtils;
+    using Settings = LevenbergMarquardtSettings;
+    using Stats = LevenbergMarquardtStats;
+
     LevenbergMarquardt();
     LevenbergMarquardt(const LevenbergMarquardtSettings& settings);
     virtual ~LevenbergMarquardt();

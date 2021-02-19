@@ -251,6 +251,20 @@ namespace nelson {
       return _settings;
     }
 
+    Tv computeRhoChi2Change(Tv mu, const HessianVectorsT& incV, Tv oldChi2) const {
+      Tv newChi2 = hessian().chi2();
+      Tv num = (oldChi2 - newChi2);
+      auto den = 
+        incV.bU().mat().transpose() * (mu * incV.bU().mat() - hessian().b().bU().mat()) + 
+        incV.bV().mat().transpose() * (mu * incV.bV().mat() - hessian().b().bV().mat())
+        ;
+      //
+      assert(den.size() == 1);
+      return num / den(0);
+
+    }
+
+
     struct EdgeUnaryUAdapter {
 
       using ParameterType = ParameterTypeU;

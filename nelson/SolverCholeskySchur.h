@@ -36,6 +36,8 @@ namespace nelson {
     using DoubleSectionHessianMatricesT = DoubleSectionHessianMatrices<matTypeU, matTypeV, matTypeW, T, BU, BV, NBU, NBV>;
     using DoubleSectionHessianVectorsT = DoubleSectionHessianVectors<T, BU, BV, NBU, NBV>;
 
+    using Type = T;
+
   private:
     DoubleSectionHessianVectorsT _incVector;
 

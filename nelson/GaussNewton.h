@@ -81,6 +81,11 @@ namespace nelson {
 
     GaussNewtownStats _stats;
   public:
+
+    using Utils = GaussNewtonUtils;
+    using Settings = GaussNewtonSettings;
+    using Stats = GaussNewtownStats;
+
     GaussNewton();
     GaussNewton(const GaussNewtonSettings & settings);
     virtual ~GaussNewton();
