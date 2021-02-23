@@ -88,7 +88,7 @@ set(TESTS_LIST
   testDoublesectionVVFF.cpp
   testDoublesectionVVFD.cpp
   testDoublesectionVVDF.cpp
-  testDoublesectionVVDD.cpp
+  testDoublesectionVVDD.cpp  
 )
 
 foreach(s ${TESTS_LIST})
@@ -113,6 +113,7 @@ find_package_wrapper(lie REQUIRED CONFIG)
 set(TESTS_LIST 
   testGaussNewton2DScansAlign.cpp
   testGaussNewton2DScansAlignTimingTest.cpp
+  testDoubleSectionSchurDiagBlock.cpp
 )
 
 foreach(s ${TESTS_LIST})

@@ -4,6 +4,7 @@
 #include "SolverCholeskyDense.hpp"
 #include "SolverCholeskySparse.hpp"
 #include "SolverCholeskySchur.hpp"
+#include "SolverDiagonalBlocksInverseSchur.hpp"
 
 namespace nelson {
 

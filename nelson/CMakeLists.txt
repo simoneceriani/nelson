@@ -60,6 +60,8 @@ target_sources_wrapper(nelson
     SolverCholeskySchur.hpp
     SolverCholeskySparse.h
     SolverCholeskySparse.hpp
+    SolverDiagonalBlocksInverseSchur.h
+    SolverDiagonalBlocksInverseSchur.hpp
     SolverTraitsBase.h
     SolverTraits.h
     ParallelExecHelper.h
@@ -83,6 +85,7 @@ target_sources_wrapper(nelson
     SolverCholeskyDense.cpp
     SolverCholeskySchur.cpp
     SolverCholeskySparse.cpp
+    SolverDiagonalBlocksInverseSchur.cpp
     ParallelExecHelper.cpp
     LevenbergMarquardt.cpp
 )

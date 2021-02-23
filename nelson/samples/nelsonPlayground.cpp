@@ -9,6 +9,37 @@
 
 double parForInner(int id, const std::vector<double>& v1, const std::vector<double>& v2);
 double parForOuter(const std::vector < std::vector<double>>& v1, const std::vector < std::vector<double>>& v2);
+void testSparseDenseCombinations();
+
+void testSparseDenseCombinations() {
+  constexpr int n = 20;
+  constexpr int m = 30;
+
+  {
+    Eigen::MatrixXd U(n, n);
+    Eigen::MatrixXd Vinv(m, m);
+    Eigen::MatrixXd W(n, m);
+    Eigen::MatrixXd S(n, n);
+    U.setRandom();
+    Vinv.setRandom();
+    W.setRandom();
+
+    S = U - W * Vinv * W.transpose();
+  }
+  {
+    Eigen::Matrix<double,n,n> U;
+    Eigen::Matrix<double,m,m> Vinv;
+    Eigen::Matrix<double,n,m> W;
+    Eigen::Matrix<double,n,n> S;
+    U.setRandom();
+    Vinv.setRandom();
+    W.setRandom();
+
+    S = U - W * Vinv * W.transpose();
+  }
+
+
+}
 
 double parForOuter(const std::vector < std::vector<double>>& v1, const std::vector < std::vector<double>>& v2) {
   double tmp(0);
@@ -42,6 +73,8 @@ double parForInner(int id, const std::vector<double>& v1, const std::vector<doub
 }
 
 int main(int argc, char* argv[]) {
+
+  testSparseDenseCombinations();
 
   int outerSize = 100;
   int innerSize = 100;

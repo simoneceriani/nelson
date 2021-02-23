@@ -1,10 +1,15 @@
 #pragma once
 #include "SolverCholeskySchur.h"
 
-#include "DoubleSectionHessianMatrices.hpp"
-
 #include "MatrixDenseWrapper.hpp"
+#include "MatrixSparseWrapper.hpp"
+
 #include "mat/VectorBlock.hpp"
+
+#include "DoubleSectionHessianMatrices.hpp"
+#include "SingleSectionHessian.hpp"
+#include "SolverCholeskyDense.hpp"
+#include "SolverCholeskySparse.hpp"
 
 namespace nelson {
 
@@ -110,14 +115,15 @@ namespace nelson {
         _firstTime = false;
       }
 
-      _solverS.factorize(_matrixS);
+      ok = _solverS.factorize(_matrixS);
+    }
+    if(ok) {
       _solverS.solve(_bS, _incVector.bU().mat());
 
       // (-bV) - Wt * xu
       _bVtilde = -b.bV().mat() - _matrixW.mat().transpose() * _incVector.bU().mat();
       _incVector.bV().mat() = _solverVMatrix.solve(_bVtilde);
 
-      int x = 32;
     }
 
     if (!ok) {
