@@ -1025,6 +1025,153 @@ using PointsSectionDDDD_SpacoDiagoDiago = Points2d3dDDDD<mat::BlockCoeffSparse, 
 using PointsSectionDDDD_SpacoDiagoSpars = Points2d3dDDDD<mat::BlockCoeffSparse, mat::BlockDiagonal, mat::BlockSparse>;
 using PointsSectionDDDD_SpacoDiagoSpaco = Points2d3dDDDD<mat::BlockCoeffSparse, mat::BlockDiagonal, mat::BlockCoeffSparse>;
 
+template<int matTypeUv, int matTypeVv, int matTypeWv>
+class Points2d3dDVFF : public Points2d3dBase < Points2d3dDVFF<matTypeUv, matTypeVv, matTypeWv>, matTypeUv, matTypeVv, matTypeWv, mat::Dynamic, mat::Variable, numPoints2d, numPoints3d > {
+  std::vector<int> v_sizes;
+public:
+
+  Points2d3dDVFF() : v_sizes(numPoints3d, Point3d::blockSize) { }
+
+  int parameterUSize(void) const override {
+    return Point2d::blockSize;
+  }
+
+  const std::vector<int>& parameterVSize(void) const override {
+    return v_sizes;
+  }
+
+
+};
+
+using PointsSectionDVFF_DenseDiagoDense = Points2d3dDVFF<mat::BlockDense, mat::BlockDiagonal, mat::BlockDense>;
+using PointsSectionDVFF_DenseDiagoDiago = Points2d3dDVFF<mat::BlockDense, mat::BlockDiagonal, mat::BlockDiagonal>;
+using PointsSectionDVFF_DenseDiagoSpars = Points2d3dDVFF<mat::BlockDense, mat::BlockDiagonal, mat::BlockSparse>;
+using PointsSectionDVFF_DenseDiagoSpaco = Points2d3dDVFF<mat::BlockDense, mat::BlockDiagonal, mat::BlockCoeffSparse>;
+using PointsSectionDVFF_DiagoDiagoDense = Points2d3dDVFF<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockDense>;
+using PointsSectionDVFF_DiagoDiagoDiago = Points2d3dDVFF<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockDiagonal>;
+using PointsSectionDVFF_DiagoDiagoSpars = Points2d3dDVFF<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockSparse>;
+using PointsSectionDVFF_DiagoDiagoSpaco = Points2d3dDVFF<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockCoeffSparse>;
+using PointsSectionDVFF_SparsDiagoDense = Points2d3dDVFF<mat::BlockSparse, mat::BlockDiagonal, mat::BlockDense>;
+using PointsSectionDVFF_SparsDiagoDiago = Points2d3dDVFF<mat::BlockSparse, mat::BlockDiagonal, mat::BlockDiagonal>;
+using PointsSectionDVFF_SparsDiagoSpars = Points2d3dDVFF<mat::BlockSparse, mat::BlockDiagonal, mat::BlockSparse>;
+using PointsSectionDVFF_SparsDiagoSpaco = Points2d3dDVFF<mat::BlockSparse, mat::BlockDiagonal, mat::BlockCoeffSparse>;
+using PointsSectionDVFF_SpacoDiagoDense = Points2d3dDVFF<mat::BlockCoeffSparse, mat::BlockDiagonal, mat::BlockDense>;
+using PointsSectionDVFF_SpacoDiagoDiago = Points2d3dDVFF<mat::BlockCoeffSparse, mat::BlockDiagonal, mat::BlockDiagonal>;
+using PointsSectionDVFF_SpacoDiagoSpars = Points2d3dDVFF<mat::BlockCoeffSparse, mat::BlockDiagonal, mat::BlockSparse>;
+using PointsSectionDVFF_SpacoDiagoSpaco = Points2d3dDVFF<mat::BlockCoeffSparse, mat::BlockDiagonal, mat::BlockCoeffSparse>;
+
+template<int matTypeUv, int matTypeVv, int matTypeWv>
+class Points2d3dDVFD : public Points2d3dBase< Points2d3dDVFD<matTypeUv, matTypeVv, matTypeWv>, matTypeUv, matTypeVv, matTypeWv, mat::Dynamic, mat::Variable, numPoints2d, mat::Dynamic > {
+  std::vector<int> v_sizes;
+public:
+
+  Points2d3dDVFD() : v_sizes(numPoints3d, Point3d::blockSize) { }
+
+  int parameterUSize(void) const override {
+    return Point2d::blockSize;
+  }
+
+  const std::vector<int>& parameterVSize(void) const override {
+    return v_sizes;
+  }
+
+};
+
+using PointsSectionDVFD_DenseDiagoDense = Points2d3dDVFD<mat::BlockDense, mat::BlockDiagonal, mat::BlockDense>;
+using PointsSectionDVFD_DenseDiagoDiago = Points2d3dDVFD<mat::BlockDense, mat::BlockDiagonal, mat::BlockDiagonal>;
+using PointsSectionDVFD_DenseDiagoSpars = Points2d3dDVFD<mat::BlockDense, mat::BlockDiagonal, mat::BlockSparse>;
+using PointsSectionDVFD_DenseDiagoSpaco = Points2d3dDVFD<mat::BlockDense, mat::BlockDiagonal, mat::BlockCoeffSparse>;
+using PointsSectionDVFD_DiagoDiagoDense = Points2d3dDVFD<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockDense>;
+using PointsSectionDVFD_DiagoDiagoDiago = Points2d3dDVFD<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockDiagonal>;
+using PointsSectionDVFD_DiagoDiagoSpars = Points2d3dDVFD<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockSparse>;
+using PointsSectionDVFD_DiagoDiagoSpaco = Points2d3dDVFD<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockCoeffSparse>;
+using PointsSectionDVFD_SparsDiagoDense = Points2d3dDVFD<mat::BlockSparse, mat::BlockDiagonal, mat::BlockDense>;
+using PointsSectionDVFD_SparsDiagoDiago = Points2d3dDVFD<mat::BlockSparse, mat::BlockDiagonal, mat::BlockDiagonal>;
+using PointsSectionDVFD_SparsDiagoSpars = Points2d3dDVFD<mat::BlockSparse, mat::BlockDiagonal, mat::BlockSparse>;
+using PointsSectionDVFD_SparsDiagoSpaco = Points2d3dDVFD<mat::BlockSparse, mat::BlockDiagonal, mat::BlockCoeffSparse>;
+using PointsSectionDVFD_SpacoDiagoDense = Points2d3dDVFD<mat::BlockCoeffSparse, mat::BlockDiagonal, mat::BlockDense>;
+using PointsSectionDVFD_SpacoDiagoDiago = Points2d3dDVFD<mat::BlockCoeffSparse, mat::BlockDiagonal, mat::BlockDiagonal>;
+using PointsSectionDVFD_SpacoDiagoSpars = Points2d3dDVFD<mat::BlockCoeffSparse, mat::BlockDiagonal, mat::BlockSparse>;
+using PointsSectionDVFD_SpacoDiagoSpaco = Points2d3dDVFD<mat::BlockCoeffSparse, mat::BlockDiagonal, mat::BlockCoeffSparse>;
+
+template<int matTypeUv, int matTypeVv, int matTypeWv>
+class Points2d3dDVDF : public Points2d3dBase < Points2d3dDVDF<matTypeUv, matTypeVv, matTypeWv>, matTypeUv, matTypeVv, matTypeWv, mat::Dynamic, mat::Variable, mat::Dynamic, numPoints3d > {
+  std::vector<int> v_sizes;
+public:
+
+  Points2d3dDVDF() : v_sizes(numPoints3d, Point3d::blockSize) { }
+
+  int parameterUSize(void) const override {
+    return Point2d::blockSize;
+  }
+
+  const std::vector<int>& parameterVSize(void) const override {
+    return v_sizes;
+  }
+
+
+  int numParametersU() const override {
+    return numPoints2d;
+  }
+
+};
+
+using PointsSectionDVDF_DenseDiagoDense = Points2d3dDVDF<mat::BlockDense, mat::BlockDiagonal, mat::BlockDense>;
+using PointsSectionDVDF_DenseDiagoDiago = Points2d3dDVDF<mat::BlockDense, mat::BlockDiagonal, mat::BlockDiagonal>;
+using PointsSectionDVDF_DenseDiagoSpars = Points2d3dDVDF<mat::BlockDense, mat::BlockDiagonal, mat::BlockSparse>;
+using PointsSectionDVDF_DenseDiagoSpaco = Points2d3dDVDF<mat::BlockDense, mat::BlockDiagonal, mat::BlockCoeffSparse>;
+using PointsSectionDVDF_DiagoDiagoDense = Points2d3dDVDF<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockDense>;
+using PointsSectionDVDF_DiagoDiagoDiago = Points2d3dDVDF<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockDiagonal>;
+using PointsSectionDVDF_DiagoDiagoSpars = Points2d3dDVDF<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockSparse>;
+using PointsSectionDVDF_DiagoDiagoSpaco = Points2d3dDVDF<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockCoeffSparse>;
+using PointsSectionDVDF_SparsDiagoDense = Points2d3dDVDF<mat::BlockSparse, mat::BlockDiagonal, mat::BlockDense>;
+using PointsSectionDVDF_SparsDiagoDiago = Points2d3dDVDF<mat::BlockSparse, mat::BlockDiagonal, mat::BlockDiagonal>;
+using PointsSectionDVDF_SparsDiagoSpars = Points2d3dDVDF<mat::BlockSparse, mat::BlockDiagonal, mat::BlockSparse>;
+using PointsSectionDVDF_SparsDiagoSpaco = Points2d3dDVDF<mat::BlockSparse, mat::BlockDiagonal, mat::BlockCoeffSparse>;
+using PointsSectionDVDF_SpacoDiagoDense = Points2d3dDVDF<mat::BlockCoeffSparse, mat::BlockDiagonal, mat::BlockDense>;
+using PointsSectionDVDF_SpacoDiagoDiago = Points2d3dDVDF<mat::BlockCoeffSparse, mat::BlockDiagonal, mat::BlockDiagonal>;
+using PointsSectionDVDF_SpacoDiagoSpars = Points2d3dDVDF<mat::BlockCoeffSparse, mat::BlockDiagonal, mat::BlockSparse>;
+using PointsSectionDVDF_SpacoDiagoSpaco = Points2d3dDVDF<mat::BlockCoeffSparse, mat::BlockDiagonal, mat::BlockCoeffSparse>;
+
+template<int matTypeUv, int matTypeVv, int matTypeWv>
+class Points2d3dDVDD : public Points2d3dBase < Points2d3dDVDD<matTypeUv, matTypeVv, matTypeWv>, matTypeUv, matTypeVv, matTypeWv, mat::Dynamic, mat::Variable, mat::Dynamic, mat::Dynamic > {
+  std::vector<int> v_sizes;
+public:
+
+  Points2d3dDVDD() : v_sizes(numPoints3d, Point3d::blockSize) { }
+
+  int parameterUSize(void) const override {
+    return Point2d::blockSize;
+  }
+
+  const std::vector<int>& parameterVSize(void) const override {
+    return v_sizes;
+  }
+
+  int numParametersU() const override {
+    return numPoints2d;
+  }
+
+};
+
+using PointsSectionDVDD_DenseDiagoDense = Points2d3dDVDD<mat::BlockDense, mat::BlockDiagonal, mat::BlockDense>;
+using PointsSectionDVDD_DenseDiagoDiago = Points2d3dDVDD<mat::BlockDense, mat::BlockDiagonal, mat::BlockDiagonal>;
+using PointsSectionDVDD_DenseDiagoSpars = Points2d3dDVDD<mat::BlockDense, mat::BlockDiagonal, mat::BlockSparse>;
+using PointsSectionDVDD_DenseDiagoSpaco = Points2d3dDVDD<mat::BlockDense, mat::BlockDiagonal, mat::BlockCoeffSparse>;
+using PointsSectionDVDD_DiagoDiagoDense = Points2d3dDVDD<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockDense>;
+using PointsSectionDVDD_DiagoDiagoDiago = Points2d3dDVDD<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockDiagonal>;
+using PointsSectionDVDD_DiagoDiagoSpars = Points2d3dDVDD<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockSparse>;
+using PointsSectionDVDD_DiagoDiagoSpaco = Points2d3dDVDD<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockCoeffSparse>;
+using PointsSectionDVDD_SparsDiagoDense = Points2d3dDVDD<mat::BlockSparse, mat::BlockDiagonal, mat::BlockDense>;
+using PointsSectionDVDD_SparsDiagoDiago = Points2d3dDVDD<mat::BlockSparse, mat::BlockDiagonal, mat::BlockDiagonal>;
+using PointsSectionDVDD_SparsDiagoSpars = Points2d3dDVDD<mat::BlockSparse, mat::BlockDiagonal, mat::BlockSparse>;
+using PointsSectionDVDD_SparsDiagoSpaco = Points2d3dDVDD<mat::BlockSparse, mat::BlockDiagonal, mat::BlockCoeffSparse>;
+using PointsSectionDVDD_SpacoDiagoDense = Points2d3dDVDD<mat::BlockCoeffSparse, mat::BlockDiagonal, mat::BlockDense>;
+using PointsSectionDVDD_SpacoDiagoDiago = Points2d3dDVDD<mat::BlockCoeffSparse, mat::BlockDiagonal, mat::BlockDiagonal>;
+using PointsSectionDVDD_SpacoDiagoSpars = Points2d3dDVDD<mat::BlockCoeffSparse, mat::BlockDiagonal, mat::BlockSparse>;
+using PointsSectionDVDD_SpacoDiagoSpaco = Points2d3dDVDD<mat::BlockCoeffSparse, mat::BlockDiagonal, mat::BlockCoeffSparse>;
+
+
 TEMPLATE_TEST_CASE("DoubleSection-", "[DoubleSection-]",
   PointsSectionFFFF_DenseDiagoDense,
   PointsSectionFFFF_DenseDiagoDiago,
@@ -1179,6 +1326,23 @@ TEMPLATE_TEST_CASE("DoubleSection-", "[DoubleSection-]",
   PointsSectionDFFF_SpacoDiagoSpars,
   PointsSectionDFFF_SpacoDiagoSpaco,
   //----------------------------------
+  PointsSectionDVFF_DenseDiagoDense,
+  PointsSectionDVFF_DenseDiagoDiago,
+  PointsSectionDVFF_DenseDiagoSpars,
+  PointsSectionDVFF_DenseDiagoSpaco,
+  PointsSectionDVFF_DiagoDiagoDense,
+  PointsSectionDVFF_DiagoDiagoDiago,
+  PointsSectionDVFF_DiagoDiagoSpars,
+  PointsSectionDVFF_DiagoDiagoSpaco,
+  PointsSectionDVFF_SparsDiagoDense,
+  PointsSectionDVFF_SparsDiagoDiago,
+  PointsSectionDVFF_SparsDiagoSpars,
+  PointsSectionDVFF_SparsDiagoSpaco,
+  PointsSectionDVFF_SpacoDiagoDense,
+  PointsSectionDVFF_SpacoDiagoDiago,
+  PointsSectionDVFF_SpacoDiagoSpars,
+  PointsSectionDVFF_SpacoDiagoSpaco,
+  //----------------------------------
   PointsSectionDFFD_DenseDiagoDense,
   PointsSectionDFFD_DenseDiagoDiago,
   PointsSectionDFFD_DenseDiagoSpars,
@@ -1195,6 +1359,23 @@ TEMPLATE_TEST_CASE("DoubleSection-", "[DoubleSection-]",
   PointsSectionDFFD_SpacoDiagoDiago,
   PointsSectionDFFD_SpacoDiagoSpars,
   PointsSectionDFFD_SpacoDiagoSpaco,
+  //----------------------------------
+  PointsSectionDVFD_DenseDiagoDense,
+  PointsSectionDVFD_DenseDiagoDiago,
+  PointsSectionDVFD_DenseDiagoSpars,
+  PointsSectionDVFD_DenseDiagoSpaco,
+  PointsSectionDVFD_DiagoDiagoDense,
+  PointsSectionDVFD_DiagoDiagoDiago,
+  PointsSectionDVFD_DiagoDiagoSpars,
+  PointsSectionDVFD_DiagoDiagoSpaco,
+  PointsSectionDVFD_SparsDiagoDense,
+  PointsSectionDVFD_SparsDiagoDiago,
+  PointsSectionDVFD_SparsDiagoSpars,
+  PointsSectionDVFD_SparsDiagoSpaco,
+  PointsSectionDVFD_SpacoDiagoDense,
+  PointsSectionDVFD_SpacoDiagoDiago,
+  PointsSectionDVFD_SpacoDiagoSpars,
+  PointsSectionDVFD_SpacoDiagoSpaco,
   //----------------------------------
   PointsSectionDFDF_DenseDiagoDense,
   PointsSectionDFDF_DenseDiagoDiago,
@@ -1213,6 +1394,23 @@ TEMPLATE_TEST_CASE("DoubleSection-", "[DoubleSection-]",
   PointsSectionDFDF_SpacoDiagoSpars,
   PointsSectionDFDF_SpacoDiagoSpaco,
   //----------------------------------
+  PointsSectionDVDF_DenseDiagoDense,
+  PointsSectionDVDF_DenseDiagoDiago,
+  PointsSectionDVDF_DenseDiagoSpars,
+  PointsSectionDVDF_DenseDiagoSpaco,
+  PointsSectionDVDF_DiagoDiagoDense,
+  PointsSectionDVDF_DiagoDiagoDiago,
+  PointsSectionDVDF_DiagoDiagoSpars,
+  PointsSectionDVDF_DiagoDiagoSpaco,
+  PointsSectionDVDF_SparsDiagoDense,
+  PointsSectionDVDF_SparsDiagoDiago,
+  PointsSectionDVDF_SparsDiagoSpars,
+  PointsSectionDVDF_SparsDiagoSpaco,
+  PointsSectionDVDF_SpacoDiagoDense,
+  PointsSectionDVDF_SpacoDiagoDiago,
+  PointsSectionDVDF_SpacoDiagoSpars,
+  PointsSectionDVDF_SpacoDiagoSpaco,
+  //----------------------------------
   PointsSectionDFDD_DenseDiagoDense,
   PointsSectionDFDD_DenseDiagoDiago,
   PointsSectionDFDD_DenseDiagoSpars,
@@ -1229,6 +1427,23 @@ TEMPLATE_TEST_CASE("DoubleSection-", "[DoubleSection-]",
   PointsSectionDFDD_SpacoDiagoDiago,
   PointsSectionDFDD_SpacoDiagoSpars,
   PointsSectionDFDD_SpacoDiagoSpaco,
+  //----------------------------------
+  PointsSectionDVDD_DenseDiagoDense,
+  PointsSectionDVDD_DenseDiagoDiago,
+  PointsSectionDVDD_DenseDiagoSpars,
+  PointsSectionDVDD_DenseDiagoSpaco,
+  PointsSectionDVDD_DiagoDiagoDense,
+  PointsSectionDVDD_DiagoDiagoDiago,
+  PointsSectionDVDD_DiagoDiagoSpars,
+  PointsSectionDVDD_DiagoDiagoSpaco,
+  PointsSectionDVDD_SparsDiagoDense,
+  PointsSectionDVDD_SparsDiagoDiago,
+  PointsSectionDVDD_SparsDiagoSpars,
+  PointsSectionDVDD_SparsDiagoSpaco,
+  PointsSectionDVDD_SpacoDiagoDense,
+  PointsSectionDVDD_SpacoDiagoDiago,
+  PointsSectionDVDD_SpacoDiagoSpars,
+  PointsSectionDVDD_SpacoDiagoSpaco,
   //----------------------------------
   PointsSectionDDFF_DenseDiagoDense,
   PointsSectionDDFF_DenseDiagoDiago,
