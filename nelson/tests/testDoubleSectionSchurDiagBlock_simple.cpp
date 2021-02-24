@@ -482,70 +482,134 @@ void testFunction(bool parallelVinv, bool parallelEval) {
 
   pss.structureReady();
 
-  auto tprep = std::chrono::steady_clock::now();
-
   {
-    using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverse>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperDense, nelson::matrixWrapperDense, nelson::choleskyAMDOrdering> >;
-    SolverAlgorithm gn;
-    if (parallelVinv) {
-      gn.solverSettings().setNumThreadsMax();
-    }
+    auto tprep = std::chrono::steady_clock::now();
 
-    pss.addNoise(0.5);
-    auto tc = gn.solve(pss);
-    std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
-    std::cout << "stats " << gn.stats().toString() << std::endl;
-    REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
-  }
-  auto ts1 = std::chrono::steady_clock::now();
-  {
-    using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverse>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperDense, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering> >;
-    SolverAlgorithm gn;
-    if (parallelVinv) {
-      gn.solverSettings().setNumThreadsMax();
-    }
-    pss.addNoise(0.5);
-    auto tc = gn.solve(pss);
-    std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
-    std::cout << "stats " << gn.stats().toString() << std::endl;
-    REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
-  }
-  auto ts2 = std::chrono::steady_clock::now();
-  {
-    using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverse>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperSparse, nelson::matrixWrapperDense, nelson::choleskyAMDOrdering> >;
-    SolverAlgorithm gn;
-    if (parallelVinv) {
-      gn.solverSettings().setNumThreadsMax();
-    }
-    pss.addNoise(0.5);
-    auto tc = gn.solve(pss);
-    std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
-    std::cout << "stats " << gn.stats().toString() << std::endl;
-    REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
-  }
-  auto ts3 = std::chrono::steady_clock::now();
-  {
-    using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverse>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperSparse, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering> >;
-    SolverAlgorithm gn;
-    if (parallelVinv) {
-      gn.solverSettings().setNumThreadsMax();
-    }
-    pss.addNoise(0.5);
-    auto tc = gn.solve(pss);
-    std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
-    std::cout << "stats " << gn.stats().toString() << std::endl;
-    REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
-  }
-  auto ts4 = std::chrono::steady_clock::now();
+    {
+      using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverse>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperDense, nelson::matrixWrapperDense, nelson::choleskyAMDOrdering> >;
+      SolverAlgorithm gn;
+      if (parallelVinv) {
+        gn.solverSettings().setNumThreadsMax();
+      }
 
-  std::cout <<
-    "---- TIME ----" <<
-    "  preparation " << std::chrono::duration<double>(tprep - t0).count() << std::endl <<
-    "  s1 " << std::chrono::duration<double>(ts1 - tprep).count() << std::endl <<
-    "  s2 " << std::chrono::duration<double>(ts2 - ts1).count() << std::endl <<
-    "  s3 " << std::chrono::duration<double>(ts3 - ts2).count() << std::endl <<
-    "  s4 " << std::chrono::duration<double>(ts4 - ts3).count() << std::endl;
+      pss.addNoise(0.5);
+      auto tc = gn.solve(pss);
+      std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
+      std::cout << "stats " << gn.stats().toString() << std::endl;
+      std::cout << gn.solver().timeStats().toString() << std::endl;
+      REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
+    }
+    auto ts1 = std::chrono::steady_clock::now();
+    {
+      using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverse>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperDense, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering> >;
+      SolverAlgorithm gn;
+      if (parallelVinv) {
+        gn.solverSettings().setNumThreadsMax();
+      }
+      pss.addNoise(0.5);
+      auto tc = gn.solve(pss);
+      std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
+      std::cout << "stats " << gn.stats().toString() << std::endl;
+      std::cout << gn.solver().timeStats().toString() << std::endl;
+      REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
+    }
+    auto ts2 = std::chrono::steady_clock::now();
+    {
+      using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverse>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperSparse, nelson::matrixWrapperDense, nelson::choleskyAMDOrdering> >;
+      SolverAlgorithm gn;
+      if (parallelVinv) {
+        gn.solverSettings().setNumThreadsMax();
+      }
+      pss.addNoise(0.5);
+      auto tc = gn.solve(pss);
+      std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
+      std::cout << "stats " << gn.stats().toString() << std::endl;
+      std::cout << gn.solver().timeStats().toString() << std::endl;
+      REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
+    }
+    auto ts3 = std::chrono::steady_clock::now();
+    {
+      using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverse>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperSparse, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering> >;
+      SolverAlgorithm gn;
+      if (parallelVinv) {
+        gn.solverSettings().setNumThreadsMax();
+      }
+      pss.addNoise(0.5);
+      auto tc = gn.solve(pss);
+      std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
+      std::cout << "stats " << gn.stats().toString() << std::endl;
+      std::cout << gn.solver().timeStats().toString() << std::endl;
+      REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
+    }
+    auto ts4 = std::chrono::steady_clock::now();
 
+    std::cout <<
+      "---- TIME WITH BLOCK DIAGONAL ----" << std::endl <<
+      "  preparation " << std::chrono::duration<double>(tprep - t0).count() << std::endl <<
+      "  Dense-Dense " << std::chrono::duration<double>(ts1 - tprep).count() << std::endl <<
+      "  Dense-Spars " << std::chrono::duration<double>(ts2 - ts1).count() << std::endl <<
+      "  Spars-Dense " << std::chrono::duration<double>(ts3 - ts2).count() << std::endl <<
+      "  Spars-Spars " << std::chrono::duration<double>(ts4 - ts3).count() << std::endl;
+  }
+
+  ///------------------- EXPLICIT CHOLESKY
+
+  if (!parallelVinv) {
+    auto tprep = std::chrono::steady_clock::now();
+
+    {
+      using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperDense, nelson::matrixWrapperDense, nelson::solverCholeskySparse, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> >;
+      SolverAlgorithm gn;
+
+      pss.addNoise(0.5);
+      auto tc = gn.solve(pss);
+      std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
+      std::cout << "stats " << gn.stats().toString() << std::endl;
+      std::cout << gn.solver().timeStats().toString() << std::endl;
+      REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
+    }
+    auto ts1 = std::chrono::steady_clock::now();
+    {
+      using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperDense, nelson::matrixWrapperSparse, nelson::solverCholeskySparse, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> >;
+      SolverAlgorithm gn;
+      pss.addNoise(0.5);
+      auto tc = gn.solve(pss);
+      std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
+      std::cout << "stats " << gn.stats().toString() << std::endl;
+      std::cout << gn.solver().timeStats().toString() << std::endl;
+      REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
+    }
+    auto ts2 = std::chrono::steady_clock::now();
+    {
+      using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperSparse, nelson::matrixWrapperDense, nelson::solverCholeskySparse, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> >;
+      SolverAlgorithm gn;
+      pss.addNoise(0.5);
+      auto tc = gn.solve(pss);
+      std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
+      std::cout << "stats " << gn.stats().toString() << std::endl;
+      std::cout << gn.solver().timeStats().toString() << std::endl;
+      REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
+    }
+    auto ts3 = std::chrono::steady_clock::now();
+    {
+      using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperSparse, nelson::matrixWrapperSparse, nelson::solverCholeskySparse, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> >;
+      SolverAlgorithm gn;
+      pss.addNoise(0.5);
+      auto tc = gn.solve(pss);
+      std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
+      std::cout << "stats " << gn.stats().toString() << std::endl;
+      std::cout << gn.solver().timeStats().toString() << std::endl;
+      REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
+    }
+    auto ts4 = std::chrono::steady_clock::now();
+
+    std::cout <<
+      "---- TIME WITH EXPLICIT SCHUR ----" << std::endl <<
+      "  Dense-Dense " << std::chrono::duration<double>(ts1 - tprep).count() << std::endl <<
+      "  Dense-Spars " << std::chrono::duration<double>(ts2 - ts1).count() << std::endl <<
+      "  Spars-Dense " << std::chrono::duration<double>(ts3 - ts2).count() << std::endl <<
+      "  Spars-Spars " << std::chrono::duration<double>(ts4 - ts3).count() << std::endl;
+  }
 }
 
 template<int matTypeUv, int matTypeVv, int matTypeWv>

@@ -101,6 +101,8 @@ namespace nelson {
 
     const GaussNewtownStats stats() const { return _stats; }
 
+    const Solver& solver() const { return _solver; }
+
     template<class OptimizationProblem>
     GaussNewtonTerminationReason solve(OptimizationProblem& op);
 

@@ -20,7 +20,35 @@
 
 #include "ParallelExecHelper.h"
 
+#include <chrono>
+
 namespace nelson {
+
+  struct SolverDiagonalBlocksInverseSchurIterationTimeStat {
+    std::chrono::steady_clock::time_point t0_startIteration;
+    std::chrono::steady_clock::time_point t1_VInvComputed;
+    std::chrono::steady_clock::time_point t2_WRefreshed;
+    std::chrono::steady_clock::time_point t3_URefreshed;
+    std::chrono::steady_clock::time_point t4_bSComputed;
+    std::chrono::steady_clock::time_point t5_SComputed;
+    std::chrono::steady_clock::time_point t6_SSolveInit;
+    std::chrono::steady_clock::time_point t7_SFactorized;
+    std::chrono::steady_clock::time_point t8_bUComputed;
+    std::chrono::steady_clock::time_point t9_bVtildeComputed;
+    std::chrono::steady_clock::time_point t10_bVComputed;
+    std::string toString(const std::string & linePrefix = "") const;
+  };
+
+  struct SolverDiagonalBlocksInverseSchurTimeStats {
+    std::chrono::steady_clock::time_point startInit;
+    std::chrono::steady_clock::time_point endInit;
+    std::vector< SolverDiagonalBlocksInverseSchurIterationTimeStat> iterations;
+    SolverDiagonalBlocksInverseSchurIterationTimeStat& lastIteration() {
+      return iterations.back();
+    }
+    void addIteration() { iterations.push_back(SolverDiagonalBlocksInverseSchurIterationTimeStat()); }
+    std::string toString(const std::string& linePrefix = "") const;
+  };
 
   template<
     int matTypeU, int matTypeW,
@@ -61,6 +89,7 @@ namespace nelson {
     T _v_maxAbsHDiag;
 
     Settings _settings;
+    SolverDiagonalBlocksInverseSchurTimeStats _timeStats;
 
     void computeVInv(DoubleSectionHessianMatricesT& input, T relLambda, T absLambda);
 
@@ -69,6 +98,10 @@ namespace nelson {
 
     Settings& settings() { return _settings; }
     const Settings& settings() const { return _settings; }
+
+    const SolverDiagonalBlocksInverseSchurTimeStats& timeStats() const {
+      return _timeStats;
+    }
 
     void init(DoubleSectionHessianMatricesT& input, const DoubleSectionHessianVectorsT& b);
 

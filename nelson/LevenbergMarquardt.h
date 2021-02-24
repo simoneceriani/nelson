@@ -113,6 +113,8 @@ namespace nelson {
     template<typename RetType = const typename Solver::Settings&>
     inline std::enable_if_t<Solver::hasSettings, RetType> solverSettings() const { return _solver.settings(); }
 
+    const Solver& solver() const { return _solver; }
+
     const LevenbergMarquardtStats stats() const { return _stats; }
 
     template<class OptimizationProblem>

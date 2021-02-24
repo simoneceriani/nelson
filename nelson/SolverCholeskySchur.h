@@ -18,7 +18,37 @@
 
 #include <Eigen/Dense>
 
+#include <chrono>
+
 namespace nelson {
+
+  struct SolverCholeskySchurIterationTimeStat {
+    std::chrono::steady_clock::time_point t0_startIteration;
+    std::chrono::steady_clock::time_point t1_VInvbVComputed;
+    std::chrono::steady_clock::time_point t2_WRefreshed;
+    std::chrono::steady_clock::time_point t3_URefreshed;
+    std::chrono::steady_clock::time_point t4_bSComputed;
+    std::chrono::steady_clock::time_point t5_SComputed;
+    std::chrono::steady_clock::time_point t6_SSolveInit;
+    std::chrono::steady_clock::time_point t7_SFactorized;
+    std::chrono::steady_clock::time_point t8_bUComputed;
+    std::chrono::steady_clock::time_point t9_bVtildeComputed;
+    std::chrono::steady_clock::time_point t10_bVComputed;
+    std::string toString(const std::string& linePrefix = "") const;
+  };
+
+  struct SolverCholeskySchurTimeStat {
+    std::chrono::steady_clock::time_point startInit;
+    std::chrono::steady_clock::time_point t_initVSolver;
+    std::chrono::steady_clock::time_point endInit;
+    std::vector< SolverCholeskySchurIterationTimeStat> iterations;
+    SolverCholeskySchurIterationTimeStat& lastIteration() {
+      return iterations.back();
+    }
+    void addIteration() { iterations.push_back(SolverCholeskySchurIterationTimeStat()); }
+    std::string toString(const std::string& linePrefix = "") const;
+  };
+
 
   template<
     int matTypeU, int matTypeV, int matTypeW,
@@ -58,11 +88,18 @@ namespace nelson {
     typename SolverTraits<wrapperUType>::template SolverEigen<typename MatrixUType::MatOutputType, choleskyOrderingS> _solverS;
 
     bool _firstTime;
+    
+    SolverCholeskySchurTimeStat _timeStats;
 
   public:
     SolverCholeskySchur();
 
     void init(DoubleSectionHessianMatricesT& input, const DoubleSectionHessianVectorsT& b);
+
+    const SolverCholeskySchurTimeStat& timeStats() const {
+      return _timeStats;
+    }
+
 
     T maxAbsHDiag() const;
 
