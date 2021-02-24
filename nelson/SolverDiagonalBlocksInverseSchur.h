@@ -18,6 +18,8 @@
 
 #include <Eigen/Dense>
 
+#include "ParallelExecHelper.h"
+
 namespace nelson {
 
   template<
@@ -37,6 +39,9 @@ namespace nelson {
 
     using Type = T;
 
+    static constexpr bool hasSettings = true;
+    using Settings = ParallelExecSettings;
+
   private:
     DoubleSectionHessianVectorsT _incVector;
 
@@ -55,8 +60,15 @@ namespace nelson {
     bool _firstTime;
     T _v_maxAbsHDiag;
 
+    Settings _settings;
+
+    void computeVInv(DoubleSectionHessianMatricesT& input, T relLambda, T absLambda);
+
   public:
     SolverDiagonalBlocksInverseSchur();
+
+    Settings& settings() { return _settings; }
+    const Settings& settings() const { return _settings; }
 
     void init(DoubleSectionHessianMatricesT& input, const DoubleSectionHessianVectorsT& b);
 

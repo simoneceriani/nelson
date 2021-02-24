@@ -114,6 +114,7 @@ set(TESTS_LIST
   testGaussNewton2DScansAlign.cpp
   testGaussNewton2DScansAlignTimingTest.cpp
   testDoubleSectionSchurDiagBlock.cpp
+  testDoubleSectionSchurDiagBlock_simple.cpp
 )
 
 foreach(s ${TESTS_LIST})

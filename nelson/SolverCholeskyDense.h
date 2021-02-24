@@ -37,6 +37,8 @@ namespace nelson {
 
     using Type = T;
 
+    static constexpr bool hasSettings = false;
+
   private:
 
     DenseWrapperT _denseWrapper;

@@ -39,6 +39,8 @@ namespace nelson {
 
     using Type = T;
 
+    static constexpr bool hasSettings = false;
+
     using SolverType = Eigen::SimplicialLDLT<Eigen::SparseMatrix<T>, Eigen::Upper, EigenOrderingMethod>;
 
   private:

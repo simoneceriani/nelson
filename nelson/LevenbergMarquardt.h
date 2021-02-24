@@ -107,6 +107,12 @@ namespace nelson {
     LevenbergMarquardtSettings& settings() { return _settings; }
     const LevenbergMarquardtSettings& settings() const { return _settings; }
 
+    template<typename RetType = typename Solver::Settings&>
+    inline std::enable_if_t<Solver::hasSettings, RetType> solverSettings() { return _solver.settings(); }
+
+    template<typename RetType = const typename Solver::Settings&>
+    inline std::enable_if_t<Solver::hasSettings, RetType> solverSettings() const { return _solver.settings(); }
+
     const LevenbergMarquardtStats stats() const { return _stats; }
 
     template<class OptimizationProblem>

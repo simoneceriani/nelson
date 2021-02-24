@@ -16,10 +16,10 @@ namespace nelson {
     SolverDiagonalBlocksInverseSchur<matTypeU, matTypeW, T, BU, BV, NBU, NBV, wrapperUType, wrapperWType, choleskyOrderingS>::SolverDiagonalBlocksInverseSchur()
     : _firstTime(true), _v_maxAbsHDiag(-1)
   {
-  
+
   }
-  
-  
+
+
   template<
     int matTypeU, int matTypeW,
     class T,
@@ -28,7 +28,7 @@ namespace nelson {
     int wrapperUType, int wrapperWType,
     int choleskyOrderingS
   >
-  void SolverDiagonalBlocksInverseSchur<matTypeU, matTypeW, T, BU, BV, NBU, NBV, wrapperUType, wrapperWType, choleskyOrderingS>::init(DoubleSectionHessianMatricesT& input, const DoubleSectionHessianVectorsT& b)
+    void SolverDiagonalBlocksInverseSchur<matTypeU, matTypeW, T, BU, BV, NBU, NBV, wrapperUType, wrapperWType, choleskyOrderingS>::init(DoubleSectionHessianMatricesT& input, const DoubleSectionHessianVectorsT& b)
   {
     _matrixVInv.resize(input.V().blockDescriptor(), input.V().sparsityPatternCSPtr());
 
@@ -54,10 +54,10 @@ namespace nelson {
     class T,
     int BU, int BV,
     int NBU, int NBV,
-    int wrapperUType, int wrapperWType, 
+    int wrapperUType, int wrapperWType,
     int choleskyOrderingS
   >
-  T SolverDiagonalBlocksInverseSchur<matTypeU, matTypeW, T, BU, BV, NBU, NBV, wrapperUType, wrapperWType, choleskyOrderingS>::maxAbsHDiag() const
+    T SolverDiagonalBlocksInverseSchur<matTypeU, matTypeW, T, BU, BV, NBU, NBV, wrapperUType, wrapperWType, choleskyOrderingS>::maxAbsHDiag() const
   {
     return std::max(_v_maxAbsHDiag, _matrixU.mat().diagonal().cwiseAbs().maxCoeff());
   }
@@ -70,24 +70,13 @@ namespace nelson {
     int wrapperUType, int wrapperWType,
     int choleskyOrderingS
   >
-  bool SolverDiagonalBlocksInverseSchur<matTypeU, matTypeW, T, BU, BV, NBU, NBV, wrapperUType, wrapperWType, choleskyOrderingS>::computeIncrement(DoubleSectionHessianMatricesT& input, const DoubleSectionHessianVectorsT& b, T relLambda, T absLambda)
+    bool SolverDiagonalBlocksInverseSchur<matTypeU, matTypeW, T, BU, BV, NBU, NBV, wrapperUType, wrapperWType, choleskyOrderingS>::computeIncrement(DoubleSectionHessianMatricesT& input, const DoubleSectionHessianVectorsT& b, T relLambda, T absLambda)
   {
 
     bool ok = true;
 
     // V^-1
-    // note, compute increment solve for -b, OK
-    for (int c = 0; c < input.V().numBlocksCol(); c++) {
-      assert(_matrixVInv.blockUID(c, c) == c);
-      _matrixVInv.blockByUID(c) = input.V().blockByUID(c).template selfadjointView<Eigen::Upper>();
-      if (relLambda != 0 || absLambda != 0) {
-        _matrixVInv.blockByUID(c).diagonal().array() *= (1 + relLambda);
-        _matrixVInv.blockByUID(c).diagonal().array() += absLambda;
-      }
-      _matrixVInv.blockByUID(c) = _matrixVInv.blockByUID(c).inverse().eval();
-    }
-
-    // V^-1
+    computeVInv(input, relLambda, absLambda);
 
     // refresh (copy if needed)
     _matrixW.refresh();
@@ -131,6 +120,132 @@ namespace nelson {
     }
 
     return ok;
+  }
+
+
+  template<
+    int matTypeU, int matTypeW,
+    class T,
+    int BU, int BV,
+    int NBU, int NBV,
+    int wrapperUType, int wrapperWType,
+    int choleskyOrderingS
+  >
+    void SolverDiagonalBlocksInverseSchur<matTypeU, matTypeW, T, BU, BV, NBU, NBV, wrapperUType, wrapperWType, choleskyOrderingS>::computeVInv(DoubleSectionHessianMatricesT& input, T relLambda, T absLambda)
+  {
+
+    const int chunkSize = _settings.chunkSize();
+    const int numEval = int(input.V().numBlocksCol());
+    const int reqNumThread = std::min(numEval, _settings.maxNumThreads());
+
+    if (_settings.isSingleThread() || reqNumThread == 1) {
+      // note, compute increment solve for -b, OK
+      for (int c = 0; c < input.V().numBlocksCol(); c++) {
+        assert(_matrixVInv.blockUID(c, c) == c);
+        _matrixVInv.blockByUID(c) = input.V().blockByUID(c).template selfadjointView<Eigen::Upper>();
+        if (relLambda != 0 || absLambda != 0) {
+          _matrixVInv.blockByUID(c).diagonal().array() *= (1 + relLambda);
+          _matrixVInv.blockByUID(c).diagonal().array() += absLambda;
+        }
+        _matrixVInv.blockByUID(c) = _matrixVInv.blockByUID(c).inverse().eval();
+      }
+    }
+    else {
+      // static 
+      if (_settings.schedule() == ParallelSchedule::schedule_static) {
+        if (_settings.isChunkAuto()) {
+#pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(static)
+          for (int c = 0; c < input.V().numBlocksCol(); c++) {
+            assert(_matrixVInv.blockUID(c, c) == c);
+            _matrixVInv.blockByUID(c) = input.V().blockByUID(c).template selfadjointView<Eigen::Upper>();
+            if (relLambda != 0 || absLambda != 0) {
+              _matrixVInv.blockByUID(c).diagonal().array() *= (1 + relLambda);
+              _matrixVInv.blockByUID(c).diagonal().array() += absLambda;
+            }
+            _matrixVInv.blockByUID(c) = _matrixVInv.blockByUID(c).inverse().eval();
+          }
+        }
+        else {
+#pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(static, chunkSize)
+          for (int c = 0; c < input.V().numBlocksCol(); c++) {
+            assert(_matrixVInv.blockUID(c, c) == c);
+            _matrixVInv.blockByUID(c) = input.V().blockByUID(c).template selfadjointView<Eigen::Upper>();
+            if (relLambda != 0 || absLambda != 0) {
+              _matrixVInv.blockByUID(c).diagonal().array() *= (1 + relLambda);
+              _matrixVInv.blockByUID(c).diagonal().array() += absLambda;
+            }
+            _matrixVInv.blockByUID(c) = _matrixVInv.blockByUID(c).inverse().eval();
+          }
+
+        }
+      }
+      else if (_settings.schedule() == ParallelSchedule::schedule_dynamic) {
+        if (_settings.isChunkAuto()) {
+#pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(dynamic)
+          for (int c = 0; c < input.V().numBlocksCol(); c++) {
+            assert(_matrixVInv.blockUID(c, c) == c);
+            _matrixVInv.blockByUID(c) = input.V().blockByUID(c).template selfadjointView<Eigen::Upper>();
+            if (relLambda != 0 || absLambda != 0) {
+              _matrixVInv.blockByUID(c).diagonal().array() *= (1 + relLambda);
+              _matrixVInv.blockByUID(c).diagonal().array() += absLambda;
+            }
+            _matrixVInv.blockByUID(c) = _matrixVInv.blockByUID(c).inverse().eval();
+          }
+        }
+        else {
+#pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(dynamic, chunkSize)
+          for (int c = 0; c < input.V().numBlocksCol(); c++) {
+            assert(_matrixVInv.blockUID(c, c) == c);
+            _matrixVInv.blockByUID(c) = input.V().blockByUID(c).template selfadjointView<Eigen::Upper>();
+            if (relLambda != 0 || absLambda != 0) {
+              _matrixVInv.blockByUID(c).diagonal().array() *= (1 + relLambda);
+              _matrixVInv.blockByUID(c).diagonal().array() += absLambda;
+            }
+            _matrixVInv.blockByUID(c) = _matrixVInv.blockByUID(c).inverse().eval();
+          }
+
+        }
+      }
+      else if (_settings.schedule() == ParallelSchedule::schedule_guided) {
+        if (_settings.isChunkAuto()) {
+#pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(guided)
+          for (int c = 0; c < input.V().numBlocksCol(); c++) {
+            assert(_matrixVInv.blockUID(c, c) == c);
+            _matrixVInv.blockByUID(c) = input.V().blockByUID(c).template selfadjointView<Eigen::Upper>();
+            if (relLambda != 0 || absLambda != 0) {
+              _matrixVInv.blockByUID(c).diagonal().array() *= (1 + relLambda);
+              _matrixVInv.blockByUID(c).diagonal().array() += absLambda;
+            }
+            _matrixVInv.blockByUID(c) = _matrixVInv.blockByUID(c).inverse().eval();
+          }
+        }
+        else {
+#pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(guided, chunkSize)
+          for (int c = 0; c < input.V().numBlocksCol(); c++) {
+            assert(_matrixVInv.blockUID(c, c) == c);
+            _matrixVInv.blockByUID(c) = input.V().blockByUID(c).template selfadjointView<Eigen::Upper>();
+            if (relLambda != 0 || absLambda != 0) {
+              _matrixVInv.blockByUID(c).diagonal().array() *= (1 + relLambda);
+              _matrixVInv.blockByUID(c).diagonal().array() += absLambda;
+            }
+            _matrixVInv.blockByUID(c) = _matrixVInv.blockByUID(c).inverse().eval();
+          }
+
+        }
+      }
+      else if (_settings.schedule() == ParallelSchedule::schedule_runtime) {
+#pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(runtime)
+        for (int c = 0; c < input.V().numBlocksCol(); c++) {
+          assert(_matrixVInv.blockUID(c, c) == c);
+          _matrixVInv.blockByUID(c) = input.V().blockByUID(c).template selfadjointView<Eigen::Upper>();
+          if (relLambda != 0 || absLambda != 0) {
+            _matrixVInv.blockByUID(c).diagonal().array() *= (1 + relLambda);
+            _matrixVInv.blockByUID(c).diagonal().array() += absLambda;
+          }
+          _matrixVInv.blockByUID(c) = _matrixVInv.blockByUID(c).inverse().eval();
+        }
+      }
+    }
   }
 
 }

@@ -93,6 +93,12 @@ namespace nelson {
     GaussNewtonSettings& settings() { return _settings; }
     const GaussNewtonSettings& settings() const { return _settings; }
 
+    template<typename RetType = typename Solver::Settings &>
+    inline std::enable_if_t<Solver::hasSettings, RetType> solverSettings() { return _solver.settings(); }
+
+    template<typename RetType = const typename Solver::Settings&>
+    inline std::enable_if_t<Solver::hasSettings, RetType> solverSettings() const { return _solver.settings(); }
+
     const GaussNewtownStats stats() const { return _stats; }
 
     template<class OptimizationProblem>
