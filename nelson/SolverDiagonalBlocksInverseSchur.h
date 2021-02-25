@@ -77,7 +77,7 @@ namespace nelson {
     typename DoubleSectionHessianVectorsT::VecTypeV::StorageType _bVtilde;
 
     typename mat::SparseCoeffMatrixBlock<T, mat::ColMajor, BV, BV, NBV, NBV> _matrixVInv;
-    typename MatrixWrapperTraits<wrapperWType>::template Wrapper<matTypeW, T, mat::ColMajor, BU, BV, NBU, NBV> _matrixW;
+    typename MatrixWrapperTraits<wrapperWType>::template Wrapper<matTypeW, T, mat::RowMajor, BU, BV, NBU, NBV> _matrixW;
 
     using MatrixUType = typename MatrixWrapperTraits<wrapperUType>::template Wrapper<matTypeU, T, mat::ColMajor, BU, BU, NBU, NBU>;
     MatrixUType _matrixU;

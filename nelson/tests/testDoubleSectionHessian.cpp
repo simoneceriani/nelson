@@ -218,7 +218,7 @@ TEMPLATE_TEST_CASE_SIG("DoubleSectionHessian", "[DoubleSectionHessian]",
     }
   }
 
-  auto spW = std::make_shared<mat::SparsityPatternColMajor>(numUBlocks, numVBlocks);
+  auto spW = std::make_shared<mat::SparsityPatternRowMajor>(numUBlocks, numVBlocks);
   spW->setDiagonal();
   if (matTypeW != mat::BlockDiagonal) {
     for (int i = 0; i < 10; i++) {
@@ -408,7 +408,7 @@ TEMPLATE_TEST_CASE_SIG("DoubleSectionHessian", "[DoubleSectionHessian]",
     }
   }
 
-  auto spW = std::make_shared<mat::SparsityPatternColMajor>(numUBlocks, numVBlocks);
+  auto spW = std::make_shared<mat::SparsityPatternRowMajor>(numUBlocks, numVBlocks);
   spW->setDiagonal();
   if (matTypeW != mat::BlockDiagonal) {
     for (int i = 0; i < 10; i++) {
@@ -597,7 +597,7 @@ TEMPLATE_TEST_CASE_SIG("DoubleSectionHessian", "[DoubleSectionHessian]",
     }
   }
 
-  auto spW = std::make_shared<mat::SparsityPatternColMajor>(numUBlocks, numVBlocks);
+  auto spW = std::make_shared<mat::SparsityPatternRowMajor>(numUBlocks, numVBlocks);
   spW->setDiagonal();
   if (matTypeW != mat::BlockDiagonal) {
     for (int i = 0; i < 10; i++) {
@@ -785,7 +785,7 @@ TEMPLATE_TEST_CASE_SIG("DoubleSectionHessian", "[DoubleSectionHessian]",
     }
   }
 
-  auto spW = std::make_shared<mat::SparsityPatternColMajor>(numUBlocks, numVBlocks);
+  auto spW = std::make_shared<mat::SparsityPatternRowMajor>(numUBlocks, numVBlocks);
   spW->setDiagonal();
   if (matTypeW != mat::BlockDiagonal) {
     for (int i = 0; i < 10; i++) {
@@ -976,7 +976,7 @@ TEMPLATE_TEST_CASE_SIG("DoubleSectionHessian", "[DoubleSectionHessian]",
     }
   }
 
-  auto spW = std::make_shared<mat::SparsityPatternColMajor>(numUBlocks, numVBlocks);
+  auto spW = std::make_shared<mat::SparsityPatternRowMajor>(numUBlocks, numVBlocks);
   spW->setDiagonal();
   if (matTypeW != mat::BlockDiagonal) {
     for (int i = 0; i < 10; i++) {
@@ -1166,7 +1166,7 @@ TEMPLATE_TEST_CASE_SIG("DoubleSectionHessian", "[DoubleSectionHessian]",
     }
   }
 
-  auto spW = std::make_shared<mat::SparsityPatternColMajor>(numUBlocks, numVBlocks);
+  auto spW = std::make_shared<mat::SparsityPatternRowMajor>(numUBlocks, numVBlocks);
   spW->setDiagonal();
   if (matTypeW != mat::BlockDiagonal) {
     for (int i = 0; i < 10; i++) {
@@ -1355,7 +1355,7 @@ TEMPLATE_TEST_CASE_SIG("DoubleSectionHessian", "[DoubleSectionHessian]",
     }
   }
 
-  auto spW = std::make_shared<mat::SparsityPatternColMajor>(numUBlocks, numVBlocks);
+  auto spW = std::make_shared<mat::SparsityPatternRowMajor>(numUBlocks, numVBlocks);
   spW->setDiagonal();
   if (matTypeW != mat::BlockDiagonal) {
     for (int i = 0; i < 10; i++) {
@@ -1543,7 +1543,7 @@ TEMPLATE_TEST_CASE_SIG("DoubleSectionHessian", "[DoubleSectionHessian]",
     }
   }
 
-  auto spW = std::make_shared<mat::SparsityPatternColMajor>(numUBlocks, numVBlocks);
+  auto spW = std::make_shared<mat::SparsityPatternRowMajor>(numUBlocks, numVBlocks);
   spW->setDiagonal();
   if (matTypeW != mat::BlockDiagonal) {
     for (int i = 0; i < 10; i++) {
@@ -1734,7 +1734,7 @@ TEMPLATE_TEST_CASE_SIG("DoubleSectionHessian", "[DoubleSectionHessian]",
     }
   }
 
-  auto spW = std::make_shared<mat::SparsityPatternColMajor>(numUBlocks, numVBlocks);
+  auto spW = std::make_shared<mat::SparsityPatternRowMajor>(numUBlocks, numVBlocks);
   spW->setDiagonal();
   if (matTypeW != mat::BlockDiagonal) {
     for (int i = 0; i < 10; i++) {
@@ -1924,7 +1924,7 @@ TEMPLATE_TEST_CASE_SIG("DoubleSectionHessian", "[DoubleSectionHessian]",
     }
   }
 
-  auto spW = std::make_shared<mat::SparsityPatternColMajor>(numUBlocks, numVBlocks);
+  auto spW = std::make_shared<mat::SparsityPatternRowMajor>(numUBlocks, numVBlocks);
   spW->setDiagonal();
   if (matTypeW != mat::BlockDiagonal) {
     for (int i = 0; i < 10; i++) {
@@ -2113,7 +2113,7 @@ TEMPLATE_TEST_CASE_SIG("DoubleSectionHessian", "[DoubleSectionHessian]",
     }
   }
 
-  auto spW = std::make_shared<mat::SparsityPatternColMajor>(numUBlocks, numVBlocks);
+  auto spW = std::make_shared<mat::SparsityPatternRowMajor>(numUBlocks, numVBlocks);
   spW->setDiagonal();
   if (matTypeW != mat::BlockDiagonal) {
     for (int i = 0; i < 10; i++) {
@@ -2301,7 +2301,7 @@ TEMPLATE_TEST_CASE_SIG("DoubleSectionHessian", "[DoubleSectionHessian]",
     }
   }
 
-  auto spW = std::make_shared<mat::SparsityPatternColMajor>(numUBlocks, numVBlocks);
+  auto spW = std::make_shared<mat::SparsityPatternRowMajor>(numUBlocks, numVBlocks);
   spW->setDiagonal();
   if (matTypeW != mat::BlockDiagonal) {
     for (int i = 0; i < 10; i++) {
@@ -2493,7 +2493,7 @@ TEMPLATE_TEST_CASE_SIG("DoubleSectionHessian", "[DoubleSectionHessian]",
     }
   }
 
-  auto spW = std::make_shared<mat::SparsityPatternColMajor>(numUBlocks, numVBlocks);
+  auto spW = std::make_shared<mat::SparsityPatternRowMajor>(numUBlocks, numVBlocks);
   spW->setDiagonal();
   if (matTypeW != mat::BlockDiagonal) {
     for (int i = 0; i < 10; i++) {
@@ -2683,7 +2683,7 @@ TEMPLATE_TEST_CASE_SIG("DoubleSectionHessian", "[DoubleSectionHessian]",
     }
   }
 
-  auto spW = std::make_shared<mat::SparsityPatternColMajor>(numUBlocks, numVBlocks);
+  auto spW = std::make_shared<mat::SparsityPatternRowMajor>(numUBlocks, numVBlocks);
   spW->setDiagonal();
   if (matTypeW != mat::BlockDiagonal) {
     for (int i = 0; i < 10; i++) {
@@ -2872,7 +2872,7 @@ TEMPLATE_TEST_CASE_SIG("DoubleSectionHessian", "[DoubleSectionHessian]",
     }
   }
 
-  auto spW = std::make_shared<mat::SparsityPatternColMajor>(numUBlocks, numVBlocks);
+  auto spW = std::make_shared<mat::SparsityPatternRowMajor>(numUBlocks, numVBlocks);
   spW->setDiagonal();
   if (matTypeW != mat::BlockDiagonal) {
     for (int i = 0; i < 10; i++) {
@@ -3060,7 +3060,7 @@ TEMPLATE_TEST_CASE_SIG("DoubleSectionHessian", "[DoubleSectionHessian]",
     }
   }
 
-  auto spW = std::make_shared<mat::SparsityPatternColMajor>(numUBlocks, numVBlocks);
+  auto spW = std::make_shared<mat::SparsityPatternRowMajor>(numUBlocks, numVBlocks);
   spW->setDiagonal();
   if (matTypeW != mat::BlockDiagonal) {
     for (int i = 0; i < 10; i++) {

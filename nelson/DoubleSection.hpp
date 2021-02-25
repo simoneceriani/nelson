@@ -27,7 +27,8 @@ namespace nelson {
     auto newV = std::vector<std::map<int, ListWithCount>>(this->numParametersV());
     this->_edgeSetterComputerV.swap(newV);
 
-    auto newW = std::vector<std::map<int, ListWithCount>>(this->numParametersV());
+    // this is row major
+    auto newW = std::vector<std::map<int, ListWithCount>>(this->numParametersU());
     this->_edgeSetterComputerW.swap(newW);
 
   }
@@ -53,10 +54,10 @@ namespace nelson {
       }
     }
 
-    this->_sparsityPatternW.reset(new mat::SparsityPattern<mat::ColMajor>(this->numParametersU(), this->numParametersV()));
-    for (int j = 0; j < this->_edgeSetterComputerW.size(); j++) {
-      for (auto& setList : this->_edgeSetterComputerW[j]) {
-        this->_sparsityPatternW->add(setList.first, j);
+    this->_sparsityPatternW.reset(new mat::SparsityPattern<mat::RowMajor>(this->numParametersU(), this->numParametersV()));
+    for (int i = 0; i < this->_edgeSetterComputerW.size(); i++) {
+      for (auto& setList : this->_edgeSetterComputerW[i]) {
+        this->_sparsityPatternW->add(i, setList.first);
       }
     }
 
@@ -95,9 +96,9 @@ namespace nelson {
     assert(buid == _hessian.V().nonZeroBlocks());
 
     buid = 0;
-    for (int j = 0; j < this->_edgeSetterComputerW.size(); j++) {
-      for (auto& setList : this->_edgeSetterComputerW[j]) {
-        assert(_hessian.W().blockUID(setList.first, j) == buid);
+    for (int i = 0; i < this->_edgeSetterComputerW.size(); i++) {
+      for (auto& setList : this->_edgeSetterComputerW[i]) {
+        assert(_hessian.W().blockUID(i, setList.first) == buid);
         for (auto& set : setList.second.list) {
           set.setter->setUID(buid);
         }
@@ -135,8 +136,8 @@ namespace nelson {
         cuCount++;
       }
     }
-    for (int j = 0; j < this->_edgeSetterComputerW.size(); j++) {
-      for (auto& setList : this->_edgeSetterComputerW[j]) {
+    for (int i = 0; i < this->_edgeSetterComputerW.size(); i++) {
+      for (auto& setList : this->_edgeSetterComputerW[i]) {
         _computationUnits[cuCount].resize(setList.second.size);
         int c = 0;
         for (auto& set : setList.second.list) {
@@ -196,8 +197,8 @@ namespace nelson {
       if (!EdgeBinaryAdapterT::isEdgeAcrossSections) {
         assert(i.id() < j.id()); 
       }
-      EdgeBinaryAdapterT::edgeSetterComputer12(*static_cast<Derived*>(this))[j.id()][i.id()].list.emplace_front(SetterComputer(new EdgeBinaryBase::EdgeUID_12_Setter(e), new typename EdgeBinarySectionBase<Derived>::HessianUpdater_12(e)));
-      EdgeBinaryAdapterT::edgeSetterComputer12(*static_cast<Derived*>(this))[j.id()][i.id()].size++;
+      EdgeBinaryAdapterT::edgeSetterComputer12(*static_cast<Derived*>(this), i.id(), j.id()).list.emplace_front(SetterComputer(new EdgeBinaryBase::EdgeUID_12_Setter(e), new typename EdgeBinarySectionBase<Derived>::HessianUpdater_12(e)));
+      EdgeBinaryAdapterT::edgeSetterComputer12(*static_cast<Derived*>(this), i.id(), j.id()).size++;
     }
 
     if (j.type() == NodeType::Variable) {

@@ -79,7 +79,7 @@ namespace nelson {
     typename DoubleSectionHessianVectorsT::VecTypeV::StorageType _bVtilde;
 
     typename SolverTraits<solverVType>::template Solver<SingleSectionHessianTraits<matTypeV,T,BV,NBV>, choleskyOrderingV> _solverVMatrix;
-    typename MatrixWrapperTraits<wrapperWType>::template Wrapper<matTypeW, T, mat::ColMajor, BU, BV, NBU, NBV> _matrixW;
+    typename MatrixWrapperTraits<wrapperWType>::template Wrapper<matTypeW, T, mat::RowMajor, BU, BV, NBU, NBV> _matrixW;
 
     using MatrixUType = typename MatrixWrapperTraits<wrapperUType>::template Wrapper<matTypeU, T, mat::ColMajor, BU, BU, NBU, NBU>;
     MatrixUType _matrixU;

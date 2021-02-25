@@ -30,7 +30,7 @@ namespace nelson {
     BlockSizeTypeParV blockSizesV, int nBlocksV,
     const mat::SparsityPattern<mat::ColMajor>::CSPtr& spU,
     const mat::SparsityPattern<mat::ColMajor>::CSPtr& spV,
-    const mat::SparsityPattern<mat::ColMajor>::CSPtr& spW
+    const mat::SparsityPattern<mat::RowMajor>::CSPtr& spW
   )
   {
     auto blockDescriptorU = MatTypeU::BlockDescriptor::squareMatrix(blockSizesU, nBlocksU);

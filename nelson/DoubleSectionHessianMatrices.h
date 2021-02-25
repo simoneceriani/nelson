@@ -18,7 +18,7 @@ namespace nelson {
   public:
     using MatTraitsU = mat::MatrixBlockIterableTypeTraits<matTypeUv, Tv, mat::ColMajor, BUv, BUv, NBUv, NBUv>;
     using MatTraitsV = mat::MatrixBlockIterableTypeTraits<matTypeVv, Tv, mat::ColMajor, BVv, BVv, NBVv, NBVv>;
-    using MatTraitsW = mat::MatrixBlockIterableTypeTraits<matTypeWv, Tv, mat::ColMajor, BUv, BVv, NBUv, NBVv>;
+    using MatTraitsW = mat::MatrixBlockIterableTypeTraits<matTypeWv, Tv, mat::RowMajor, BUv, BVv, NBUv, NBVv>;
 
     using MatTypeU = typename MatTraitsU::MatrixType;
     using MatTypeV = typename MatTraitsV::MatrixType;

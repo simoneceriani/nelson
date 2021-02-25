@@ -162,7 +162,8 @@ namespace nelson {
   private:
 
     // once the number of params is known (parametersReady() called), _sparsityPattern is allocated and _edgeSetter too, ready to receive edges
-    std::shared_ptr<mat::SparsityPattern<mat::ColMajor>> _sparsityPatternU, _sparsityPatternV, _sparsityPatternW;
+    std::shared_ptr<mat::SparsityPattern<mat::ColMajor>> _sparsityPatternU, _sparsityPatternV;
+    std::shared_ptr<mat::SparsityPattern<mat::RowMajor>> _sparsityPatternW;
 
     std::vector<std::map<int, ListWithCount>> _edgeSetterComputerU, _edgeSetterComputerV, _edgeSetterComputerW;
 
@@ -211,7 +212,7 @@ namespace nelson {
       assert(_sparsityPatternV != nullptr);
       return *_sparsityPatternV;
     }
-    const mat::SparsityPattern<mat::ColMajor >& sparsityPatternW() const {
+    const mat::SparsityPattern<mat::RowMajor >& sparsityPatternW() const {
       assert(_sparsityPatternW != nullptr);
       return *_sparsityPatternW;
     }
@@ -413,8 +414,8 @@ namespace nelson {
         return section.hessianUBlockByUID(uid);
       }
 
-      static std::vector<std::map<int, ListWithCount>>& edgeSetterComputer12(Derived& section) {
-        return section._edgeSetterComputerU;
+      static ListWithCount & edgeSetterComputer12(Derived& section, int i, int j) {
+        return section._edgeSetterComputerU[j][i];
       }
 
     };
@@ -426,8 +427,8 @@ namespace nelson {
         return section.hessianWBlockByUID(uid);
       }
 
-      static std::vector<std::map<int, ListWithCount>>& edgeSetterComputer12(Derived& section) {
-        return section._edgeSetterComputerW;
+      static ListWithCount& edgeSetterComputer12(Derived& section, int i, int j) {
+        return section._edgeSetterComputerW[i][j];
       }
 
     };
@@ -439,8 +440,8 @@ namespace nelson {
         return section.hessianVBlockByUID(uid);
       }
 
-      static std::vector<std::map<int, ListWithCount>>& edgeSetterComputer12(Derived& section) {
-        return section._edgeSetterComputerV;
+      static ListWithCount & edgeSetterComputer12(Derived& section, int i, int j) {
+        return section._edgeSetterComputerV[j][i];
       }
 
     };
