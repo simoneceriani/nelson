@@ -16,7 +16,7 @@ namespace nelson {
   class SparseWrapper<mat::BlockDense, T, Ordering, BR, BC, NBR, NBC> {
   public:
     using MatType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockDense, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
-    using MatCopyType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockCoeffSparse, T, mat::ColMajor, BR, BC, NBR, NBC>::MatrixType;
+    using MatCopyType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockCoeffSparse, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
     using MatOutputType = typename MatCopyType::StorageType;
 
   private:
@@ -111,7 +111,7 @@ namespace nelson {
   public:
     using MatType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockDiagonal, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
 
-    using MatCopyType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockCoeffSparse, T, mat::ColMajor, BR, BC, NBR, NBC>::MatrixType;
+    using MatCopyType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockCoeffSparse, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
     using MatOutputType = typename MatCopyType::StorageType;
   private:
 
@@ -159,7 +159,7 @@ namespace nelson {
   public:
     using MatType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockSparse, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
 
-    using MatCopyType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockCoeffSparse, T, mat::ColMajor, BR, BC, NBR, NBC>::MatrixType;
+    using MatCopyType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockCoeffSparse, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
     using MatOutputType = typename MatCopyType::StorageType;
   private:
 

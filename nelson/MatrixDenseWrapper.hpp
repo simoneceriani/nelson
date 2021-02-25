@@ -34,8 +34,8 @@ namespace nelson {
   template<class T, int Ordering, int BR, int BC, int NBR, int NBC>
   void DenseWrapper<mat::BlockDiagonal, T, Ordering, BR, BC, NBR, NBC>::refresh() {
     assert(this->_matrix != nullptr);
-    for (int cb = 0; cb < this->_matrix->numBlocksCol(); cb++) {
-      for (auto it = this->_matrix->colBegin(cb); it() != it.end(); it++) {
+    for (int cb = 0; cb < this->_matrix->outerSize(); cb++) {
+      for (auto it = this->_matrix->begin(cb); it() != it.end(); it++) {
         this->_matCopy.block(it.row(), it.col()) = it.block();
       }
     }
@@ -58,8 +58,8 @@ namespace nelson {
   template<class T, int Ordering, int BR, int BC, int NBR, int NBC>
   void DenseWrapper<mat::BlockSparse, T, Ordering, BR, BC, NBR, NBC>::refresh() {
     assert(this->_matrix != nullptr);
-    for (int cb = 0; cb < this->_matrix->numBlocksCol(); cb++) {
-      for (auto it = this->_matrix->colBegin(cb); it() != it.end(); it++) {
+    for (int cb = 0; cb < this->_matrix->outerSize(); cb++) {
+      for (auto it = this->_matrix->begin(cb); it() != it.end(); it++) {
         this->_matCopy.block(it.row(), it.col()) = it.block();
       }
     }
