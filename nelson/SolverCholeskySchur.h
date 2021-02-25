@@ -71,6 +71,7 @@ namespace nelson {
     using Type = T;
 
     static constexpr bool hasSettings = false;
+    class Settings {};
 
   private:
     DoubleSectionHessianVectorsT _incVector;
