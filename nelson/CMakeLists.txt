@@ -52,6 +52,8 @@ target_sources_wrapper(nelson
     MatrixDenseWrapper.hpp
     MatrixSparseWrapper.h
     MatrixSparseWrapper.hpp
+    MatrixWWtMultiplier.h
+    MatrixWWtMultiplier.hpp
     GaussNewton.h
     GaussNewton.hpp
     SolverCholeskyDense.h
@@ -81,6 +83,7 @@ target_sources_wrapper(nelson
     EdgeBinary.cpp
     MatrixDenseWrapper.cpp
     MatrixSparseWrapper.cpp
+    MatrixWWtMultiplier.cpp
     GaussNewton.cpp
     SolverCholeskyDense.cpp
     SolverCholeskySchur.cpp

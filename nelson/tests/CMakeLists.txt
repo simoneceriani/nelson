@@ -24,6 +24,7 @@ set(TESTS_LIST
   testSingleSection.cpp
   testMatrixSparseDenseWrapper.cpp
   testDoubleSectionSchurDiagBlock_simple.cpp
+  testMatrixWWtMultiplier.cpp
 )
 
 foreach(s ${TESTS_LIST})
