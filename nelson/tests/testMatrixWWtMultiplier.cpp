@@ -168,6 +168,14 @@ TEMPLATE_TEST_CASE_SIG("MatrixWWtMultiplier-Base", "[MatrixWWtMultiplier-Base]",
   }
 
   nelson::MatrixWWtMultiplier<matType, double, BR, BC, NBR, NBC, matOutType, matOutOrdering> mwwt;
+
+  SECTION("SINGLE THREAD") {
+    mwwt.settings().setSingleThread();
+  }
+  SECTION("MULTI THREAD") {
+    mwwt.settings().setNumThreadsMax();
+  }
+
   mwwt.prepare(W);
   mwwt.multiply(W, W);
 
