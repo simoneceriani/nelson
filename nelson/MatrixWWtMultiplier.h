@@ -20,7 +20,9 @@ namespace nelson {
       int inner_index;
       std::vector<UIDPair> pairs;
 
-      MultPattern(int inner_index, std::vector<UIDPair> & pairs) : inner_index(inner_index) {
+      MultPattern(int inner_index, std::vector<UIDPair> & pairs) : 
+        inner_index(inner_index)
+      {
         this->pairs.swap(pairs);
       }
     };
@@ -39,6 +41,13 @@ namespace nelson {
 
     void prepare(const MatType& input); // only one input, no need for the other matrix, sparsity pattern is the transpose
     void multiply(const MatType& A, const MatType& B);
+
+    const MatOuputType& result() const {
+      return _matOutput;
+    }
+    MatOuputType& result() {
+      return _matOutput;
+    }
   };
   
 }
