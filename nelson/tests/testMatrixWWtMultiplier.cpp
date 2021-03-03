@@ -14,148 +14,49 @@ constexpr int NBCv = 5;
 
 #define DEBUGOUT if(false)
 
-TEMPLATE_TEST_CASE_SIG("MatrixWWtMultiplier-Base", "[MatrixWWtMultiplier-Base]",
-  ((int matType, int BR, int BC, int NBR, int NBC, int matOutType, int matOutOrdering), matType, BR, BC, NBR, NBC, matOutType, matOutOrdering),
-  (mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::ColMajor),
-  (mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::RowMajor),
-  (mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::ColMajor),
-  (mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::RowMajor),
-  (mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
-  (mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
-  //---------------------------------------------------------------------------------
-  (mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::ColMajor),
-  (mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::RowMajor),
-  (mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::ColMajor),
-  (mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::RowMajor),
-  (mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
-  (mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
-  //---------------------------------------------------------------------------------
-  (mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::ColMajor),
-  (mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::RowMajor),
-  (mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::ColMajor),
-  (mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::RowMajor),
-  (mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
-  (mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
-  //---------------------------------------------------------------------------------
-  (mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::ColMajor),
-  (mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::RowMajor),
-  (mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::ColMajor),
-  (mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::RowMajor),
-  (mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
-  (mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
-  //---------------------------------------------------------------------------------
-  //---------------------------------------------------------------------------------
-  (mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::ColMajor),
-  (mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::RowMajor),
-  (mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
-  (mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
-  (mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
-  (mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
-  //---------------------------------------------------------------------------------
-  (mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::ColMajor),
-  (mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::RowMajor),
-  (mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
-  (mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
-  (mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
-  (mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
-  //---------------------------------------------------------------------------------
-  (mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::ColMajor),
-  (mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::RowMajor),
-  (mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
-  (mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
-  (mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
-  (mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
-  //---------------------------------------------------------------------------------
-  (mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::ColMajor),
-  (mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::RowMajor),
-  (mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
-  (mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
-  (mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
-  (mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
-  //---------------------------------------------------------------------------------
-  //---------------------------------------------------------------------------------
-  (mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::ColMajor),
-  (mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::RowMajor),
-  (mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::ColMajor),
-  (mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::RowMajor),
-  (mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
-  (mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
-  //---------------------------------------------------------------------------------
-  (mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::ColMajor),
-  (mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::RowMajor),
-  (mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::ColMajor),
-  (mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::RowMajor),
-  (mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
-  (mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
-  //---------------------------------------------------------------------------------
-  (mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::ColMajor),
-  (mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::RowMajor),
-  (mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::ColMajor),
-  (mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::RowMajor),
-  (mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
-  (mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
-  //---------------------------------------------------------------------------------
-  (mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::ColMajor),
-  (mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::RowMajor),
-  (mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::ColMajor),
-  (mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::RowMajor),
-  (mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
-  (mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
-  //---------------------------------------------------------------------------------
-  //---------------------------------------------------------------------------------
-  (mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::ColMajor),
-  (mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::RowMajor),
-  (mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
-  (mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
-  (mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
-  (mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
-  //---------------------------------------------------------------------------------
-  (mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::ColMajor),
-  (mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::RowMajor),
-  (mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
-  (mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
-  (mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
-  (mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
-  //---------------------------------------------------------------------------------
-  (mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::ColMajor),
-  (mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::RowMajor),
-  (mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
-  (mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
-  (mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
-  (mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
-  //---------------------------------------------------------------------------------
-  (mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::ColMajor),
-  (mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::RowMajor),
-  (mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
-  (mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
-  (mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
-  (mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor)
-)
-{
+template<int matUType, int matType, int BR, int BC, int NBR, int NBC, int matOutType, int matOutOrdering>
+void templateTestFunc() {
+  typename mat::MatrixBlockIterableTypeTraits<matUType, double, mat::ColMajor, BR, BR, NBR, NBR>::MatrixType U;
+  mat::SparsityPattern<mat::ColMajor>::SPtr spU(new mat::SparsityPattern<mat::ColMajor>(NBRv, NBRv));
+  spU->setDiagonal();
+  if (matUType != mat::BlockDiagonal) {
+    spU->add(0, 2);
+  }
+
+  U.resize(mat::MatrixBlockDescriptor<BR, BR, NBR, NBR>(BRv, NBRv, BRv, NBRv), spU);
+  U.setZero();
+  for (int bi = 0; bi < U.nonZeroBlocks(); bi++) {
+    U.blockByUID(bi).setRandom();
+  }
 
   typename mat::MatrixBlockIterableTypeTraits<matType, double, mat::RowMajor, BR, BC, NBR, NBC>::MatrixType W;
 
   mat::SparsityPattern<mat::RowMajor>::SPtr sp(new mat::SparsityPattern<mat::RowMajor>(NBRv, NBCv));
-  // 0 1 2 3 4
-  // X - - X X
   if (matType != mat::BlockDiagonal) {
+    // 0 1 2 3 4
+    // X - - X X
     sp->add(0, 0); sp->add(0, 3); sp->add(0, 4);
     // X X - X -
     sp->add(1, 0); sp->add(1, 1); sp->add(1, 3);
     // - X X X X
-    sp->add(2, 1); sp->add(2, 2); sp->add(2, 3); sp->add(2, 4);
+    sp->add(2, 1); sp->add(2, 2); //sp->add(2, 3); sp->add(2, 4);
 
     //   0 1 2 3 4       0 1 2
     // 0 X - - X X     0 X X - 
     // 1 X X - X -  *  1 - X X
-    // 2 - X X X X     2 - - X
-    //                 3 X X X
-    //                 4 X - X
+    // 2 - X X - -     2 - - X
+    //                 3 X X -
+    //                 4 X - -
 
     // [0,0] = 0,0 * (0,0)' + 0,3 * (0,3)' + 0,4 * (0,4)'
     // [0,1] = 0,0 * (1,0)' + 0,3 * (1,3)'
     // [0,2] = 0,3 * (2,3)' + 0,4 * (2,4)'
     // etc
+
+    // result patter (tri up)
+    // X X -
+    //   X X
+    //     X
   }
   else {
     sp->setDiagonal();
@@ -167,7 +68,7 @@ TEMPLATE_TEST_CASE_SIG("MatrixWWtMultiplier-Base", "[MatrixWWtMultiplier-Base]",
     W.blockByUID(bi).setRandom();
   }
 
-  nelson::MatrixWWtMultiplier<matType, double, BR, BC, NBR, NBC, matOutType, matOutOrdering> mwwt;
+  nelson::MatrixWWtMultiplier<matOutType, double, matOutOrdering, BR, NBR> mwwt;
 
   SECTION("SINGLE THREAD") {
     mwwt.settings().setSingleThread();
@@ -176,14 +77,17 @@ TEMPLATE_TEST_CASE_SIG("MatrixWWtMultiplier-Base", "[MatrixWWtMultiplier-Base]",
     mwwt.settings().setNumThreadsMax();
   }
 
-  mwwt.prepare(W);
-  mwwt.multiply(W, W);
+  mwwt.prepare(U, W);
+  mwwt.multiply(U, W, W);
 
   nelson::DenseWrapper<matType, double, mat::RowMajor, BR, BC, NBR, NBC> W_Wrap;
   W_Wrap.set(&W);
   DEBUGOUT std::cout << "W_Wrap" << std::endl << W_Wrap.mat() << std::endl << std::endl;
+  nelson::DenseWrapper<matUType, double, mat::ColMajor, BR, BR, NBR, NBR> U_Wrap;
+  U_Wrap.set(&U);
+  DEBUGOUT std::cout << "U_Wrap" << std::endl << U_Wrap.mat() << std::endl << std::endl;
 
-  Eigen::MatrixXd WWt = W_Wrap.mat() * W_Wrap.mat().transpose();
+  Eigen::MatrixXd WWt = U_Wrap.mat() - W_Wrap.mat() * W_Wrap.mat().transpose();
   DEBUGOUT std::cout << "WWt" << std::endl << WWt << std::endl << std::endl;
 
   nelson::DenseWrapper<matOutType, double, matOutOrdering, BR, BR, NBR, NBR> WWt_Wrap;
@@ -194,6 +98,492 @@ TEMPLATE_TEST_CASE_SIG("MatrixWWtMultiplier-Base", "[MatrixWWtMultiplier-Base]",
   Eigen::MatrixXd diff = (WWt_Wrap.mat() - WWt).triangularView<Eigen::Upper>();
   DEBUGOUT std::cout << "diff" << std::endl << diff << std::endl << std::endl;
 
-  REQUIRE((diff.array().abs() < Eigen::NumTraits<double>::dummy_precision()).all());
+  bool ok = (diff.array().abs() < Eigen::NumTraits<double>::dummy_precision()).all();
+  REQUIRE(ok);
 
+}
+
+TEMPLATE_TEST_CASE_SIG("MatrixWWtMultiplier-Dense", "[MatrixWWtMultiplier-Base]",
+  ((int matUType, int matType, int BR, int BC, int NBR, int NBC, int matOutType, int matOutOrdering), matUType, matType, BR, BC, NBR, NBC, matOutType, matOutOrdering),
+  //***************************************************************************
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDense, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor)
+)
+{
+  templateTestFunc< matUType, matType, BR, BC, NBR, NBC, matOutType, matOutOrdering>();
+}
+
+TEMPLATE_TEST_CASE_SIG("MatrixWWtMultiplier-Sparse", "[MatrixWWtMultiplier-Base]",
+  ((int matUType, int matType, int BR, int BC, int NBR, int NBC, int matOutType, int matOutOrdering), matUType, matType, BR, BC, NBR, NBC, matOutType, matOutOrdering),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor)
+)
+{
+  templateTestFunc< matUType, matType, BR, BC, NBR, NBC, matOutType, matOutOrdering>();
+}
+
+TEMPLATE_TEST_CASE_SIG("MatrixWWtMultiplier-SparseCoeff", "[MatrixWWtMultiplier-Base]",
+  ((int matUType, int matType, int BR, int BC, int NBR, int NBC, int matOutType, int matOutOrdering), matUType, matType, BR, BC, NBR, NBC, matOutType, matOutOrdering),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockCoeffSparse, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor)
+)
+{
+  templateTestFunc< matUType, matType, BR, BC, NBR, NBC, matOutType, matOutOrdering>();
+}
+
+TEMPLATE_TEST_CASE_SIG("MatrixWWtMultiplier-Diagonal", "[MatrixWWtMultiplier-Base]",
+  ((int matUType, int matType, int BR, int BC, int NBR, int NBC, int matOutType, int matOutOrdering), matUType, matType, BR, BC, NBR, NBC, matOutType, matOutOrdering),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, NBRv, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, NBRv, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, NBCv, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDense, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockCoeffSparse, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor),
+  //---------------------------------------------------------------------------------
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockDense, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockSparse, mat::RowMajor),
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::ColMajor),
+  (mat::BlockDiagonal, mat::BlockDiagonal, BRv, BCv, mat::Dynamic, mat::Dynamic, mat::BlockCoeffSparse, mat::RowMajor)
+)
+{
+  templateTestFunc< matUType, matType, BR, BC, NBR, NBC, matOutType, matOutOrdering>();
 }
