@@ -111,6 +111,7 @@ namespace nelson {
 
   template<int matType, class T, int BR, int BC, int NBR, int NBC, int matOutputType, int matOutputOrdering>
   void MatrixWWtMultiplier<matType, T, BR, BC, NBR, NBC, matOutputType, matOutputOrdering>::multiply(const MatType& A, const MatType& B) {
+    _matOutput.setZero();
 
     const int chunkSize = _settings.chunkSize();
     const int numEval = int(_blockPairs.size());
@@ -120,7 +121,7 @@ namespace nelson {
       // note, compute increment solve for -b, OK
       for (int ip = 0; ip < _blockPairs.size(); ip++) {
         typename MatOuputType::BlockType block = _matOutput.blockByUID(ip);
-        block.setZero();
+        
         for (const auto& p : _blockPairs[ip]) {
           block += A.blockByUID(p.uid_1) * B.blockByUID(p.uid_2).transpose();
         }
@@ -133,7 +134,7 @@ namespace nelson {
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(static)
           for (int ip = 0; ip < _blockPairs.size(); ip++) {
             typename MatOuputType::BlockType block = _matOutput.blockByUID(ip);
-            block.setZero();
+            
             for (const auto& p : _blockPairs[ip]) {
               block += A.blockByUID(p.uid_1) * B.blockByUID(p.uid_2).transpose();
             }
@@ -143,7 +144,7 @@ namespace nelson {
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(static, chunkSize)
           for (int ip = 0; ip < _blockPairs.size(); ip++) {
             typename MatOuputType::BlockType block = _matOutput.blockByUID(ip);
-            block.setZero();
+            
             for (const auto& p : _blockPairs[ip]) {
               block += A.blockByUID(p.uid_1) * B.blockByUID(p.uid_2).transpose();
             }
@@ -156,7 +157,7 @@ namespace nelson {
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(dynamic)
           for (int ip = 0; ip < _blockPairs.size(); ip++) {
             typename MatOuputType::BlockType block = _matOutput.blockByUID(ip);
-            block.setZero();
+            
             for (const auto& p : _blockPairs[ip]) {
               block += A.blockByUID(p.uid_1) * B.blockByUID(p.uid_2).transpose();
             }
@@ -166,7 +167,7 @@ namespace nelson {
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(dynamic, chunkSize)
           for (int ip = 0; ip < _blockPairs.size(); ip++) {
             typename MatOuputType::BlockType block = _matOutput.blockByUID(ip);
-            block.setZero();
+            
             for (const auto& p : _blockPairs[ip]) {
               block += A.blockByUID(p.uid_1) * B.blockByUID(p.uid_2).transpose();
             }
@@ -179,7 +180,7 @@ namespace nelson {
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(guided)
           for (int ip = 0; ip < _blockPairs.size(); ip++) {
             typename MatOuputType::BlockType block = _matOutput.blockByUID(ip);
-            block.setZero();
+            
             for (const auto& p : _blockPairs[ip]) {
               block += A.blockByUID(p.uid_1) * B.blockByUID(p.uid_2).transpose();
             }
@@ -189,7 +190,7 @@ namespace nelson {
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(guided, chunkSize)
           for (int ip = 0; ip < _blockPairs.size(); ip++) {
             typename MatOuputType::BlockType block = _matOutput.blockByUID(ip);
-            block.setZero();
+            
             for (const auto& p : _blockPairs[ip]) {
               block += A.blockByUID(p.uid_1) * B.blockByUID(p.uid_2).transpose();
             }
@@ -201,7 +202,7 @@ namespace nelson {
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(runtime)
         for (int ip = 0; ip < _blockPairs.size(); ip++) {
           typename MatOuputType::BlockType block = _matOutput.blockByUID(ip);
-          block.setZero();
+          
           for (const auto& p : _blockPairs[ip]) {
             block += A.blockByUID(p.uid_1) * B.blockByUID(p.uid_2).transpose();
           }
