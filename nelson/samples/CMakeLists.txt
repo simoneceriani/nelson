@@ -10,17 +10,23 @@ PROJECT(nelson_samples LANGUAGES CXX)
 # but the native target_sources function
 
 ## add these lines block for each sample, or if you need more complex structure, create a subfolder
-# add_executable(nelson_samples)
-# target_sources(nelson_samples PRIVATE <<...>>)
-# if (WIN32)
-# 	set_target_properties(nelson_samples PROPERTIES FOLDER <<SAMPLE_FOLDER>>)
-# endif()
-# target_link_libraries(nelson_samples PRIVATE <<...>>)
+add_executable(nelsonSamples_WWtPerformances)
+target_sources(
+  nelsonSamples_WWtPerformances 
+  PRIVATE 
+  WWtMultPerformances.cpp 
+  Problems.h 
+  Problems.cpp
+)
+if (WIN32)
+ 	set_target_properties(nelsonSamples_WWtPerformances PROPERTIES FOLDER nelson/samples)
+endif()
+target_link_libraries(nelsonSamples_WWtPerformances PRIVATE nelson)
 
 ## and/or compile this list to have simple 1-file samples
 
 set(SAMPLES_LIST 
-	nelsonPlayground.cpp
+	nelsonPlayground.cpp  
 )
 
 foreach(s ${SAMPLES_LIST})

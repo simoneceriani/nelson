@@ -3,5 +3,5 @@ include_guard(GLOBAL)
 
 # generated with CMakeBaseBuildSystem
 
-set(mat_HASH "beeab0d05eed1a29838eb2d37874f8a20e85bb40")
-set(mat_LOG "2021-01-27T14:29:27+01:00 add-some-compatibility-method")
+set(mat_HASH "ddd704f4207089f82abbaba0acdc3e957eef9454")
+set(mat_LOG "2021-02-25T12:48:22+01:00 fix-error")

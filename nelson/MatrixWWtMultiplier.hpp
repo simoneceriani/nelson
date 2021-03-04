@@ -105,11 +105,9 @@ namespace nelson {
           sp->add(i, j);
 
           if (matOutputOrdering == mat::ColMajor) {
-            // MultPattern constructor will perform swap
             multPattern[j][i].swap(pairs);
           }
           else if (matOutputOrdering == mat::RowMajor) {
-            // MultPattern constructor will perform swap
             multPattern[i][j].swap(pairs);
           }
           else {
