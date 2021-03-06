@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
     //W.blockByUID(bi).setZero();
   }
 
-  nelson::MatrixWWtMultiplier<matSType, double, mat::ColMajor, BR, mat::Dynamic> mwwt;
+  nelson::MatrixWWtMultiplier<matSType, double, BR, mat::Dynamic> mwwt;
   const int half_maxthreads = nelson::ParallelExecSettings::maxSupportedThreads() / 2;
   const int maxthreads = nelson::ParallelExecSettings::maxSupportedThreads();
 

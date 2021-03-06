@@ -11,19 +11,24 @@ namespace nelson {
     struct UIDPair {
       int uid_1, uid_2;
     };
+    struct UIDPairUS {
+      int uid_U, uid_S;
+    };
   }
 
-  template<int matOutputType, class T, int matOutputOrdering, int BR, int NBR>
+  template<int matOutputType, class T, int BR, int NBR>
   class MatrixWWtMultiplier {
   public:
-    using MatOuputType = typename mat::MatrixBlockIterableTypeTraits< matOutputType, T, matOutputOrdering, BR, BR, NBR, NBR>::MatrixType;
+    using MatOuputType = typename mat::MatrixBlockIterableTypeTraits< matOutputType, T, mat::ColMajor, BR, BR, NBR, NBR>::MatrixType;
 
     using Settings = ParallelExecSettings;
 
   private:
 
     using UIDPair = _private::UIDPair;
+    using UIDPairUS = _private::UIDPairUS;
     std::vector< std::vector<UIDPair> > _blockPairs;
+    std::vector<UIDPairUS> _blockPairsU;
     MatOuputType _matOutput;
 
     Settings _settings;

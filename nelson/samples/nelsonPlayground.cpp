@@ -38,7 +38,6 @@ void testSparseDenseCombinations() {
     S = U - W * Vinv * W.transpose();
   }
 
-
 }
 
 double parForOuter(const std::vector < std::vector<double>>& v1, const std::vector < std::vector<double>>& v2) {
