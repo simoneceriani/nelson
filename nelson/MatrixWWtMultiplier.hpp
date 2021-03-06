@@ -53,7 +53,7 @@ namespace nelson {
     // prepare the count of elements to be multiplied for the output matrix (including U blocks to be summed)
     auto spMatW = W.sparsityPattern().toSparseMatrix();
     auto spMatU = U.sparsityPattern().toSparseMatrix();
-    Eigen::SparseMatrix<int> spMatUWWt = (spMatU + spMatW * spMatW.transpose()).triangularView<Eigen::Upper>();
+    Eigen::SparseMatrix<int> spMatUWWt = (spMatU + spMatW * spMatW.transpose()).template triangularView<Eigen::Upper>();
 
     // iterate on columns
     int o_buid = 0;
