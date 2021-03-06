@@ -10,6 +10,33 @@
 
 namespace nelson {
 
+  namespace _private {
+
+    template<class Iter1, class Iter2>
+    void addNNZ_buid(Iter1& i_it, Iter2& j_it, std::vector<UIDPair>& pairs, int count) {
+      while (i_it() != i_it.end() && j_it() != j_it.end() && count < pairs.size()) {
+        int k_i = i_it.col();
+        int k_j = j_it.col();
+        if (k_i == k_j) {
+          int buid_1 = i_it.blockUID();
+          int buid_2 = j_it.blockUID();
+          i_it++;
+          j_it++;
+          pairs[count++] = UIDPair{ buid_1, buid_2 };          
+        }
+        else if (k_i < k_j) {
+          i_it++;
+        }
+        else if (k_j < k_i) {
+          j_it++;
+        }
+      }
+
+      assert(count == pairs.size());
+    }
+
+  }
+
   template<int matOutputType, class T, int matOutputOrdering, int BR, int NBR>
   template<class MatrixBlockU, class MatrixBlockW>
   void MatrixWWtMultiplier<matOutputType, T, matOutputOrdering, BR, NBR>::prepare(
@@ -30,6 +57,12 @@ namespace nelson {
       u_j_its.push_back(U.colBegin(j));
     }
 
+#define SPMAT
+#ifdef SPMAT
+    auto spMatW = W.sparsityPattern().toSparseMatrix();
+    auto spMatWWt = (spMatW * spMatW.transpose()).triangularView<Eigen::Upper>().eval();
+#endif
+
     // iterate on rows of W
     for (int i = 0; i < W.numBlocksRow(); i++) {
       // iterate on cols of W', i.e., on rows of W, upper triag only
@@ -39,22 +72,11 @@ namespace nelson {
         auto j_it = W.rowBegin(j);
 
         // count how many elements are both non zero
-        int count = 0;
-        while (i_it() != i_it.end() && j_it() != j_it.end()) {
-          int k_i = i_it.col();
-          int k_j = j_it.col();
-          if (k_i == k_j) {
-            i_it++;
-            j_it++;
-            count++;
-          }
-          else if (k_i < k_j) {
-            i_it++;
-          }
-          else if (k_j < k_i) {
-            j_it++;
-          }
-        }
+#ifdef SPMAT
+        int count = spMatWWt.coeff(i, j);
+#else
+        int count = _private::countNNZ(i_it, j_it);
+#endif
 
         // check if there is an additional element from U[i,j]
         int u_ij_buid = -1;
@@ -66,38 +88,22 @@ namespace nelson {
         }
 
         std::vector<UIDPair> pairs(count + (u_ij_buid != -1 ? 1 : 0));
+
+        count = 0;
         if (u_ij_buid != -1) {
           // set uid of u and -1 as second uid, to remember this is not from W*W' but from U
-          pairs[0].uid_1 = u_ij_buid;
-          pairs[0].uid_2 = -1;
+          pairs[count].uid_1 = u_ij_buid;
+          pairs[count].uid_2 = -1;
+          count++;
         }
 
         // redo the loop to insert
-        if (count > 0) {
+        if (count < pairs.size()) {
 
-          count = (u_ij_buid != -1 ? 1 : 0);
           i_it = W.rowBegin(i);
           j_it = W.rowBegin(j);
-          while (i_it() != i_it.end() && j_it() != j_it.end()) {
-            int k_i = i_it.col();
-            int k_j = j_it.col();
-            if (k_i == k_j) {
-              int buid_1 = i_it.blockUID();
-              int buid_2 = j_it.blockUID();
-              i_it++;
-              j_it++;
-              pairs[count++] = UIDPair{ buid_1, buid_2 };
 
-            }
-            else if (k_i < k_j) {
-              i_it++;
-            }
-            else if (k_j < k_i) {
-              j_it++;
-            }
-          }
-
-          assert(count == pairs.size());
+          addNNZ_buid(i_it, j_it, pairs, count);
         }
         // found at least one block match (from U or W*W')
         if (pairs.size() > 0) {

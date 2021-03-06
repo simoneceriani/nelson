@@ -7,6 +7,12 @@
 
 namespace nelson {
 
+  namespace _private {
+    struct UIDPair {
+      int uid_1, uid_2;
+    };
+  }
+
   template<int matOutputType, class T, int matOutputOrdering, int BR, int NBR>
   class MatrixWWtMultiplier {
   public:
@@ -16,9 +22,7 @@ namespace nelson {
 
   private:
 
-    struct UIDPair {
-      int uid_1, uid_2;
-    };
+    using UIDPair = _private::UIDPair;
     std::vector< std::vector<UIDPair> > _blockPairs;
     MatOuputType _matOutput;
 

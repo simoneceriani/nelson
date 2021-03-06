@@ -57,7 +57,11 @@ namespace nelson {
       _maxNumThreads = 1;
     }
     void setNumThreadsMax() {
-       _maxNumThreads = omp_get_max_threads();
+      _maxNumThreads = maxSupportedThreads();
+    }
+
+    static int maxSupportedThreads() {
+      return omp_get_max_threads();
     }
     
     void setChunkSize(int c) {
