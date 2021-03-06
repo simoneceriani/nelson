@@ -1,13 +1,8 @@
-#include <catch2/catch_template_test_macros.hpp>
-#include <catch2/catch_test_macros.hpp>
-
+#pragma once
 #include "nelson/DoubleSectionHessian.hpp"
 #include "nelson/DoubleSection.hpp"
 #include "nelson/EdgeUnary.hpp"
 #include "nelson/EdgeBinary.hpp"
-
-#include "nelson/GaussNewton.hpp"
-#include "nelson/LevenbergMarquardt.hpp"
 
 #include <array>
 #include <iostream>
@@ -26,13 +21,9 @@ struct Point3d {
 
 constexpr int Point3d::blockSize;
 
-#ifndef NDEBUG
-static constexpr int numPoints2d = 50; 
-static constexpr int numPoints3d = 300;
-#else
-static constexpr int numPoints2d = 50;
-static constexpr int numPoints3d = 3000;
-#endif
+static constexpr int numPoints2d = 5; // totsize = 10
+static constexpr int numPoints3d = 3; // totsize = 9
+
 
 template<class Section>
 class EdgeUnaryPoint2d : public nelson::EdgeUnarySectionBaseCRPT<Section, typename Section::EdgeUnaryUAdapter, EdgeUnaryPoint2d<Section>> {
@@ -333,8 +324,8 @@ public:
 template<class Derived, int matTypeUv, int matTypeVv, int matTypeWv, int BU, int BV, int NBU, int NBV>
 class Points2d3dBase : public nelson::DoubleSection< Derived, Point2d, Point3d, matTypeUv, matTypeVv, matTypeWv, double, BU, BV, NBU, NBV> {
 
-  std::vector<Point2d> _points2d, _bck_points2d;
-  std::vector<Point3d> _points3d, _bck_points3d;
+  std::array<Point2d, numPoints2d> _points2d, _bck_points2d;
+  std::array<Point3d, numPoints3d> _points3d, _bck_points3d;
   Point2d _fixedPoint2d;
   Point3d _fixedPoint3d;
 
@@ -342,10 +333,7 @@ class Points2d3dBase : public nelson::DoubleSection< Derived, Point2d, Point3d, 
 public:
   using DoubleSectionBase = nelson::DoubleSection< Derived, Point2d, Point3d, matTypeUv, matTypeVv, matTypeWv, double, BU, BV, NBU, NBV>;
 
-  Points2d3dBase() : 
-    _points2d(numPoints2d), _bck_points2d(numPoints2d),
-    _points3d(numPoints3d), _bck_points3d(numPoints3d)
-  {
+  Points2d3dBase() {
     Eigen::Matrix3Xd groundThruthPoints;
     groundThruthPoints.setRandom(3, std::max(numPoints2d, numPoints3d));
 
@@ -425,233 +413,4 @@ public:
 };
 
 template<class TestType, template<typename> class Solver>
-void testFunction(bool parallelVinv, bool parallelEval) {
-  std::cout << "---- " << (parallelVinv ? "V inv parallel" : "V inv sequential") << " ----" << std::endl;
-  std::cout << "---- " << (parallelEval ? "EVAL parallel" : "EVAL sequential") << " ----" << std::endl;
-
-  auto t0 = std::chrono::steady_clock::now();
-  TestType pss;
-
-  if (parallelEval == 1) {
-    pss.settings().hessianUpdateParallelSettings.setNumThreadsMax();
-    pss.settings().edgeEvalParallelSettings.setNumThreadsMax();
-  }
-
-  pss.parametersReady();
-  REQUIRE(pss.numParametersU() == numPoints2d);
-  REQUIRE(pss.numParametersV() == numPoints3d);
-
-  // unary edge first section
-  for (int i = 0; i < numPoints2d; i++) {
-    pss.addEdge(i, new EdgeUnaryPoint2d<TestType>(i, pss.parameterU(i).p2d));
-  }
-  // unary edge second section
-  for (int i = 0; i < numPoints3d; i++) {
-    pss.addEdge(i, new EdgeUnaryPoint3d<TestType>(i, pss.parameterV(i).p3d));
-  }
-  // binary edge first section
-  if (pss.matTypeU() != mat::BlockDiagonal) {
-    for (int i = 0; i < numPoints2d; i++) {
-      for (int j = i + 1; j < numPoints2d; j++) {
-        pss.addEdge(i, j, new EdgeBinaryPoint2d<TestType>(i, j, pss.parameterU(i).p2d - pss.parameterU(j).p2d));
-      }
-    }
-  }
-  // binary edge section section
-  if (pss.matTypeV() != mat::BlockDiagonal) {
-    for (int i = 0; i < numPoints3d; i++) {
-      for (int j = i + 1; j < numPoints3d; j++) {
-        pss.addEdge(i, j, new EdgeBinaryPoint3d<TestType>(i, j, pss.parameterV(i).p3d - pss.parameterV(j).p3d));
-      }
-    }
-  }
-  // binary edge first section to second section
-  if (pss.matTypeW() != mat::BlockDiagonal) {
-    for (int i = 0; i < numPoints2d; i++) {
-      for (int j = 0; j < numPoints3d; j++) {
-        pss.addEdge(i, j, new EdgeBinaryPoint2d3d<TestType>(i, j, pss.parameterU(i).p2d - pss.parameterV(j).p3d.template head<2>()));
-      }
-    }
-  }
-  else {
-    for (int i = 0; i < std::min(numPoints2d, numPoints3d); i++) {
-      pss.addEdge(i, i, new EdgeBinaryPoint2d3d<TestType>(i, i, pss.parameterU(i).p2d - pss.parameterV(i).p3d.template head<2>()));
-    }
-  }
-
-
-  pss.structureReady();
-
-  {
-    auto tprep = std::chrono::steady_clock::now();
-
-    {
-      using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverse>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperDense, nelson::matrixWrapperDense, nelson::choleskyAMDOrdering> >;
-      SolverAlgorithm gn;
-      if (parallelVinv) {
-        gn.solverSettings().setNumThreadsMax();
-      }
-
-      pss.addNoise(0.5);
-      auto tc = gn.solve(pss);
-      std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
-      std::cout << "stats " << gn.stats().toString() << std::endl;
-      std::cout << gn.solver().timeStats().toString() << std::endl;
-      REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
-    }
-    auto ts1 = std::chrono::steady_clock::now();
-    {
-      using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverse>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperDense, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering> >;
-      SolverAlgorithm gn;
-      if (parallelVinv) {
-        gn.solverSettings().setNumThreadsMax();
-      }
-      pss.addNoise(0.5);
-      auto tc = gn.solve(pss);
-      std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
-      std::cout << "stats " << gn.stats().toString() << std::endl;
-      std::cout << gn.solver().timeStats().toString() << std::endl;
-      REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
-    }
-    auto ts2 = std::chrono::steady_clock::now();
-    {
-      using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverse>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperSparse, nelson::matrixWrapperDense, nelson::choleskyAMDOrdering> >;
-      SolverAlgorithm gn;
-      if (parallelVinv) {
-        gn.solverSettings().setNumThreadsMax();
-      }
-      pss.addNoise(0.5);
-      auto tc = gn.solve(pss);
-      std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
-      std::cout << "stats " << gn.stats().toString() << std::endl;
-      std::cout << gn.solver().timeStats().toString() << std::endl;
-      REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
-    }
-    auto ts3 = std::chrono::steady_clock::now();
-    {
-      using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverse>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperSparse, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering> >;
-      SolverAlgorithm gn;
-      if (parallelVinv) {
-        gn.solverSettings().setNumThreadsMax();
-      }
-      pss.addNoise(0.5);
-      auto tc = gn.solve(pss);
-      std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
-      std::cout << "stats " << gn.stats().toString() << std::endl;
-      std::cout << gn.solver().timeStats().toString() << std::endl;
-      REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
-    }
-    auto ts4 = std::chrono::steady_clock::now();
-
-    std::cout <<
-      "---- TIME WITH BLOCK DIAGONAL ----" << std::endl <<
-      "  preparation " << std::chrono::duration<double>(tprep - t0).count() << std::endl <<
-      "  Dense-Dense " << std::chrono::duration<double>(ts1 - tprep).count() << std::endl <<
-      "  Dense-Spars " << std::chrono::duration<double>(ts2 - ts1).count() << std::endl <<
-      "  Spars-Dense " << std::chrono::duration<double>(ts3 - ts2).count() << std::endl <<
-      "  Spars-Spars " << std::chrono::duration<double>(ts4 - ts3).count() << std::endl;
-  }
-
-  ///------------------- EXPLICIT CHOLESKY
-
-  if (!parallelVinv) {
-    auto tprep = std::chrono::steady_clock::now();
-
-    {
-      using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperDense, nelson::matrixWrapperDense, nelson::solverCholeskySparse, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> >;
-      SolverAlgorithm gn;
-
-      pss.addNoise(0.5);
-      auto tc = gn.solve(pss);
-      std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
-      std::cout << "stats " << gn.stats().toString() << std::endl;
-      std::cout << gn.solver().timeStats().toString() << std::endl;
-      REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
-    }
-    auto ts1 = std::chrono::steady_clock::now();
-    {
-      using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperDense, nelson::matrixWrapperSparse, nelson::solverCholeskySparse, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> >;
-      SolverAlgorithm gn;
-      pss.addNoise(0.5);
-      auto tc = gn.solve(pss);
-      std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
-      std::cout << "stats " << gn.stats().toString() << std::endl;
-      std::cout << gn.solver().timeStats().toString() << std::endl;
-      REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
-    }
-    auto ts2 = std::chrono::steady_clock::now();
-    {
-      using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperSparse, nelson::matrixWrapperDense, nelson::solverCholeskySparse, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> >;
-      SolverAlgorithm gn;
-      pss.addNoise(0.5);
-      auto tc = gn.solve(pss);
-      std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
-      std::cout << "stats " << gn.stats().toString() << std::endl;
-      std::cout << gn.solver().timeStats().toString() << std::endl;
-      REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
-    }
-    auto ts3 = std::chrono::steady_clock::now();
-    {
-      using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperSparse, nelson::matrixWrapperSparse, nelson::solverCholeskySparse, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> >;
-      SolverAlgorithm gn;
-      pss.addNoise(0.5);
-      auto tc = gn.solve(pss);
-      std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
-      std::cout << "stats " << gn.stats().toString() << std::endl;
-      std::cout << gn.solver().timeStats().toString() << std::endl;
-      REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
-    }
-    auto ts4 = std::chrono::steady_clock::now();
-
-    std::cout <<
-      "---- TIME WITH EXPLICIT SCHUR ----" << std::endl <<
-      "  Dense-Dense " << std::chrono::duration<double>(ts1 - tprep).count() << std::endl <<
-      "  Dense-Spars " << std::chrono::duration<double>(ts2 - ts1).count() << std::endl <<
-      "  Spars-Dense " << std::chrono::duration<double>(ts3 - ts2).count() << std::endl <<
-      "  Spars-Spars " << std::chrono::duration<double>(ts4 - ts3).count() << std::endl;
-  }
-}
-
-template<int matTypeUv, int matTypeVv, int matTypeWv>
-class Points2d3dDDDD : public Points2d3dBase < Points2d3dDDDD<matTypeUv, matTypeVv, matTypeWv>, matTypeUv, matTypeVv, matTypeWv, mat::Dynamic, mat::Dynamic, mat::Dynamic, mat::Dynamic > {
-
-public:
-
-  int parameterVSize(void) const override {
-    return Point3d::blockSize;
-  }
-
-  int parameterUSize(void) const override {
-    return Point2d::blockSize;
-  }
-
-  int numParametersV() const override {
-    return numPoints3d;
-  }
-
-  int numParametersU() const override {
-    return numPoints2d;
-  }
-
-};
-
-using PointsSectionDDDD_SpacoDiagoSpaco = Points2d3dDDDD<mat::BlockCoeffSparse, mat::BlockDiagonal, mat::BlockCoeffSparse>;
-
-TEMPLATE_TEST_CASE("DoubleSection-DF", "[DoubleSection-DF]",
-  PointsSectionDDDD_SpacoDiagoSpaco
-)
-{
-  // single thread
-  testFunction<TestType, nelson::GaussNewton>(false, false);
-  // multi thread
-  testFunction<TestType, nelson::GaussNewton>(true, false);
-  testFunction<TestType, nelson::GaussNewton>(true, true);
-
-  // single thread
-  testFunction<TestType, nelson::LevenbergMarquardt>(false, false);
-  // multi thread
-  testFunction<TestType, nelson::LevenbergMarquardt>(true, false);
-  testFunction<TestType, nelson::LevenbergMarquardt>(true, true);
-
-}
-
+void testFunction();

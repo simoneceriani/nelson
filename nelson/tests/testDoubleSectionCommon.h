@@ -1,3 +1,4 @@
+#pragma once
 #include "nelson/DoubleSectionHessian.hpp"
 #include "nelson/DoubleSection.hpp"
 #include "nelson/EdgeUnary.hpp"

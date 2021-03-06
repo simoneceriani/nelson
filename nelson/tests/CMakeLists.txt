@@ -23,7 +23,6 @@ set(TESTS_LIST
   testDoubleSectionHessian.cpp
   testSingleSection.cpp
   testMatrixSparseDenseWrapper.cpp
-  testDoubleSectionSchurDiagBlock_simple.cpp
   testMatrixWWtMultiplier.cpp
 )
 
@@ -111,14 +110,65 @@ if(nelsonTest_COMPILE_LONG_TESTS)
   endforeach()
 
 
+#--------------------------------------------------------------------------------------------
+
+
+  set(DOUBLESECTIONSCHURTESTCOMMON testDoubleSectionSchurCommon.h testDoubleSectionSchurCommon.hpp)
+
+
   set(TESTS_LIST 
-    testDoubleSectionSchurDiagBlock.cpp
+    testDoubleSectionSchurDiagBlockFFFF.cpp
+    testDoubleSectionSchurDiagBlockFFFD.cpp
+    testDoubleSectionSchurDiagBlockFFDF.cpp
+    testDoubleSectionSchurDiagBlockFFDD.cpp
+    #--------------------------------------
+    testDoubleSectionSchurDiagBlockFDFF.cpp
+    testDoubleSectionSchurDiagBlockFDFD.cpp
+    testDoubleSectionSchurDiagBlockFDDF.cpp
+    testDoubleSectionSchurDiagBlockFDDD.cpp
+    #--------------------------------------
+    testDoubleSectionSchurDiagBlockFVFF.cpp
+    testDoubleSectionSchurDiagBlockFVFD.cpp
+    testDoubleSectionSchurDiagBlockFVDF.cpp
+    testDoubleSectionSchurDiagBlockFVDD.cpp
+    #--------------------------------------
+    #--------------------------------------
+    testDoubleSectionSchurDiagBlockDFFF.cpp
+    testDoubleSectionSchurDiagBlockDFFD.cpp
+    testDoubleSectionSchurDiagBlockDFDF.cpp
+    testDoubleSectionSchurDiagBlockDFDD.cpp
+    #--------------------------------------
+    testDoubleSectionSchurDiagBlockDDFF.cpp
+    testDoubleSectionSchurDiagBlockDDFD.cpp
+    testDoubleSectionSchurDiagBlockDDDF.cpp
+    testDoubleSectionSchurDiagBlockDDDD.cpp
+    #--------------------------------------
+    testDoubleSectionSchurDiagBlockDVFF.cpp
+    testDoubleSectionSchurDiagBlockDVFD.cpp
+    testDoubleSectionSchurDiagBlockDVDF.cpp
+    testDoubleSectionSchurDiagBlockDVDD.cpp
+    #--------------------------------------
+    #--------------------------------------
+    testDoubleSectionSchurDiagBlockVFFF.cpp
+    testDoubleSectionSchurDiagBlockVFFD.cpp
+    testDoubleSectionSchurDiagBlockVFDF.cpp
+    testDoubleSectionSchurDiagBlockVFDD.cpp
+    #--------------------------------------
+    testDoubleSectionSchurDiagBlockVDFF.cpp
+    testDoubleSectionSchurDiagBlockVDFD.cpp
+    testDoubleSectionSchurDiagBlockVDDF.cpp
+    testDoubleSectionSchurDiagBlockVDDD.cpp
+    #--------------------------------------
+    testDoubleSectionSchurDiagBlockVVFF.cpp
+    testDoubleSectionSchurDiagBlockVVFD.cpp
+    testDoubleSectionSchurDiagBlockVVDF.cpp
+    testDoubleSectionSchurDiagBlockVVDD.cpp
   )
 
   foreach(s ${TESTS_LIST})
     get_filename_component(sn "${s}" NAME_WE)
     add_executable(nelsonTest_${sn})
-    target_sources_wrapper(nelsonTest_${sn} PRIVATE ${s})
+    target_sources_wrapper(nelsonTest_${sn} PRIVATE ${s} ${DOUBLESECTIONSCHURTESTCOMMON})
     if (WIN32)
       set_target_properties(nelsonTest_${sn} PROPERTIES FOLDER nelson/test)
     endif()	
@@ -138,7 +188,6 @@ find_package_wrapper(lie REQUIRED CONFIG)
 
 set(TESTS_LIST 
   testGaussNewton2DScansAlign.cpp
-  testGaussNewton2DScansAlignTimingTest.cpp
 )
 
 foreach(s ${TESTS_LIST})
