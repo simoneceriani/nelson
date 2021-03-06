@@ -26,6 +26,35 @@ int main(int argc, char* argv[]) {
   }
   const Problem& problem = *problemPtr;
 
+  {
+    auto t0 = std::chrono::steady_clock::now();
+    std::vector<std::set<int>> sp(problem.nCameras);
+    for (int i = 0; i < problem.edges.size(); i++) {
+      const auto& e = problem.edges[i];
+      sp[e.first].insert(e.second);
+    }
+    auto t1 = std::chrono::steady_clock::now();
+    std::cout << "edges on std::vector<std::set<int>> " << std::chrono::duration<double>(t1 - t0).count() << std::endl;
+  }
+  {
+    auto t0 = std::chrono::steady_clock::now();
+    std::vector<std::unordered_set<int>> sp(problem.nCameras);
+    for (int i = 0; i < problem.edges.size(); i++) {
+      const auto& e = problem.edges[i];
+      sp[e.first].insert(e.second);
+    }
+    auto t1 = std::chrono::steady_clock::now();
+    std::vector<std::vector<int>> sort_set(problem.nCameras);
+    for (int i = 0; i < sp.size(); i++) {
+      sort_set[i] = std::vector<int>(sp[i].begin(), sp[i].end());
+      std::sort(sort_set[i].begin(), sort_set[i].end());
+    }
+    auto t2 = std::chrono::steady_clock::now();
+    std::cout << "edges on std::vector<std::unordered_set<int>> TOT " << std::chrono::duration<double>(t2 - t0).count() << std::endl;
+    std::cout << " -- addition                                      " << std::chrono::duration<double>(t1 - t0).count() << std::endl;
+    std::cout << " -- sort                                          " << std::chrono::duration<double>(t2 - t1).count() << std::endl;
+  }
+
   mat::SparsityPattern<mat::RowMajor>::SPtr sp(new mat::SparsityPattern<mat::RowMajor>(problem.nCameras, problem.nPoints));
   for (int i = 0; i < problem.edges.size(); i++) {
     const auto& e = problem.edges[i];
