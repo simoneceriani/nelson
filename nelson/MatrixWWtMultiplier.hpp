@@ -58,7 +58,7 @@ namespace nelson {
     // iterate on columns
     int o_buid = 0;
     int u_buid = 0;
-    
+
     // contains all blocks of output matrix ordered as they are ordered in the matrix, 
     //   per each, contains the list of blocks to be multiplied 
     _blockPairs.resize(spMatUWWt.nonZeros());
@@ -83,8 +83,8 @@ namespace nelson {
 
         // check if there is an additional element from U[i,j]
         if (iU_it() != iU_it.end() && iU_it.row() == i) {
-          _blockPairsU[u_buid].uid_U = iU_it.blockUID();
-          _blockPairsU[u_buid].uid_S = o_buid;
+          assert(u_buid == iU_it.blockUID());
+          _blockPairsU[u_buid] = o_buid;
           iU_it++;
           u_buid++;
           blockCounts--;
@@ -123,15 +123,14 @@ namespace nelson {
     const int chunkSize = _settings.chunkSize();
     const int numEval = int(_blockPairs.size());
     const int reqNumThread = std::min(numEval, _settings.maxNumThreads());
-    
+
     const int numEvalU = int(_blockPairsU.size());
     const int reqNumThreadU = std::min(numEvalU, _settings.maxNumThreads());
 
     if (_settings.isSingleThread() || reqNumThread == 1) {
       // first copy U blocks
       for (int i = 0; i < _blockPairsU.size(); i++) {
-        typename MatOuputType::BlockType block = _matOutput.blockByUID(_blockPairsU[i].uid_S);
-        block = U.blockByUID(_blockPairsU[i].uid_U);
+        _matOutput.blockByUID(_blockPairsU[i]) = U.blockByUID(i);
       }
       // then subtract W*W' blocks
       for (int ip = 0; ip < _blockPairs.size(); ip++) {
@@ -139,8 +138,7 @@ namespace nelson {
         assert(_blockPairs[ip].size() >= 0); // if exists is not empty or it is 0 if only U block exists
 
         for (int i = 0; i < _blockPairs[ip].size(); i++) {
-          const auto& p = _blockPairs[ip][i];
-          block -= A.blockByUID(p.uid_1) * B.blockByUID(p.uid_2).transpose();
+          block -= A.blockByUID(_blockPairs[ip][i].uid_1) * B.blockByUID(_blockPairs[ip][i].uid_2).transpose();
         }
       }
     }
@@ -151,8 +149,7 @@ namespace nelson {
 #pragma omp parallel for num_threads(reqNumThreadU) default (shared) schedule(static)
           // first copy U blocks
           for (int i = 0; i < _blockPairsU.size(); i++) {
-            typename MatOuputType::BlockType block = _matOutput.blockByUID(_blockPairsU[i].uid_S);
-            block = U.blockByUID(_blockPairsU[i].uid_U);
+            _matOutput.blockByUID(_blockPairsU[i]) = U.blockByUID(i);
           }
           // then subtract W*W' blocks
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(static)
@@ -161,8 +158,7 @@ namespace nelson {
             assert(_blockPairs[ip].size() >= 0); // if exists is not empty or it is 0 if only U block exists
 
             for (int i = 0; i < _blockPairs[ip].size(); i++) {
-              const auto& p = _blockPairs[ip][i];
-              block -= A.blockByUID(p.uid_1) * B.blockByUID(p.uid_2).transpose();
+              block -= A.blockByUID(_blockPairs[ip][i].uid_1) * B.blockByUID(_blockPairs[ip][i].uid_2).transpose();
             }
           }
         }
@@ -170,8 +166,7 @@ namespace nelson {
 #pragma omp parallel for num_threads(reqNumThreadU) default (shared) schedule(static, chunkSize)
           // first copy U blocks
           for (int i = 0; i < _blockPairsU.size(); i++) {
-            typename MatOuputType::BlockType block = _matOutput.blockByUID(_blockPairsU[i].uid_S);
-            block = U.blockByUID(_blockPairsU[i].uid_U);
+            _matOutput.blockByUID(_blockPairsU[i]) = U.blockByUID(i);
           }
           // then subtract W*W' blocks
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(static, chunkSize)
@@ -180,11 +175,9 @@ namespace nelson {
             assert(_blockPairs[ip].size() >= 0); // if exists is not empty or it is 0 if only U block exists
 
             for (int i = 0; i < _blockPairs[ip].size(); i++) {
-              const auto& p = _blockPairs[ip][i];
-              block -= A.blockByUID(p.uid_1) * B.blockByUID(p.uid_2).transpose();
+              block -= A.blockByUID(_blockPairs[ip][i].uid_1) * B.blockByUID(_blockPairs[ip][i].uid_2).transpose();
             }
           }
-
 
         }
       }
@@ -193,8 +186,7 @@ namespace nelson {
 #pragma omp parallel for num_threads(reqNumThreadU) default (shared) schedule(dynamic)
           // first copy U blocks
           for (int i = 0; i < _blockPairsU.size(); i++) {
-            typename MatOuputType::BlockType block = _matOutput.blockByUID(_blockPairsU[i].uid_S);
-            block = U.blockByUID(_blockPairsU[i].uid_U);
+            _matOutput.blockByUID(_blockPairsU[i]) = U.blockByUID(i);
           }
           // then subtract W*W' blocks
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(dynamic)
@@ -203,8 +195,7 @@ namespace nelson {
             assert(_blockPairs[ip].size() >= 0); // if exists is not empty or it is 0 if only U block exists
 
             for (int i = 0; i < _blockPairs[ip].size(); i++) {
-              const auto& p = _blockPairs[ip][i];
-              block -= A.blockByUID(p.uid_1) * B.blockByUID(p.uid_2).transpose();
+              block -= A.blockByUID(_blockPairs[ip][i].uid_1) * B.blockByUID(_blockPairs[ip][i].uid_2).transpose();
             }
           }
         }
@@ -212,8 +203,7 @@ namespace nelson {
 #pragma omp parallel for num_threads(reqNumThreadU) default (shared) schedule(dynamic, chunkSize)
           // first copy U blocks
           for (int i = 0; i < _blockPairsU.size(); i++) {
-            typename MatOuputType::BlockType block = _matOutput.blockByUID(_blockPairsU[i].uid_S);
-            block = U.blockByUID(_blockPairsU[i].uid_U);
+            _matOutput.blockByUID(_blockPairsU[i]) = U.blockByUID(i);
           }
           // then subtract W*W' blocks
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(dynamic, chunkSize)
@@ -222,11 +212,9 @@ namespace nelson {
             assert(_blockPairs[ip].size() >= 0); // if exists is not empty or it is 0 if only U block exists
 
             for (int i = 0; i < _blockPairs[ip].size(); i++) {
-              const auto& p = _blockPairs[ip][i];
-              block -= A.blockByUID(p.uid_1) * B.blockByUID(p.uid_2).transpose();
+              block -= A.blockByUID(_blockPairs[ip][i].uid_1) * B.blockByUID(_blockPairs[ip][i].uid_2).transpose();
             }
           }
-
         }
       }
       else if (_settings.schedule() == ParallelSchedule::schedule_guided) {
@@ -234,8 +222,7 @@ namespace nelson {
 #pragma omp parallel for num_threads(reqNumThreadU) default (shared) schedule(guided)
           // first copy U blocks
           for (int i = 0; i < _blockPairsU.size(); i++) {
-            typename MatOuputType::BlockType block = _matOutput.blockByUID(_blockPairsU[i].uid_S);
-            block = U.blockByUID(_blockPairsU[i].uid_U);
+            _matOutput.blockByUID(_blockPairsU[i]) = U.blockByUID(i);
           }
           // then subtract W*W' blocks
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(guided)
@@ -244,18 +231,15 @@ namespace nelson {
             assert(_blockPairs[ip].size() >= 0); // if exists is not empty or it is 0 if only U block exists
 
             for (int i = 0; i < _blockPairs[ip].size(); i++) {
-              const auto& p = _blockPairs[ip][i];
-              block -= A.blockByUID(p.uid_1) * B.blockByUID(p.uid_2).transpose();
+              block -= A.blockByUID(_blockPairs[ip][i].uid_1) * B.blockByUID(_blockPairs[ip][i].uid_2).transpose();
             }
           }
-
         }
         else {
 #pragma omp parallel for num_threads(reqNumThreadU) default (shared) schedule(guided, chunkSize)
           // first copy U blocks
           for (int i = 0; i < _blockPairsU.size(); i++) {
-            typename MatOuputType::BlockType block = _matOutput.blockByUID(_blockPairsU[i].uid_S);
-            block = U.blockByUID(_blockPairsU[i].uid_U);
+            _matOutput.blockByUID(_blockPairsU[i]) = U.blockByUID(i);
           }
           // then subtract W*W' blocks
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(guided, chunkSize)
@@ -264,35 +248,29 @@ namespace nelson {
             assert(_blockPairs[ip].size() >= 0); // if exists is not empty or it is 0 if only U block exists
 
             for (int i = 0; i < _blockPairs[ip].size(); i++) {
-              const auto& p = _blockPairs[ip][i];
-              block -= A.blockByUID(p.uid_1) * B.blockByUID(p.uid_2).transpose();
+              block -= A.blockByUID(_blockPairs[ip][i].uid_1) * B.blockByUID(_blockPairs[ip][i].uid_2).transpose();
             }
           }
-
         }
       }
       else if (_settings.schedule() == ParallelSchedule::schedule_runtime) {
 #pragma omp parallel for num_threads(reqNumThreadU) default (shared) schedule(runtime)
-      // first copy U blocks
-      for (int i = 0; i < _blockPairsU.size(); i++) {
-        typename MatOuputType::BlockType block = _matOutput.blockByUID(_blockPairsU[i].uid_S);
-        block = U.blockByUID(_blockPairsU[i].uid_U);
-      }
-      // then subtract W*W' blocks
+        // first copy U blocks
+        for (int i = 0; i < _blockPairsU.size(); i++) {
+          _matOutput.blockByUID(_blockPairsU[i]) = U.blockByUID(i);
+        }
+        // then subtract W*W' blocks
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(runtime)
-      for (int ip = 0; ip < _blockPairs.size(); ip++) {
-        typename MatOuputType::BlockType block = _matOutput.blockByUID(ip);
-        assert(_blockPairs[ip].size() >= 0); // if exists is not empty or it is 0 if only U block exists
+        for (int ip = 0; ip < _blockPairs.size(); ip++) {
+          typename MatOuputType::BlockType block = _matOutput.blockByUID(ip);
+          assert(_blockPairs[ip].size() >= 0); // if exists is not empty or it is 0 if only U block exists
 
-        for (int i = 0; i < _blockPairs[ip].size(); i++) {
-          const auto& p = _blockPairs[ip][i];
-          block -= A.blockByUID(p.uid_1) * B.blockByUID(p.uid_2).transpose();
+          for (int i = 0; i < _blockPairs[ip].size(); i++) {
+            block -= A.blockByUID(_blockPairs[ip][i].uid_1) * B.blockByUID(_blockPairs[ip][i].uid_2).transpose();
+          }
         }
       }
-
-      }
     }
-
 
   }
 

@@ -11,9 +11,6 @@ namespace nelson {
     struct UIDPair {
       int uid_1, uid_2;
     };
-    struct UIDPairUS {
-      int uid_U, uid_S;
-    };
   }
 
   template<int matOutputType, class T, int BR, int NBR>
@@ -26,9 +23,8 @@ namespace nelson {
   private:
 
     using UIDPair = _private::UIDPair;
-    using UIDPairUS = _private::UIDPairUS;
     std::vector< std::vector<UIDPair> > _blockPairs;
-    std::vector<UIDPairUS> _blockPairsU;
+    std::vector<int> _blockPairsU;
     MatOuputType _matOutput;
 
     Settings _settings;
