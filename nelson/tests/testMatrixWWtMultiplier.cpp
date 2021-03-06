@@ -95,7 +95,7 @@ void templateTestFunc() {
 
   DEBUGOUT std::cout << "WWt_Wrap" << std::endl << WWt_Wrap.mat() << std::endl << std::endl;
 
-  Eigen::MatrixXd diff = (WWt_Wrap.mat() - WWt).triangularView<Eigen::Upper>();
+  Eigen::MatrixXd diff = (WWt_Wrap.mat() - WWt).template triangularView<Eigen::Upper>();
   DEBUGOUT std::cout << "diff" << std::endl << diff << std::endl << std::endl;
 
   bool ok = (diff.array().abs() < Eigen::NumTraits<double>::dummy_precision()).all();
