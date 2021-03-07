@@ -36,7 +36,6 @@ namespace nelson {
     Settings& settings() { return _settings; }
     const Settings& settings() const { return _settings; }
 
-    // only one input, no need for the other matrix, sparsity pattern is the transpose
     template<class MatrixBlockU, class MatrixBlockW>
     void prepare(const MatrixBlockU& U, const MatrixBlockW & Wpattern);
     
