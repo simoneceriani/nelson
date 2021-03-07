@@ -13,12 +13,14 @@ namespace nelson {
     };
   }
 
+  using MatrixWWtMultiplierSettings = ParallelExecSettings;
+
   template<int matOutputType, class T, int BR, int NBR>
   class MatrixWWtMultiplier {
   public:
     using MatOuputType = typename mat::MatrixBlockIterableTypeTraits< matOutputType, T, mat::ColMajor, BR, BR, NBR, NBR>::MatrixType;
 
-    using Settings = ParallelExecSettings;
+    using Settings = MatrixWWtMultiplierSettings;
 
   private:
 

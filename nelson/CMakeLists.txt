@@ -52,6 +52,8 @@ target_sources_wrapper(nelson
     MatrixDenseWrapper.hpp
     MatrixSparseWrapper.h
     MatrixSparseWrapper.hpp
+    MatrixDiagInv.h
+    MatrixDiagInv.hpp
     MatrixWWtMultiplier.h
     MatrixWWtMultiplier.hpp
     GaussNewton.h
@@ -64,6 +66,8 @@ target_sources_wrapper(nelson
     SolverCholeskySparse.hpp
     SolverDiagonalBlocksInverseSchur.h
     SolverDiagonalBlocksInverseSchur.hpp
+    SolverDiagonalBlocksInverseWWtMultSchur.h
+    SolverDiagonalBlocksInverseWWtMultSchur.hpp
     SolverTraitsBase.h
     SolverTraits.h
     ParallelExecHelper.h
@@ -83,12 +87,14 @@ target_sources_wrapper(nelson
     EdgeBinary.cpp
     MatrixDenseWrapper.cpp
     MatrixSparseWrapper.cpp
+    MatrixDiagInv.cpp
     MatrixWWtMultiplier.cpp
     GaussNewton.cpp
     SolverCholeskyDense.cpp
     SolverCholeskySchur.cpp
     SolverCholeskySparse.cpp
     SolverDiagonalBlocksInverseSchur.cpp
+    SolverDiagonalBlocksInverseWWtMultSchur.cpp
     ParallelExecHelper.cpp
     LevenbergMarquardt.cpp
 )

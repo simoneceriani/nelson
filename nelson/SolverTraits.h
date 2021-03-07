@@ -5,11 +5,13 @@
 #include "SolverTraitsBase.h"
 #include "SolverCholeskySchur.h"
 #include "SolverDiagonalBlocksInverseSchur.h"
+#include "SolverDiagonalBlocksInverseWWtMultSchur.h"
 
 namespace nelson {
 
   constexpr int solverCholeskySchur = 3;
   constexpr int solverCholeskySchurDiagBlockInverse = 4;
+  constexpr int solverCholeskySchurDiagBlockInverseWWtMult = 5;
 
   template<>
   struct SolverTraits<solverCholeskySchur>
@@ -35,6 +37,20 @@ namespace nelson {
       HessianTraits::BU, HessianTraits::BV,
       HessianTraits::NBU, HessianTraits::NBV,
       wrapperUType, wrapperWType,
+      choleskyOrderingS
+    >;
+  };
+
+  template<>
+  struct SolverTraits<solverCholeskySchurDiagBlockInverseWWtMult>
+  {
+    template<class HessianTraits, int SType, int choleskyOrderingS>
+    using Solver = SolverDiagonalBlocksInverseWWtMultSchur<
+      HessianTraits::matTypeU, HessianTraits::matTypeW,
+      typename HessianTraits::Type,
+      HessianTraits::BU, HessianTraits::BV,
+      HessianTraits::NBU, HessianTraits::NBV,
+      SType,
       choleskyOrderingS
     >;
   };

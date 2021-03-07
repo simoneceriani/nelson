@@ -13,24 +13,26 @@
 #include "SolverCholeskyDense.h"
 #include "SolverCholeskySparse.h"
 
-#include "MatrixDiagInv.h"
-
 #include "SolverTraitsBase.h"
 #include "MatrixWrapperTraits.h"
 
 #include <Eigen/Dense>
 
 #include "ParallelExecHelper.h"
+#include "MatrixWWtMultiplier.h"
+#include "MatrixDiagInv.h"
+
 
 #include <chrono>
 
+
 namespace nelson {
 
-  struct SolverDiagonalBlocksInverseSchurIterationTimeStat {
+  struct SolverDiagonalBlocksInverseWWtMultSchurIterationTimeStat {
     std::chrono::steady_clock::time_point t0_startIteration;
     std::chrono::steady_clock::time_point t1_VInvComputed;
-    std::chrono::steady_clock::time_point t2_WRefreshed;
-    std::chrono::steady_clock::time_point t3_URefreshed;
+    std::chrono::steady_clock::time_point t2_VinvWComputed;
+    std::chrono::steady_clock::time_point t3_WVinvWtComputed;
     std::chrono::steady_clock::time_point t4_bSComputed;
     std::chrono::steady_clock::time_point t5_SComputed;
     std::chrono::steady_clock::time_point t6_SSolveInit;
@@ -41,33 +43,39 @@ namespace nelson {
     std::string toString(const std::string & linePrefix = "") const;
   };
 
-  struct SolverDiagonalBlocksInverseSchurTimeStats {
+  struct SolverDiagonalBlocksInverseWWtMultSchurTimeStats {
     std::chrono::steady_clock::time_point startInit;
     std::chrono::steady_clock::time_point endInit;
-    std::vector< SolverDiagonalBlocksInverseSchurIterationTimeStat> iterations;
-    SolverDiagonalBlocksInverseSchurIterationTimeStat& lastIteration() {
+    std::vector< SolverDiagonalBlocksInverseWWtMultSchurIterationTimeStat> iterations;
+    SolverDiagonalBlocksInverseWWtMultSchurIterationTimeStat& lastIteration() {
       return iterations.back();
     }
-    void addIteration() { iterations.push_back(SolverDiagonalBlocksInverseSchurIterationTimeStat()); }
+    void addIteration() { iterations.push_back(SolverDiagonalBlocksInverseWWtMultSchurIterationTimeStat()); }
     std::string toString(const std::string& linePrefix = "") const;
   };
-
-  struct SolverDiagonalBlocksInverseSchurSettings {
-    MatrixDiagInvSettings& settings;
-    SolverDiagonalBlocksInverseSchurSettings(MatrixDiagInvSettings& settings) : settings(settings) {}
-
+  
+  struct SolverDiagonalBlocksInverseWWtMultSchurIterationSettings {
+    MatrixWWtMultiplierSettings& WWtMultiplierSettings;
+    MatrixDiagInvSettings& VinvSettings;
+    ParallelExecSettings WVinvSettings;
+    SolverDiagonalBlocksInverseWWtMultSchurIterationSettings(
+      MatrixWWtMultiplierSettings& WWtMultiplierSettings,
+      MatrixDiagInvSettings& VinvSettings
+    ) : WWtMultiplierSettings(WWtMultiplierSettings), VinvSettings(VinvSettings) 
+    {
+      
+    }
   };
-
+  
   template<
     int matTypeU, int matTypeW,
     class T,
     int BU, int BV,
     int NBU, int NBV,
-    int wrapperUType, int wrapperWType, 
+    int SType,
     int choleskyOrderingS
   >
-  class SolverDiagonalBlocksInverseSchur {
-
+  class SolverDiagonalBlocksInverseWWtMultSchur {
   public:
 
     using DoubleSectionHessianMatricesT = DoubleSectionHessianMatrices<matTypeU, mat::BlockDiagonal, matTypeW, T, BU, BV, NBU, NBV>;
@@ -76,7 +84,7 @@ namespace nelson {
     using Type = T;
 
     static constexpr bool hasSettings = true;
-    using Settings = SolverDiagonalBlocksInverseSchurSettings;
+    using Settings = SolverDiagonalBlocksInverseWWtMultSchurIterationSettings;    
 
   private:
     DoubleSectionHessianVectorsT _incVector;
@@ -84,28 +92,29 @@ namespace nelson {
     typename DoubleSectionHessianVectorsT::VecTypeU::StorageType _bS;
     typename DoubleSectionHessianVectorsT::VecTypeV::StorageType _bVtilde;
 
-    MatrixDiagInv<T, BV, NBV, mat::BlockCoeffSparse> _matrixVInv;
-    typename MatrixWrapperTraits<wrapperWType>::template Wrapper<matTypeW, T, mat::RowMajor, BU, BV, NBU, NBV> _matrixW;
-
-    using MatrixUType = typename MatrixWrapperTraits<wrapperUType>::template Wrapper<matTypeU, T, mat::ColMajor, BU, BU, NBU, NBU>;
-    MatrixUType _matrixU;
-    typename MatrixUType::MatOutputType _matrixS;
-
-    typename SolverTraits<wrapperUType>::template SolverEigen<typename MatrixUType::MatOutputType, choleskyOrderingS> _solverS;
+    MatrixDiagInv<T, BV, NBV, mat::BlockDiagonal> _matrixVInv;
+    typename DoubleSectionHessianMatricesT::MatTypeW _matrixWVInv;
+    MatrixWWtMultiplier<SType, T, BU, NBU> _wwtMult;
+    
+    using MatrixSType = typename MatrixWrapperTraits<SType>::template Wrapper<matTypeU, T, mat::ColMajor, BU, BU, NBU, NBU>::MatOutputType;
+    
+    typename SolverTraits<SType>::template SolverEigen<MatrixSType, choleskyOrderingS> _solverS;
 
     bool _firstTime;
-    T _v_maxAbsHDiag;
+    T _uv_maxAbsHDiag;
 
     Settings _settings;
-    SolverDiagonalBlocksInverseSchurTimeStats _timeStats;
+    SolverDiagonalBlocksInverseWWtMultSchurTimeStats _timeStats;
 
+    void computeWVInv(DoubleSectionHessianMatricesT& input);
+   
   public:
-    SolverDiagonalBlocksInverseSchur();
+    SolverDiagonalBlocksInverseWWtMultSchur();
 
     Settings& settings() { return _settings; }
     const Settings& settings() const { return _settings; }
 
-    const SolverDiagonalBlocksInverseSchurTimeStats& timeStats() const {
+    const SolverDiagonalBlocksInverseWWtMultSchurTimeStats& timeStats() const {
       return _timeStats;
     }
 
@@ -122,7 +131,6 @@ namespace nelson {
     T incrementVectorSquaredNorm() const {
       return _incVector.bU().mat().squaredNorm() + _incVector.bV().mat().squaredNorm();
     }
-  };
-
+  };    
 
 }

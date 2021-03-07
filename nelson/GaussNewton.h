@@ -5,6 +5,8 @@
 #include "SolverCholeskyDense.h"
 #include "SolverCholeskySparse.h"
 #include "SolverCholeskySchur.h"
+#include "SolverDiagonalBlocksInverseSchur.h"
+#include "SolverDiagonalBlocksInverseWWtMultSchur.h"
 
 #include "SolverTraits.h"
 
