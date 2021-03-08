@@ -2,12 +2,16 @@
 #include "Global.h"
 
 #include "mat/MatrixTypeTraits.h"
+#include "mat/VectorBlock.h"
 
 #include "ParallelExecHelper.h"
 
 namespace nelson {
   
-  using MatrixDiagInvSettings =  ParallelExecSettings;
+  struct MatrixDiagInvSettings {
+    ParallelExecSettings blockInversion;
+    ParallelExecSettings rightVectorMult;
+  };
 
   template<class T, int BV, int NBV, int matTypeOut>
   class MatrixDiagInv {
@@ -29,7 +33,9 @@ namespace nelson {
     void init(const MatTypeV& V);
     void compute(const MatTypeV& V, T relLambda, T absLambda);
 
-    const MatTypeVinv& Vinv() const { return _Vinv; }
+    MatTypeVinv& Vinv() { return _Vinv; }
+
+    void rightMultVector(const mat::VectorBlock<T, BV, NBV>& v, mat::VectorBlock<T, BV, NBV>& res) const;
   };
 
 

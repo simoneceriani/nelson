@@ -24,6 +24,7 @@ endif()
 set(SAMPLES_LIST 
 	WWtMultPerformances.cpp  
   WVinvMultPerformances.cpp
+  VinvMultPerformances.cpp
   TestSetUnorderedSetPerformances.cpp
 )
 
