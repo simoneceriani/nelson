@@ -18,6 +18,7 @@ namespace nelson {
     using MatType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockDense, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
     using MatCopyType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockCoeffSparse, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
     using MatOutputType = typename MatCopyType::StorageType;
+    static constexpr int matOutputType = mat::BlockCoeffSparse;
 
   private:
     // the original matrix
@@ -62,6 +63,7 @@ namespace nelson {
   public:
     using MatType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockCoeffSparse, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
     using MatOutputType = typename MatType::StorageType;
+    static constexpr int matOutputType = mat::BlockCoeffSparse;
   private:
 
 
@@ -113,6 +115,7 @@ namespace nelson {
 
     using MatCopyType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockCoeffSparse, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
     using MatOutputType = typename MatCopyType::StorageType;
+    static constexpr int matOutputType = mat::BlockCoeffSparse;
   private:
 
 
@@ -161,6 +164,7 @@ namespace nelson {
 
     using MatCopyType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockCoeffSparse, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
     using MatOutputType = typename MatCopyType::StorageType;
+    static constexpr int matOutputType = mat::BlockCoeffSparse;
   private:
 
 
@@ -210,6 +214,7 @@ namespace nelson {
 
     using MatType = typename SparseWrapper<matType, T, Ordering, BR, BR, NBR, NBR>::MatType;
     using DiagType = typename mat::VectorBlockTraits<T, BR, NBR>::StorageType;
+    static constexpr int matOutputType = mat::BlockCoeffSparse;
 
   private:
 

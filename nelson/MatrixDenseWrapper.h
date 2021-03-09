@@ -16,6 +16,7 @@ namespace nelson {
 
     using MatType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockDense, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
     using MatOutputType = typename MatType::StorageType;
+    static constexpr int matOutputType = mat::BlockDense;
 
   private:
 
@@ -57,6 +58,7 @@ namespace nelson {
     using MatCopyType = typename mat::MatrixBlockTypeTraits<mat::BlockDense, T, BR, BC, NBR, NBC>::StorageType;
 
     using MatOutputType = MatCopyType;
+    static constexpr int matOutputType = mat::BlockDense;
 
   private:
     // the original matrix
@@ -102,6 +104,7 @@ namespace nelson {
     using MatType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockDiagonal, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
     using MatCopyType = mat::DenseMatrixBlock<T, BR, BC, NBR, NBC>;
     using MatOutputType = typename MatCopyType::StorageType;
+    static constexpr int matOutputType = mat::BlockDense;
 
   private:
     // the original matrix
@@ -141,6 +144,7 @@ namespace nelson {
     using MatType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockSparse, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
     using MatCopyType = mat::DenseMatrixBlock<T, BR, BC, NBR, NBC>;
     using MatOutputType = typename MatCopyType::StorageType;
+    static constexpr int matOutputType = mat::BlockDense;
 
   private:
 
