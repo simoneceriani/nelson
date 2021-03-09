@@ -2,12 +2,16 @@
 #include "Global.h"
 
 #include "mat/MatrixTypeTraits.h"
+#include "mat/VectorBlock.h"
 
 #include "ParallelExecHelper.h"
 
 namespace nelson {
 
-  using MatrixWVinvMultiplierSettings = ParallelExecSettings;
+  struct MatrixWVinvMultiplierSettings {
+    ParallelExecSettings multiplication;
+    ParallelExecSettings rightVectorMult;
+  };
 
   template<int matWType, class T, int BR, int BC, int NBR, int NBC>
   class MatrixWVinvMultiplier {
@@ -40,6 +44,7 @@ namespace nelson {
       return _matOutput;
     }
 
+    void rightMultVectorSub(const mat::VectorBlock<T, BC, NBC>& v, mat::VectorBlock<T, BR, NBR>& res) const;
 
   };
 

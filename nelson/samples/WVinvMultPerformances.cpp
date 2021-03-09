@@ -56,6 +56,15 @@ int main(int argc, char* argv[]) {
     //W.blockByUID(bi).setZero();
   }
 
+  mat::VectorBlock<double, BC, mat::Dynamic> b;
+  b.resize(V.blockDescriptor().rowDescriptionCSPtr());
+  b.mat().setRandom();
+
+  mat::VectorBlock<double, BR, mat::Dynamic> bv;
+  bv.resize(W.blockDescriptor().rowDescriptionCSPtr());
+  bv.mat().setRandom();
+
+
   nelson::MatrixWVinvMultiplier<matWType, double, BR, BC, mat::Dynamic, mat::Dynamic> mwvinv;
   const int half_maxthreads = nelson::ParallelExecSettings::maxSupportedThreads() / 2;
   const int maxthreads = nelson::ParallelExecSettings::maxSupportedThreads();
@@ -67,13 +76,13 @@ int main(int argc, char* argv[]) {
     auto t0 = std::chrono::steady_clock::now();
     mwvinv.prepare(W);
     auto t1 = std::chrono::steady_clock::now();
-    mwvinv.settings().setSingleThread();
+    mwvinv.settings().multiplication.setSingleThread();
     mwvinv.multiply(W, V);
     auto t2 = std::chrono::steady_clock::now();
-    mwvinv.settings().setNumThreads(half_maxthreads);
+    mwvinv.settings().multiplication.setNumThreads(half_maxthreads);
     mwvinv.multiply(W, V);
     auto t3 = std::chrono::steady_clock::now();
-    mwvinv.settings().setNumThreadsMax();
+    mwvinv.settings().multiplication.setNumThreadsMax();
     mwvinv.multiply(W, V);
     auto t4 = std::chrono::steady_clock::now();
 
@@ -143,6 +152,29 @@ int main(int argc, char* argv[]) {
   }
   else {
     std::cerr << "OK" << std::endl;
+  }
+
+  // with multiplier, vector
+  {
+    auto t1 = std::chrono::steady_clock::now();
+    mwvinv.settings().rightVectorMult.setSingleThread();
+    mwvinv.rightMultVectorSub(b, bv);
+    auto t2 = std::chrono::steady_clock::now();
+    mwvinv.settings().rightVectorMult.setNumThreads(half_maxthreads);
+    mwvinv.rightMultVectorSub(b, bv);
+    auto t3 = std::chrono::steady_clock::now();
+    mwvinv.settings().rightVectorMult.setNumThreadsMax();
+    mwvinv.rightMultVectorSub(b, bv);
+    auto t4 = std::chrono::steady_clock::now();
+
+    double t_mult = std::chrono::duration<double>(t2 - t1).count();
+    double t_mult2 = std::chrono::duration<double>(t3 - t2).count();
+    double t_mult3 = std::chrono::duration<double>(t4 - t3).count();
+
+    std::cout << "**** VECTOR ****" << std::endl;
+    std::cout << "t_mult " << t_mult << std::endl;
+    std::cout << "t_mult(" << half_maxthreads << ") " << t_mult2 << std::endl;
+    std::cout << "t_mult(" << maxthreads << ") " << t_mult3 << std::endl;
   }
 
   return 0;

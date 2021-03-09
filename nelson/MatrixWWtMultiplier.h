@@ -5,6 +5,8 @@
 
 #include "ParallelExecHelper.h"
 
+#include <Eigen/Sparse>
+
 namespace nelson {
 
   namespace _private {
@@ -37,7 +39,7 @@ namespace nelson {
     const Settings& settings() const { return _settings; }
 
     template<class MatrixBlockU, class MatrixBlockW>
-    void prepare(const MatrixBlockU& U, const MatrixBlockW & Wpattern);
+    void prepare(const MatrixBlockU& U, const MatrixBlockW & Wpattern, const Eigen::SparseMatrix<int, Eigen::RowMajor> * spWmat = nullptr);
     
     template<class MatrixBlockU, class MatrixBlockW>
     void multiply(

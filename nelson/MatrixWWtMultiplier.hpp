@@ -42,7 +42,8 @@ namespace nelson {
   template<class MatrixBlockU, class MatrixBlockW>
   void MatrixWWtMultiplier<matOutputType, T, BR, NBR>::prepare(
     const MatrixBlockU& U,
-    const MatrixBlockW& W
+    const MatrixBlockW& W,
+    const Eigen::SparseMatrix<int, Eigen::RowMajor>* spWmat
   ) {
     assert(U.numBlocksRow() == U.numBlocksCol());
     assert(U.numBlocksRow() == W.numBlocksRow());
@@ -51,8 +52,14 @@ namespace nelson {
     mat::SparsityPattern<mat::ColMajor>::SPtr sp(new mat::SparsityPattern<mat::ColMajor>(U.numBlocksRow(), U.numBlocksRow()));
 
     // prepare the count of elements to be multiplied for the output matrix (including U blocks to be summed)
-    auto spMatW = W.sparsityPattern().toSparseMatrix();
-    auto spMatU = U.sparsityPattern().toSparseMatrix();
+    Eigen::SparseMatrix<int, Eigen::RowMajor> spMatW_computed;
+    if (spWmat == nullptr) {
+      spMatW_computed = W.sparsityPattern().toSparseMatrix();
+      spWmat = &spMatW_computed;
+    }    
+    const Eigen::SparseMatrix<int, Eigen::RowMajor>& spMatW = *spWmat;
+
+    Eigen::SparseMatrix<int> spMatU = U.sparsityPattern().toSparseMatrix();
     Eigen::SparseMatrix<int> spMatUWWt = (spMatU + spMatW * spMatW.transpose()).template triangularView<Eigen::Upper>();
 
     // iterate on columns

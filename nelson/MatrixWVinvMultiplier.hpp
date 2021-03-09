@@ -5,6 +5,9 @@
 #include "mat/DiagonalMatrixBlock.hpp"
 #include "mat/SparseCoeffMatrixBlock.hpp"
 #include "mat/SparseMatrixBlock.hpp"
+
+#include "mat/VectorBlock.hpp"
+
 #include <cassert>
 
 namespace nelson {
@@ -18,11 +21,13 @@ namespace nelson {
   template<int matWType, class T, int BR, int BC, int NBR, int NBC>
   void MatrixWVinvMultiplier<matWType, T, BR, BC, NBR, NBC >::multiply(const MatType& W, const MatTypeV& Vinv) {
 
-    const int chunkSize = _settings.chunkSize();
-    const int numEval = int(W.numBlocksRow());
-    const int reqNumThread = std::min(numEval, _settings.maxNumThreads());
+    const auto& settings = _settings.multiplication;
 
-    if (_settings.isSingleThread() || reqNumThread == 1) {
+    const int chunkSize = settings.chunkSize();
+    const int numEval = int(W.numBlocksRow());
+    const int reqNumThread = std::min(numEval, settings.maxNumThreads());
+
+    if (settings.isSingleThread() || reqNumThread == 1) {
       for (int r = 0; r < W.numBlocksRow(); r++) {
         for (auto it = W.rowBegin(r); it() != it.end(); it++) {
           _matOutput.blockByUID(it.blockUID()) = W.blockByUID(it.blockUID()) * Vinv.blockByUID(it.col());
@@ -31,8 +36,8 @@ namespace nelson {
     }
     else {
       // static 
-      if (_settings.schedule() == ParallelSchedule::schedule_static) {
-        if (_settings.isChunkAuto()) {
+      if (settings.schedule() == ParallelSchedule::schedule_static) {
+        if (settings.isChunkAuto()) {
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(static)
           for (int r = 0; r < W.numBlocksRow(); r++) {
             for (auto it = W.rowBegin(r); it() != it.end(); it++) {
@@ -50,8 +55,8 @@ namespace nelson {
 
         }
       }
-      else if (_settings.schedule() == ParallelSchedule::schedule_dynamic) {
-        if (_settings.isChunkAuto()) {
+      else if (settings.schedule() == ParallelSchedule::schedule_dynamic) {
+        if (settings.isChunkAuto()) {
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(dynamic)
           for (int r = 0; r < W.numBlocksRow(); r++) {
             for (auto it = W.rowBegin(r); it() != it.end(); it++) {
@@ -69,8 +74,8 @@ namespace nelson {
 
         }
       }
-      else if (_settings.schedule() == ParallelSchedule::schedule_guided) {
-        if (_settings.isChunkAuto()) {
+      else if (settings.schedule() == ParallelSchedule::schedule_guided) {
+        if (settings.isChunkAuto()) {
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(guided)
           for (int r = 0; r < W.numBlocksRow(); r++) {
             for (auto it = W.rowBegin(r); it() != it.end(); it++) {
@@ -88,7 +93,7 @@ namespace nelson {
 
         }
       }
-      else if (_settings.schedule() == ParallelSchedule::schedule_runtime) {
+      else if (settings.schedule() == ParallelSchedule::schedule_runtime) {
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(runtime)
         for (int r = 0; r < W.numBlocksRow(); r++) {
           for (auto it = W.rowBegin(r); it() != it.end(); it++) {
@@ -97,6 +102,93 @@ namespace nelson {
         }
       }
     }
+  }
+
+
+  template<int matWType, class T, int BR, int BC, int NBR, int NBC>
+  void MatrixWVinvMultiplier<matWType, T, BR, BC, NBR, NBC >::rightMultVectorSub(const mat::VectorBlock<T, BC, NBC>& v, mat::VectorBlock<T, BR, NBR>& res) const {
+    const auto& settings = _settings.rightVectorMult;
+
+    const int chunkSize = settings.chunkSize();
+    const int numEval = int(_matOutput.numBlocksRow());
+    const int reqNumThread = std::min(numEval, settings.maxNumThreads());
+
+    if (settings.isSingleThread() || reqNumThread == 1) {
+      for (int r = 0; r < _matOutput.numBlocksRow(); r++) {
+        for (auto it = _matOutput.rowBegin(r); it() != it.end(); it++) {
+          res.segment(r) -= _matOutput.blockByUID(it.blockUID()) * v.segment(it.col());
+        }
+      }
+    }
+    else {
+      // static 
+      if (settings.schedule() == ParallelSchedule::schedule_static) {
+        if (settings.isChunkAuto()) {
+#pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(static)
+          for (int r = 0; r < _matOutput.numBlocksRow(); r++) {
+            for (auto it = _matOutput.rowBegin(r); it() != it.end(); it++) {
+              res.segment(r) -= _matOutput.blockByUID(it.blockUID()) * v.segment(it.col());
+            }
+          }
+        }
+        else {
+#pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(static, chunkSize)
+          for (int r = 0; r < _matOutput.numBlocksRow(); r++) {
+            for (auto it = _matOutput.rowBegin(r); it() != it.end(); it++) {
+              res.segment(r) -= _matOutput.blockByUID(it.blockUID()) * v.segment(it.col());
+            }
+          }
+
+        }
+      }
+      else if (settings.schedule() == ParallelSchedule::schedule_dynamic) {
+        if (settings.isChunkAuto()) {
+#pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(dynamic)
+          for (int r = 0; r < _matOutput.numBlocksRow(); r++) {
+            for (auto it = _matOutput.rowBegin(r); it() != it.end(); it++) {
+              res.segment(r) -= _matOutput.blockByUID(it.blockUID()) * v.segment(it.col());
+            }
+          }
+        }
+        else {
+#pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(dynamic, chunkSize)
+          for (int r = 0; r < _matOutput.numBlocksRow(); r++) {
+            for (auto it = _matOutput.rowBegin(r); it() != it.end(); it++) {
+              res.segment(r) -= _matOutput.blockByUID(it.blockUID()) * v.segment(it.col());
+            }
+          }
+
+        }
+      }
+      else if (settings.schedule() == ParallelSchedule::schedule_guided) {
+        if (settings.isChunkAuto()) {
+#pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(guided)
+          for (int r = 0; r < _matOutput.numBlocksRow(); r++) {
+            for (auto it = _matOutput.rowBegin(r); it() != it.end(); it++) {
+              res.segment(r) -= _matOutput.blockByUID(it.blockUID()) * v.segment(it.col());
+            }
+          }
+        }
+        else {
+#pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(guided, chunkSize)
+          for (int r = 0; r < _matOutput.numBlocksRow(); r++) {
+            for (auto it = _matOutput.rowBegin(r); it() != it.end(); it++) {
+              res.segment(r) -= _matOutput.blockByUID(it.blockUID()) * v.segment(it.col());
+            }
+          }
+
+        }
+      }
+      else if (settings.schedule() == ParallelSchedule::schedule_runtime) {
+#pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(runtime)
+        for (int r = 0; r < _matOutput.numBlocksRow(); r++) {
+          for (auto it = _matOutput.rowBegin(r); it() != it.end(); it++) {
+            res.segment(r) -= _matOutput.blockByUID(it.blockUID()) * v.segment(it.col());
+          }
+        }
+      }
+    }
+
   }
 
 }

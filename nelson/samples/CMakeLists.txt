@@ -23,6 +23,7 @@ endif()
 
 set(SAMPLES_LIST 
 	WWtMultPerformances.cpp  
+  WtXMultPerformances.cpp
   WVinvMultPerformances.cpp
   VinvMultPerformances.cpp
   TestSetUnorderedSetPerformances.cpp

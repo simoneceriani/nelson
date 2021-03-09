@@ -25,6 +25,7 @@ set(TESTS_LIST
   testMatrixSparseDenseWrapper.cpp
   testMatrixWWtMultiplier.cpp
   testMatrixWVinvMultiplier.cpp
+  testMatrixWtXMultiplier.cpp
   testMatrixVinv.cpp
   testDoubleSectionSchurDiagBlockWWtFFFF.cpp
 )

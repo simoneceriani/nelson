@@ -20,11 +20,24 @@ void templateTestFunc() {
   mat::SparsityPattern<mat::ColMajor>::SPtr spVinv(new mat::SparsityPattern<mat::ColMajor>(NBCv, NBCv));
   spVinv->setDiagonal();
 
-  Vinv.resize(mat::MatrixBlockDescriptor<BC, BC, NBC, NBC>(BCv, NBCv, BCv, NBCv), spVinv);
+  auto blockDescriptorV = mat::MatrixBlockDescriptor<BC, BC, NBC, NBC>(BCv, NBCv, BCv, NBCv);
+  auto blockDescriptorW = mat::MatrixBlockDescriptor<BR, BC, NBR, NBC>(BRv, BCv, NBRv, NBCv);
+
+  Vinv.resize(blockDescriptorV, spVinv);
   Vinv.setZero();
   for (int bi = 0; bi < Vinv.nonZeroBlocks(); bi++) {
     Vinv.blockByUID(bi).setRandom();
   }
+
+  mat::VectorBlock<double, BC, NBC> b;
+  b.resize(blockDescriptorV.rowDescriptionCSPtr());
+  b.mat().setRandom();
+
+  mat::VectorBlock<double, BR, NBR> bv, bvOrig;
+  bv.resize(blockDescriptorW.rowDescriptionCSPtr());
+  bvOrig.resize(blockDescriptorW.rowDescriptionCSPtr());
+  bvOrig.mat().setRandom();
+  bv.mat() = bvOrig.mat();
 
   typename mat::MatrixBlockIterableTypeTraits<matType, double, mat::RowMajor, BR, BC, NBR, NBC>::MatrixType W;
 
@@ -50,7 +63,7 @@ void templateTestFunc() {
     sp->setDiagonal();
   }
 
-  W.resize(mat::MatrixBlockDescriptor<BR, BC, NBR, NBC>(BRv, BCv, NBRv, NBCv), sp);
+  W.resize(blockDescriptorW, sp);
   W.setZero();
   for (int bi = 0; bi < W.nonZeroBlocks(); bi++) {
     W.blockByUID(bi).setRandom();
@@ -59,14 +72,17 @@ void templateTestFunc() {
   nelson::MatrixWVinvMultiplier<matType, double, BR, BC, NBR, NBC> mwvinv;
 
   SECTION("SINGLE THREAD") {
-    mwvinv.settings().setSingleThread();
+    mwvinv.settings().multiplication.setSingleThread();
+    mwvinv.settings().rightVectorMult.setSingleThread();
   }
   SECTION("MULTI THREAD") {
-    mwvinv.settings().setNumThreadsMax();
+    mwvinv.settings().multiplication.setNumThreadsMax();
+    mwvinv.settings().rightVectorMult.setSingleThread();
   }
 
   mwvinv.prepare(W);
   mwvinv.multiply(W, Vinv);
+  mwvinv.rightMultVectorSub(b, bv);
 
   nelson::DenseWrapper<matType, double, mat::RowMajor, BR, BC, NBR, NBC> W_Wrap;
 
@@ -89,6 +105,13 @@ void templateTestFunc() {
 
   bool ok = (diff.array().abs() < Eigen::NumTraits<double>::dummy_precision()).all();
   REQUIRE(ok);
+
+  Eigen::VectorXd diff2 = (bvOrig.mat() - WVinv_Wrap.mat() * b.mat()) - bv.mat();
+  DEBUGOUT std::cout << "diff" << std::endl << diff.transpose() << std::endl << std::endl;
+
+  bool ok2 = (diff2.array().abs() < Eigen::NumTraits<double>::dummy_precision()).all();
+  REQUIRE(ok2);
+
 
 }
 
