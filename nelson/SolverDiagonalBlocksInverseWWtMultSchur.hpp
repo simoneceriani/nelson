@@ -15,10 +15,10 @@ namespace nelson {
     class T,
     int BU, int BV,
     int NBU, int NBV,
-    int SType, int VinvType,
+    int SType,
     int choleskyOrderingS
   >
-    SolverDiagonalBlocksInverseWWtMultSchur<matTypeU, matTypeW, T, BU, BV, NBU, NBV, SType, VinvType, choleskyOrderingS>::SolverDiagonalBlocksInverseWWtMultSchur() :
+    SolverDiagonalBlocksInverseWWtMultSchur<matTypeU, matTypeW, T, BU, BV, NBU, NBV, SType, choleskyOrderingS>::SolverDiagonalBlocksInverseWWtMultSchur() :
     _settings(_Vinv.settings(), _WVinv.settings(), _wwtMult.settings(), _WtX.settings()),
     _uv_maxAbsHDiag(-1)
   {
@@ -30,10 +30,10 @@ namespace nelson {
     class T,
     int BU, int BV,
     int NBU, int NBV,
-    int SType, int VinvType,
+    int SType, 
     int choleskyOrderingS
   >
-    void SolverDiagonalBlocksInverseWWtMultSchur<matTypeU, matTypeW, T, BU, BV, NBU, NBV, SType, VinvType, choleskyOrderingS>::init(DoubleSectionHessianMatricesT& input, const DoubleSectionHessianVectorsT& b)
+    void SolverDiagonalBlocksInverseWWtMultSchur<matTypeU, matTypeW, T, BU, BV, NBU, NBV, SType, choleskyOrderingS>::init(DoubleSectionHessianMatricesT& input, const DoubleSectionHessianVectorsT& b)
   {
     _timeStats.startInit = std::chrono::steady_clock::now();
 
@@ -80,10 +80,10 @@ namespace nelson {
     class T,
     int BU, int BV,
     int NBU, int NBV,
-    int SType, int VinvType,
+    int SType,
     int choleskyOrderingS
   >
-    T SolverDiagonalBlocksInverseWWtMultSchur<matTypeU, matTypeW, T, BU, BV, NBU, NBV, SType, VinvType, choleskyOrderingS>::maxAbsHDiag() const
+    T SolverDiagonalBlocksInverseWWtMultSchur<matTypeU, matTypeW, T, BU, BV, NBU, NBV, SType, choleskyOrderingS>::maxAbsHDiag() const
   {
     return _uv_maxAbsHDiag;
   }
@@ -93,10 +93,10 @@ namespace nelson {
     class T,
     int BU, int BV,
     int NBU, int NBV,
-    int SType, int VinvType,
+    int SType,
     int choleskyOrderingS
   >
-    bool SolverDiagonalBlocksInverseWWtMultSchur<matTypeU, matTypeW, T, BU, BV, NBU, NBV, SType, VinvType, choleskyOrderingS>::computeIncrement(DoubleSectionHessianMatricesT& input, const DoubleSectionHessianVectorsT& b, T relLambda, T absLambda)
+    bool SolverDiagonalBlocksInverseWWtMultSchur<matTypeU, matTypeW, T, BU, BV, NBU, NBV, SType, choleskyOrderingS>::computeIncrement(DoubleSectionHessianMatricesT& input, const DoubleSectionHessianVectorsT& b, T relLambda, T absLambda)
   {
     _timeStats.addIteration();
 

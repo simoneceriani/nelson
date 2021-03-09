@@ -56,7 +56,6 @@ void testFunction() {
 
 
   pss.update(true);
-  std::cout << "chi2 BEFORE " << pss.hessian().chi2() << std::endl;
 
   {
     using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchur>::Solver<typename TestType::Hessian::Traits, nelson::solverCholeskyDense, nelson::matrixWrapperDense, nelson::matrixWrapperDense, nelson::choleskyAMDOrdering, nelson::choleskyAMDOrdering> >;

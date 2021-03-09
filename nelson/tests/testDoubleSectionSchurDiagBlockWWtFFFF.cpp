@@ -484,10 +484,9 @@ void testFunction() {
 
 
   pss.update(true);
-  std::cout << "chi2 BEFORE " << pss.hessian().chi2() << std::endl;
 
   {
-    using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverseWWtMult>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperSparse, mat::BlockDiagonal, nelson::choleskyAMDOrdering> >;
+    using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverseWWtMult>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering> >;
     SolverAlgorithm gn;
     pss.addNoise(0.5);
     auto tc = gn.solve(pss);
@@ -497,7 +496,7 @@ void testFunction() {
   }
 
   {
-    using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverseWWtMult>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperDense, mat::BlockDiagonal, nelson::choleskyAMDOrdering > > ;
+    using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverseWWtMult>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperDense, nelson::choleskyAMDOrdering > > ;
     SolverAlgorithm gn;
     pss.addNoise(0.5);
     auto tc = gn.solve(pss);

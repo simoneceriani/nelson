@@ -44,13 +44,13 @@ namespace nelson {
   template<>
   struct SolverTraits<solverCholeskySchurDiagBlockInverseWWtMult>
   {
-    template<class HessianTraits, int SType, int VinvType, int choleskyOrderingS>
+    template<class HessianTraits, int SType, int choleskyOrderingS>
     using Solver = SolverDiagonalBlocksInverseWWtMultSchur<
       HessianTraits::matTypeU, HessianTraits::matTypeW,
       typename HessianTraits::Type,
       HessianTraits::BU, HessianTraits::BV,
       HessianTraits::NBU, HessianTraits::NBV,
-      SType, VinvType,
+      SType,
       choleskyOrderingS
     >;
   };

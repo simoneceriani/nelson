@@ -56,7 +56,6 @@ void testFunction() {
 
 
   pss.update(true);
-  std::cout << "chi2 BEFORE " << pss.hessian().chi2() << std::endl;
 
   {
     using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverse>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperDense, nelson::matrixWrapperDense, nelson::choleskyAMDOrdering> >;
@@ -88,6 +87,25 @@ void testFunction() {
   }
   {
     using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverse>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperSparse, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering> >;
+    SolverAlgorithm gn;
+    pss.addNoise(0.5);
+    auto tc = gn.solve(pss);
+    std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
+    std::cout << "stats " << gn.stats().toString() << std::endl;
+    REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
+  }
+  // alternative solver, better
+  {
+    using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverseWWtMult>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering> >;
+    SolverAlgorithm gn;
+    pss.addNoise(0.5);
+    auto tc = gn.solve(pss);
+    std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
+    std::cout << "stats " << gn.stats().toString() << std::endl;
+    REQUIRE(pss.hessian().chi2() < Eigen::NumTraits<double>::dummy_precision());
+  }
+  {
+    using SolverAlgorithm = Solver <typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverseWWtMult>::Solver<typename TestType::Hessian::Traits, nelson::matrixWrapperDense, nelson::choleskyAMDOrdering> >;
     SolverAlgorithm gn;
     pss.addNoise(0.5);
     auto tc = gn.solve(pss);

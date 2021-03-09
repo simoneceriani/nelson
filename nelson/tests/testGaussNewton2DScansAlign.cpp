@@ -685,7 +685,6 @@ TEMPLATE_TEST_CASE_SIG("GaussNewton-LevenbergMarquardt", "[GaussNewton-Levenberg
       optProblem.structureReady();
 
       optProblem.update(true);
-      std::cout << "chi2 BEFORE " << optProblem.hessian().chi2() << std::endl;
 
       if (!solveGN) {
         nelson::LevenbergMarquardt<typename nelson::SolverTraits<solverType>::template Solver<typename ProblemType::Hessian::Traits, nelson::choleskyAMDOrdering> > lm;

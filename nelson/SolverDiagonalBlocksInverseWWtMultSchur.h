@@ -83,7 +83,7 @@ namespace nelson {
     class T,
     int BU, int BV,
     int NBU, int NBV,
-    int SType, int VinvType,
+    int SType,
     int choleskyOrderingS
   >
   class SolverDiagonalBlocksInverseWWtMultSchur {
@@ -105,7 +105,7 @@ namespace nelson {
 
     static constexpr int matSType = MatrixWrapperTraits<SType>::template Wrapper<matTypeU, T, mat::ColMajor, BU, BU, NBU, NBU>::matOutputType;
 
-    MatrixDiagInv<double, BV, NBV, VinvType> _Vinv;
+    MatrixDiagInv<double, BV, NBV, mat::BlockDiagonal> _Vinv;
     MatrixWVinvMultiplier<matTypeW, T, BU, BV, NBU, NBV> _WVinv;
     MatrixWWtMultiplier<matSType, T, BU, NBU> _wwtMult;
     MatrixWtXMultiplier<matTypeW, T, BU, BV, NBU, NBV> _WtX;
