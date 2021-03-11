@@ -71,6 +71,38 @@ namespace nelson {
     std::string toString() const;
   };
 
+  class GaussNewtownTimingStats {
+  public:
+    struct IterationTime {
+      std::chrono::duration<double> evalTime;
+      std::chrono::duration<double> applyIncrementTime;
+      std::chrono::duration<double> computeIncrementTime;
+      std::chrono::duration<double> overallTime;
+      IterationTime();
+      std::string toString(const std::string& linePrefix = "") const;
+    };
+
+  private:
+
+    std::vector<IterationTime> _stats;
+    std::chrono::duration<double> _firstEvalTime;
+    std::chrono::duration<double> _solverInitTime;
+
+  public:
+    GaussNewtownTimingStats();
+    virtual ~GaussNewtownTimingStats();
+
+    void reserve(int n);
+
+    void setFirstEvalTime(const std::chrono::duration<double>& d) { _firstEvalTime = d; };
+    void setSolverInitTime(const std::chrono::duration<double>& d) { _solverInitTime = d; }
+
+    void addIteration(const IterationTime& it);
+
+    std::string toString(const std::string& linePrefix = "") const;
+  };
+
+
   //------------------------------------------------------------------------------------------------------
 
   template<class Solver>
@@ -82,11 +114,13 @@ namespace nelson {
     int iter;
 
     GaussNewtownStats _stats;
+    GaussNewtownTimingStats _timingStats;
   public:
 
     using Utils = GaussNewtonUtils;
     using Settings = GaussNewtonSettings;
     using Stats = GaussNewtownStats;
+    using TimingStats = GaussNewtownTimingStats;
 
     GaussNewton();
     GaussNewton(const GaussNewtonSettings & settings);
@@ -102,6 +136,7 @@ namespace nelson {
     inline std::enable_if_t<Solver::hasSettings, RetType> solverSettings() const { return _solver.settings(); }
 
     const GaussNewtownStats stats() const { return _stats; }
+    const GaussNewtownTimingStats timingStats() const { return _timingStats; }
 
     const Solver& solver() const { return _solver; }
 

@@ -286,14 +286,21 @@ int main(int argc, char* argv[]) {
   ba_problem.settings().edgeEvalParallelSettings.setNumThreads(numThreads);
   ba_problem.settings().hessianUpdateParallelSettings.setNumThreads(numThreads);
   gn.solverSettings().Vinv.blockInversion.setNumThreads(numThreads);
+  gn.solverSettings().Vinv.rightVectorMult.setNumThreads(numThreads);
   gn.solverSettings().WtX.setNumThreads(numThreads);
   gn.solverSettings().WVinv.multiplication.setNumThreads(numThreads);
   gn.solverSettings().WVinv.rightVectorMult.setNumThreads(numThreads);
   gn.solverSettings().WVinvWt.setNumThreads(numThreads);
+  gn.settings().minNumIt = 5;
 
+  auto t0 = std::chrono::steady_clock::now();
   auto tc = gn.solve(ba_problem);
+  auto t1 = std::chrono::steady_clock::now();
+
+  std::cout << "ELAPSED " << std::chrono::duration<double>(t1 - t0).count() << std::endl;
   std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
   std::cout << "stats " << gn.stats().toString() << std::endl;
+  std::cout << gn.timingStats().toString() << std::endl;
 
   return 0;
 }
