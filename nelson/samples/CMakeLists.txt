@@ -39,6 +39,26 @@ foreach(s ${SAMPLES_LIST})
 	target_link_libraries(nelsonSamples_${sn} PRIVATE nelson nelsonSamples_Problem)
 endforeach()
 
+########
+find_package_wrapper(lie REQUIRED CONFIG)
+find_package_wrapper(camera REQUIRED CONFIG)
+
+set(SAMPLES_LIST 
+  BASchurPerfomances.cpp
+)
+
+foreach(s ${SAMPLES_LIST})
+	get_filename_component(sn "${s}" NAME_WE)
+	add_executable(nelsonSamples_${sn})
+	target_sources(nelsonSamples_${sn} PRIVATE ${s})
+	if (WIN32)
+		set_target_properties(nelsonSamples_${sn} PROPERTIES FOLDER nelson/samples)
+	endif()	
+	target_link_libraries(nelsonSamples_${sn} PRIVATE nelson nelsonSamples_Problem lie::lie camera::camera)
+endforeach()
+
+
+
 ## add these lines block for each sample, or if you need more complex structure, create a subfolder
 #add_executable(<<target>>)
 #target_sources(

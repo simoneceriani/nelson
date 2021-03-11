@@ -45,9 +45,9 @@ foreach(s ${TESTS_LIST})
 endforeach()
 
 ######################################################################
-OPTION(nelsonTest_COMPILE_LONG_TESTS "Compile All Tests, including very long compile time ones" ON)
+OPTION(nelson_COMPILE_LONG_TESTS "Compile All Tests, including very long compile time ones" ON)
 
-if(nelsonTest_COMPILE_LONG_TESTS)
+if(nelson_COMPILE_LONG_TESTS)
   set(DOUBLESECTIONTESTCOMMON testDoubleSectionCommon.h testDoubleSectionCommon.hpp)
 
   set(TESTS_LIST 
