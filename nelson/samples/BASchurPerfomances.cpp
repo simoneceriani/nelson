@@ -276,10 +276,21 @@ int main(int argc, char* argv[]) {
   ba_problem.addNoise();
   ba_problem.update(false);
 
+  int numThreads = nelson::ParallelExecSettings::maxSupportedThreads() / 2;
+
   std::cout << "chi2 noise add " << ba_problem.hessian().chi2() << std::endl;
 
   using SolverAlgorithm = nelson::GaussNewton<typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverseWWtMult>::Solver<typename BA_Problem::Hessian::Traits, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering> >;
   SolverAlgorithm gn;
+
+  ba_problem.settings().edgeEvalParallelSettings.setNumThreads(numThreads);
+  ba_problem.settings().hessianUpdateParallelSettings.setNumThreads(numThreads);
+  gn.solverSettings().Vinv.blockInversion.setNumThreads(numThreads);
+  gn.solverSettings().WtX.setNumThreads(numThreads);
+  gn.solverSettings().WVinv.multiplication.setNumThreads(numThreads);
+  gn.solverSettings().WVinv.rightVectorMult.setNumThreads(numThreads);
+  gn.solverSettings().WVinvWt.setNumThreads(numThreads);
+
   auto tc = gn.solve(ba_problem);
   std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
   std::cout << "stats " << gn.stats().toString() << std::endl;
