@@ -21,7 +21,7 @@ void testFunction() {
     pss.addEdge(i, new EdgeUnaryPoint3d<TestType>(i, pss.parameterV(i).p3d));
   }
   // binary edge first section
-  if (pss.matTypeU() != mat::BlockDiagonal) {
+  if (pss.matTypeU() != mat::BlockDiagonal && pss.matTypeU() != mat::SparseCoeffBlockDiagonal) {
     for (int i = 0; i < numPoints2d; i++) {
       for (int j = i + 1; j < numPoints2d; j++) {
         pss.addEdge(i, j, new EdgeBinaryPoint2d<TestType>(i, j, pss.parameterU(i).p2d - pss.parameterU(j).p2d));
@@ -29,7 +29,7 @@ void testFunction() {
     }
   }
   // binary edge section section
-  if (pss.matTypeV() != mat::BlockDiagonal) {
+  if (pss.matTypeV() != mat::BlockDiagonal && pss.matTypeV() != mat::SparseCoeffBlockDiagonal) {
     for (int i = 0; i < numPoints3d; i++) {
       for (int j = i + 1; j < numPoints3d; j++) {
         pss.addEdge(i, j, new EdgeBinaryPoint3d<TestType>(i, j, pss.parameterV(i).p3d - pss.parameterV(j).p3d));
@@ -37,7 +37,7 @@ void testFunction() {
     }
   }
   // binary edge first section to second section
-  if (pss.matTypeW() != mat::BlockDiagonal) {
+  if (pss.matTypeW() != mat::BlockDiagonal && pss.matTypeW() != mat::SparseCoeffBlockDiagonal) {
     for (int i = 0; i < numPoints2d; i++) {
       for (int j = 0; j < numPoints3d; j++) {
         pss.addEdge(i, j, new EdgeBinaryPoint2d3d<TestType>(i, j, pss.parameterU(i).p2d - pss.parameterV(j).p3d.template head<2>()));

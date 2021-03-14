@@ -24,19 +24,17 @@
 constexpr int BR = 6;
 constexpr int BC = 3;
 
-constexpr int matUType = mat::BlockDiagonal;
-constexpr int matWType = mat::BlockCoeffSparse;
-constexpr int matSType = mat::BlockDiagonal;
-
+template<int matUType, int matVType, int matWType>
 class Edge;
 
-class BA_Problem : public nelson::DoubleSection < BA_Problem, lie::Pose3Dd, Eigen::Vector3d, matUType, mat::BlockDiagonal, matWType, double, 6, 3, mat::Dynamic, mat::Dynamic >
+template<int matUType, int matVType, int matWType>
+class BA_Problem : public nelson::DoubleSection < BA_Problem<matUType, matVType, matWType>, lie::Pose3Dd, Eigen::Vector3d, matUType, matVType, matWType, double, 6, 3, mat::Dynamic, mat::Dynamic >
 {
   camera::Camerad _camera;
   std::vector<lie::Pose3Dd> _poses;
   std::vector<Eigen::Vector3d> _points;
 
-  using DoubleSectionBase = nelson::DoubleSection<BA_Problem, lie::Pose3Dd, Eigen::Vector3d, matUType, mat::BlockDiagonal, matWType, double, 6, 3, mat::Dynamic, mat::Dynamic>;
+  using DoubleSectionBase = nelson::DoubleSection<BA_Problem<matUType, matVType, matWType>, lie::Pose3Dd, Eigen::Vector3d, matUType, matVType, matWType, double, 6, 3, mat::Dynamic, mat::Dynamic>;
 
 public:
   BA_Problem(int nc, int np, int ne) :
@@ -173,7 +171,8 @@ public:
 
 };
 
-class Edge : public BA_Problem::EdgeBinaryUV<Edge> {
+template<int matUType, int matVType, int matWType>
+class Edge : public BA_Problem<matUType, matVType, matWType>::EdgeBinaryUV<Edge<matUType, matVType, matWType>> {
   Eigen::Vector2d _meas;
 
   Eigen::Vector3d _pC;
@@ -232,33 +231,10 @@ public:
   }
 };
 
-int main(int argc, char* argv[]) {
-
-  const Problem* problemPtr = &ProblemCollections::ladybug_49_7776;
-  std::unique_ptr<Problem> newProblem;
-  if (argc == 2) {
-    newProblem.reset(new Problem());
-    bool ok = newProblem->load(argv[1]);
-    if (!ok) {
-      std::cerr << "error reading " << argv[1] << std::endl;
-      std::exit(-1);
-    }
-    else {
-      problemPtr = newProblem.get();
-    }
-  }
-  const Problem& problem = *problemPtr;
-
-  BA_Problem ba_problem(problem.nCameras, problem.nPoints, problem.edges.size());
+template<int matUType, int matVType, int matWType>
+void testFunction(const Problem & problem) {
+  BA_Problem< matUType, matVType, matWType> ba_problem(problem.nCameras, problem.nPoints, problem.edges.size());
   ba_problem.parametersReady();
-  /*
-  for (int i = 0; i < 10; i++) {
-    std::cout << ba_problem.parameterU(i).inverse().matrix() << std::endl;
-  }
-  for (int i = 0; i < 10; i++) {
-    std::cout << ba_problem.parameterV(i).transpose() << std::endl;
-  }
-  //*/
 
   for (int i = 0; i < problem.edges.size(); i++) {
     const auto& e = problem.edges[i];
@@ -266,7 +242,7 @@ int main(int argc, char* argv[]) {
     const int e_j = e.second;
     nelson::NodeId cam_i = nelson::NodeId((e_i == 0 ? 0 : e_i - 1), (e_i == 0 ? nelson::NodeType::Fixed : nelson::NodeType::Variable));
     nelson::NodeId point_i = nelson::NodeId((e_j == 0 ? 0 : e_j - 1), (e_j == 0 ? nelson::NodeType::Fixed : nelson::NodeType::Variable));
-    ba_problem.addEdge(cam_i, point_i, new Edge(ba_problem.camera().points3D_to_image(ba_problem.pose(e.first) * ba_problem.point(e.second))));
+    ba_problem.addEdge(cam_i, point_i, new Edge<matUType, matVType, matWType>(ba_problem.camera().points3D_to_image(ba_problem.pose(e.first) * ba_problem.point(e.second))));
   }
 
   ba_problem.structureReady();
@@ -280,7 +256,7 @@ int main(int argc, char* argv[]) {
 
   std::cout << "chi2 noise add " << ba_problem.hessian().chi2() << std::endl;
 
-  using SolverAlgorithm = nelson::GaussNewton<typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverseWWtMult>::Solver<typename BA_Problem::Hessian::Traits, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering> >;
+  using SolverAlgorithm = nelson::GaussNewton<typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverseWWtMult>::Solver<typename BA_Problem<matUType, matVType, matWType>::Hessian::Traits, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering> >;
   SolverAlgorithm gn;
 
   ba_problem.settings().edgeEvalParallelSettings.setNumThreads(numThreads);
@@ -302,6 +278,54 @@ int main(int argc, char* argv[]) {
   std::cout << "stats " << gn.stats().toString() << std::endl;
   std::cout << gn.timingStats().toString() << std::endl;
   std::cout << gn.solver().timingStats().toString() << std::endl;
+
+}
+
+int main(int argc, char* argv[]) {
+
+  const Problem* problemPtr = &ProblemCollections::ladybug_49_7776;
+  std::unique_ptr<Problem> newProblem;
+  if (argc == 2) {
+    newProblem.reset(new Problem());
+    bool ok = newProblem->load(argv[1]);
+    if (!ok) {
+      std::cerr << "error reading " << argv[1] << std::endl;
+      std::exit(-1);
+    }
+    else {
+      problemPtr = newProblem.get();
+    }
+  }
+  const Problem& problem = *problemPtr;
+
+  std::cout 
+    << "----------------------------------------------------"<< std::endl 
+    << "matUType BlockDiagonal, matVType BlockDiagonal, matWType BlockCoeffSparse" << std::endl;
+  testFunction<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockCoeffSparse>(problem);
+  std::cout
+    << "----------------------------------------------------" << std::endl << std::endl;
+
+  std::cout
+    << "----------------------------------------------------" << std::endl
+    << "matUType SparseCoeffBlockDiagonal, matVType SparseCoeffBlockDiagonal, matWType BlockCoeffSparse" << std::endl;
+  testFunction<mat::SparseCoeffBlockDiagonal, mat::SparseCoeffBlockDiagonal, mat::BlockCoeffSparse>(problem);
+  std::cout
+    << "----------------------------------------------------" << std::endl << std::endl;
+
+  std::cout
+    << "----------------------------------------------------" << std::endl
+    << "matUType BlockDiagonal, matVType BlockDiagonal, matWType BlockSparse" << std::endl;
+  testFunction<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockSparse>(problem);
+  std::cout
+    << "----------------------------------------------------" << std::endl << std::endl;
+
+  std::cout
+    << "----------------------------------------------------" << std::endl
+    << "matUType SparseCoeffBlockDiagonal, matVType SparseCoeffBlockDiagonal, matWType BlockSparse" << std::endl;
+  testFunction<mat::SparseCoeffBlockDiagonal, mat::SparseCoeffBlockDiagonal, mat::BlockSparse>(problem);
+  std::cout
+    << "----------------------------------------------------" << std::endl << std::endl;
+
 
   return 0;
 }
