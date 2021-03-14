@@ -97,7 +97,7 @@ namespace nelson {
 
     void init(DoubleSectionHessianMatricesT& input, const DoubleSectionHessianVectorsT& b);
 
-    const SolverCholeskySchurTimeStat& timeStats() const {
+    const SolverCholeskySchurTimeStat& timingStats() const {
       return _timeStats;
     }
 

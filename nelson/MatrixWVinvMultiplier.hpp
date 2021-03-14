@@ -5,6 +5,7 @@
 #include "mat/DiagonalMatrixBlock.hpp"
 #include "mat/SparseCoeffMatrixBlock.hpp"
 #include "mat/SparseMatrixBlock.hpp"
+#include "mat/SparseCoeffDiagonalMatrixBlock.hpp"
 
 #include "mat/VectorBlock.hpp"
 
@@ -12,14 +13,14 @@
 
 namespace nelson {
 
-  template<int matWType, class T, int BR, int BC, int NBR, int NBC>
-  void MatrixWVinvMultiplier<matWType, T, BR, BC, NBR, NBC >::prepare(const MatType& W) {
+  template<int matWType, int matVType, class T, int BR, int BC, int NBR, int NBC>
+  void MatrixWVinvMultiplier<matWType, matVType, T, BR, BC, NBR, NBC >::prepare(const MatType& W) {
     _matOutput.resize(W.blockDescriptor(), W.sparsityPatternCSPtr());
     _matOutput.setZero();
   }
 
-  template<int matWType, class T, int BR, int BC, int NBR, int NBC>
-  void MatrixWVinvMultiplier<matWType, T, BR, BC, NBR, NBC >::multiply(const MatType& W, const MatTypeV& Vinv) {
+  template<int matWType, int matVType, class T, int BR, int BC, int NBR, int NBC>
+  void MatrixWVinvMultiplier<matWType, matVType, T, BR, BC, NBR, NBC >::multiply(const MatType& W, const MatTypeV& Vinv) {
 
     const auto& settings = _settings.multiplication;
 
@@ -105,8 +106,8 @@ namespace nelson {
   }
 
 
-  template<int matWType, class T, int BR, int BC, int NBR, int NBC>
-  void MatrixWVinvMultiplier<matWType, T, BR, BC, NBR, NBC >::rightMultVectorSub(const mat::VectorBlock<T, BC, NBC>& v, mat::VectorBlock<T, BR, NBR>& res) const {
+  template<int matWType, int matVType, class T, int BR, int BC, int NBR, int NBC>
+  void MatrixWVinvMultiplier<matWType, matVType, T, BR, BC, NBR, NBC >::rightMultVectorSub(const mat::VectorBlock<T, BC, NBC>& v, mat::VectorBlock<T, BR, NBR>& res) const {
     const auto& settings = _settings.rightVectorMult;
 
     const int chunkSize = settings.chunkSize();

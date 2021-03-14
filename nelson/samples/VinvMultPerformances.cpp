@@ -12,24 +12,8 @@
 
 constexpr int BC = 3;
 
-constexpr int matVType = mat::BlockDiagonal;
-
-int main(int argc, char* argv[]) {
-  const Problem* problemPtr = &ProblemCollections::ladybug_49_7776;
-  std::unique_ptr<Problem> newProblem;
-  if (argc == 2) {
-    newProblem.reset(new Problem());
-    bool ok = newProblem->load(argv[1]);
-    if (!ok) {
-      std::cerr << "error reading " << argv[1] << std::endl;
-      std::exit(-1);
-    }
-    else {
-      problemPtr = newProblem.get();
-    }
-  }
-  const Problem& problem = *problemPtr;
-
+template<int matVType>
+void testFunction(const Problem& problem) {
   typename mat::MatrixBlockIterableTypeTraits<matVType, double, mat::ColMajor, BC, BC, mat::Dynamic, mat::Dynamic>::MatrixType V;
   mat::SparsityPattern<mat::ColMajor>::SPtr spV(new mat::SparsityPattern<mat::ColMajor>(problem.nPoints, problem.nPoints));
   spV->setDiagonal();
@@ -45,7 +29,7 @@ int main(int argc, char* argv[]) {
   b.mat().setRandom();
   bv.resize(blockDescriptorV.rowDescriptionCSPtr());
 
-  nelson::MatrixDiagInv<double, BC, mat::Dynamic, mat::BlockDiagonal> mwvinv;
+  nelson::MatrixDiagInv<matVType, double, BC, mat::Dynamic, mat::BlockDiagonal> mwvinv;
   const int half_maxthreads = nelson::ParallelExecSettings::maxSupportedThreads() / 2;
   const int maxthreads = nelson::ParallelExecSettings::maxSupportedThreads();
 
@@ -103,6 +87,30 @@ int main(int argc, char* argv[]) {
 
   }
 
+}
+
+int main(int argc, char* argv[]) {
+  const Problem* problemPtr = &ProblemCollections::ladybug_49_7776;
+  std::unique_ptr<Problem> newProblem;
+  if (argc == 2) {
+    newProblem.reset(new Problem());
+    bool ok = newProblem->load(argv[1]);
+    if (!ok) {
+      std::cerr << "error reading " << argv[1] << std::endl;
+      std::exit(-1);
+    }
+    else {
+      problemPtr = newProblem.get();
+    }
+  }
+  const Problem& problem = *problemPtr;
+  std::cout << problem.toString() << std::endl;
+
+  std::cout << "******* mat::BlockDiagonal" << std::endl;
+  testFunction<mat::BlockDiagonal>(problem);
+
+  std::cout << "******* mat::SparseCoeffBlockDiagonal" << std::endl;
+  testFunction<mat::SparseCoeffBlockDiagonal>(problem);
 
 
   return 0;

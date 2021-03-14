@@ -14,6 +14,12 @@ namespace nelson {
   DenseWrapper<mat::BlockCoeffSparse, T, Ordering, BR, BC, NBR, NBC>::~DenseWrapper() {
 
   }
+  //---------------------------------------------------------------------------------------------------
+
+  template<class T, int Ordering, int BR, int BC, int NBR, int NBC>
+  DenseWrapper < mat::SparseCoeffBlockDiagonal , T, Ordering, BR, BC, NBR, NBC > ::~DenseWrapper() {
+
+  }
 
   //---------------------------------------------------------------------------------------------------
 

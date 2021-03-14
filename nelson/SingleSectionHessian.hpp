@@ -4,6 +4,7 @@
 #include "mat/DenseMatrixBlock.hpp"
 #include "mat/DiagonalMatrixBlock.hpp"
 #include "mat/SparseCoeffMatrixBlock.hpp"
+#include "mat/SparseCoeffDiagonalMatrixBlock.hpp"
 #include "mat/SparseMatrixBlock.hpp"
 
 #include "mat/VectorBlock.hpp"

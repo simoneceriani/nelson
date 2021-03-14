@@ -26,21 +26,19 @@ namespace nelson {
   //---------------------------------------------------------------------------------------------------
 
   template<int matTypeV, class T, int B, int NB, class EigenOrderingMethod>
-  void SolverCholeskySparse<matTypeV, T, B, NB, EigenOrderingMethod>::init(MatType& input, const mat::VectorBlock<T, B, NB>& b) {
+  void SolverCholeskySparseBase<matTypeV, T, B, NB, EigenOrderingMethod>::init(MatType& input, const VecType & b) {
     _sparseWrapper.set(&input);
     
-    _incVector.resize(b.segmentDescriptionCSPtr());
-
     this->_ldlt.analyzePattern(_sparseWrapper.mat());
   }
 
   template<int matTypeV, class T, int B, int NB, class EigenOrderingMethod>
-  T SolverCholeskySparse<matTypeV, T, B, NB, EigenOrderingMethod>::maxAbsHDiag() const {
+  T SolverCholeskySparseBase<matTypeV, T, B, NB, EigenOrderingMethod>::maxAbsHDiag() const {
     return _sparseWrapper.maxAbsDiag();
   }
 
   template<int matTypeV, class T, int B, int NB, class EigenOrderingMethod>
-  bool SolverCholeskySparse<matTypeV, T, B, NB, EigenOrderingMethod>::computeIncrement(MatType& input, const mat::VectorBlock<T, B, NB>& b, T relLambda, T absLambda) {
+  bool SolverCholeskySparseBase<matTypeV, T, B, NB, EigenOrderingMethod>::computeIncrement(MatType& input, const VecType& b, T relLambda, T absLambda, VecType& result) {
     _sparseWrapper.refresh();
 
     if (relLambda != 0 || absLambda != 0) {
@@ -59,7 +57,7 @@ namespace nelson {
     this->_ldlt.factorize(_sparseWrapper.mat());
 
     if (this->_ldlt.info() == Eigen::ComputationInfo::Success) {
-      _incVector.mat() = this->_ldlt.solve(-b.mat());
+      result.mat() = this->_ldlt.solve(-b.mat());
     }
 
     // restore diagonal values
@@ -71,14 +69,27 @@ namespace nelson {
   }
 
   template<int matTypeV, class T, int B, int NB, class EigenOrderingMethod>
-  const Eigen::Solve<typename SolverCholeskySparse<matTypeV, T, B, NB, EigenOrderingMethod>::SolverType, Eigen::SparseMatrix<T>> SolverCholeskySparse<matTypeV, T, B, NB, EigenOrderingMethod>::solve(const Eigen::SparseMatrix<T>& b) const {
+  const Eigen::Solve<typename SolverCholeskySparseBase<matTypeV, T, B, NB, EigenOrderingMethod>::SolverType, Eigen::SparseMatrix<T>> SolverCholeskySparseBase<matTypeV, T, B, NB, EigenOrderingMethod>::solve(const Eigen::SparseMatrix<T>& b) const {
     return this->_ldlt.solve(b);
   }
 
   template<int matTypeV, class T, int B, int NB, class EigenOrderingMethod>
   template<class Derived>
-  const Eigen::Solve<typename SolverCholeskySparse<matTypeV, T, B, NB, EigenOrderingMethod>::SolverType, Derived> SolverCholeskySparse<matTypeV, T, B, NB, EigenOrderingMethod>::solve(const Eigen::MatrixBase<Derived>& b) const {
+  const Eigen::Solve<typename SolverCholeskySparseBase<matTypeV, T, B, NB, EigenOrderingMethod>::SolverType, Derived> SolverCholeskySparseBase<matTypeV, T, B, NB, EigenOrderingMethod>::solve(const Eigen::MatrixBase<Derived>& b) const {
     return this->_ldlt.solve(b);
+  }
+
+  //---------------------------------------------------------------------------------------------------
+
+  template<int matTypeV, class T, int B, int NB, class EigenOrderingMethod>
+  void SolverCholeskySparse<matTypeV, T, B, NB, EigenOrderingMethod>::init(MatType& input, const VecType& b) {
+    SolverCholeskySparseBase<matTypeV, T, B, NB, EigenOrderingMethod>::init(input, b);
+    _incVector.resize(b.segmentDescriptionCSPtr());
+  }
+
+  template<int matTypeV, class T, int B, int NB, class EigenOrderingMethod>
+  bool SolverCholeskySparse<matTypeV, T, B, NB, EigenOrderingMethod>::computeIncrement(MatType& input, const VecType& b, T relLambda, T absLambda) {
+    return SolverCholeskySparseBase<matTypeV, T, B, NB, EigenOrderingMethod>::computeIncrement(input, b, relLambda, absLambda, _incVector);
   }
 
 

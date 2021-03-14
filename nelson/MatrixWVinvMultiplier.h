@@ -13,11 +13,11 @@ namespace nelson {
     ParallelExecSettings rightVectorMult;
   };
 
-  template<int matWType, class T, int BR, int BC, int NBR, int NBC>
+  template<int matWType, int matVType, class T, int BR, int BC, int NBR, int NBC>
   class MatrixWVinvMultiplier {
   public:
     using MatType = typename mat::MatrixBlockIterableTypeTraits<matWType, T, mat::RowMajor, BR, BC, NBR, NBC>::MatrixType;
-    using MatTypeV = typename mat::MatrixBlockIterableTypeTraits<mat::BlockDiagonal, T, mat::ColMajor, BC, BC, NBC, NBC>::MatrixType;
+    using MatTypeV = typename mat::MatrixBlockIterableTypeTraits<matVType, T, mat::ColMajor, BC, BC, NBC, NBC>::MatrixType;
 
     using Settings = MatrixWVinvMultiplierSettings;
 

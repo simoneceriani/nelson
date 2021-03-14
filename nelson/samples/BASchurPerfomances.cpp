@@ -301,6 +301,7 @@ int main(int argc, char* argv[]) {
   std::cout << SolverAlgorithm::Utils::toString(tc) << std::endl;
   std::cout << "stats " << gn.stats().toString() << std::endl;
   std::cout << gn.timingStats().toString() << std::endl;
+  std::cout << gn.solver().timingStats().toString() << std::endl;
 
   return 0;
 }

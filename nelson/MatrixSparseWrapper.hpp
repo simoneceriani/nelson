@@ -32,7 +32,12 @@ namespace nelson {
   SparseWrapper<mat::BlockCoeffSparse, T, Ordering, BR, BC, NBR, NBC>::~SparseWrapper() {
 
   }
-  
+
+  template<class T, int Ordering, int BR, int BC, int NBR, int NBC>
+  SparseWrapper<mat::SparseCoeffBlockDiagonal, T, Ordering, BR, BC, NBR, NBC>::~SparseWrapper() {
+
+  }
+
   //---------------------------------------------------------------------------------------------------
 
 

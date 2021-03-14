@@ -107,6 +107,54 @@ namespace nelson {
 
   };
 
+  template<class T, int Ordering, int BR, int BC, int NBR, int NBC>
+  class SparseWrapper<mat::SparseCoeffBlockDiagonal, T, Ordering, BR, BC, NBR, NBC> {
+  public:
+    using MatType = typename mat::MatrixBlockIterableTypeTraits<mat::SparseCoeffBlockDiagonal, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
+    using MatOutputType = typename MatType::StorageType;
+    static constexpr int matOutputType = mat::BlockCoeffSparse;
+  private:
+
+
+    // the original matrix
+    MatType* _matrix;
+
+  public:
+
+    SparseWrapper() : _matrix(nullptr) {
+
+    }
+
+    virtual ~SparseWrapper();
+
+    void set(MatType* matrix) {
+      this->_matrix = matrix;
+      this->refresh();
+    }
+
+    void refresh() {
+      // nothig to do
+    }
+
+    typename MatType::StorageType& mat() {
+      assert(_matrix != nullptr);
+      return _matrix->mat();
+    }
+    typename MatType::StorageType& mat() const {
+      assert(_matrix != nullptr);
+      return _matrix->mat();
+    }
+
+    MatType& matBlocks() {
+      assert(_matrix != nullptr);
+      return *_matrix;
+    }
+    const MatType& matBlocks() const {
+      assert(_matrix != nullptr);
+      return *_matrix;
+    }
+
+  };
 
   template<class T, int Ordering, int BR, int BC, int NBR, int NBC>
   class SparseWrapper<mat::BlockDiagonal, T, Ordering, BR, BC, NBR, NBC> {

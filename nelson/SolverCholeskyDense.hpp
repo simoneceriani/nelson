@@ -26,18 +26,17 @@ namespace nelson {
   //---------------------------------------------------------------------------------------------------
 
   template<int matTypeV, class T, int B, int NB>
-  void SolverCholeskyDense<matTypeV, T, B, NB>::init(MatType& input, const mat::VectorBlock<T, B, NB>& b) {
+  void SolverCholeskyDenseBase<matTypeV, T, B, NB>::init(MatType& input, const mat::VectorBlock<T, B, NB>& b) {
     _denseWrapper.set(&input);
-    _incVector.resize(b.segmentDescriptionCSPtr());
   }
 
   template<int matTypeV, class T, int B, int NB>
-  T SolverCholeskyDense<matTypeV, T, B, NB>::maxAbsHDiag() const {
+  T SolverCholeskyDenseBase<matTypeV, T, B, NB>::maxAbsHDiag() const {
     return _denseWrapper.maxAbsDiag();
   }
 
   template<int matTypeV, class T, int B, int NB>
-  bool SolverCholeskyDense<matTypeV, T, B, NB>::computeIncrement(MatType& input, const mat::VectorBlock<T, B, NB>& b, T relLambda, T absLambda) {
+  bool SolverCholeskyDenseBase<matTypeV, T, B, NB>::computeIncrement(MatType& input, const mat::VectorBlock<T, B, NB>& b, T relLambda, T absLambda, VecType& result) {
     _denseWrapper.refresh();
 
     if (relLambda != 0 || absLambda != 0) {
@@ -56,7 +55,7 @@ namespace nelson {
     this->_ldlt.compute(_denseWrapper.mat());
 
     if (this->_ldlt.info() == Eigen::ComputationInfo::Success) {
-      _incVector.mat() = this->_ldlt.solve(-b.mat());
+      result.mat() = this->_ldlt.solve(-b.mat());
     }
 
     // restore diagonal values
@@ -69,13 +68,25 @@ namespace nelson {
 
   template<int matTypeV, class T, int B, int NB>
   template<class Derived>
-  const Eigen::Solve<Eigen::LDLT<typename SolverCholeskyDense<matTypeV, T, B, NB>::DenseWrapperT::MatOutputType, Eigen::Upper>, Derived> SolverCholeskyDense<matTypeV, T, B, NB>::solve(const Eigen::MatrixBase<Derived>& b) const {
+  const Eigen::Solve<Eigen::LDLT<typename SolverCholeskyDenseBase<matTypeV, T, B, NB>::DenseWrapperT::MatOutputType, Eigen::Upper>, Derived> SolverCholeskyDenseBase<matTypeV, T, B, NB>::solve(const Eigen::MatrixBase<Derived>& b) const {
     return this->_ldlt.solve(b);
   }
 
   template<int matTypeV, class T, int B, int NB>
-  Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> SolverCholeskyDense<matTypeV, T, B, NB>::solve(const Eigen::SparseMatrix<T>& b) const {
+  Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> SolverCholeskyDenseBase<matTypeV, T, B, NB>::solve(const Eigen::SparseMatrix<T>& b) const {
     return this->_ldlt.solve(Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>(b));
+  }
+
+  //---------------------------------------------------------------------------------------------------
+
+  template<int matTypeV, class T, int B, int NB>
+  void SolverCholeskyDense<matTypeV, T, B, NB>::init(MatType& input, const mat::VectorBlock<T, B, NB>& b) {
+    SolverCholeskyDenseBase<matTypeV, T, B, NB>::init(input, b);
+    _incVector.resize(b.segmentDescriptionCSPtr());
+  }
+  template<int matTypeV, class T, int B, int NB>
+  bool SolverCholeskyDense<matTypeV, T, B, NB>::computeIncrement(MatType& input, const mat::VectorBlock<T, B, NB>& b, T relLambda, T absLambda) {
+    return SolverCholeskyDenseBase<matTypeV, T, B, NB>::computeIncrement(input, b, relLambda, absLambda, _incVector);
   }
 
 }

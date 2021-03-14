@@ -2,6 +2,9 @@
 #include<iostream>
 #include<fstream>
 
+#include <sstream>
+#include <iomanip>
+
 bool Problem::load(const std::string& file) {
   bool ok = true;
   std::ifstream f;
@@ -24,6 +27,12 @@ bool Problem::load(const std::string& file) {
   f.close();
 
   return ok;
+}
+
+std::string Problem::toString() const {
+  std::ostringstream s;
+  s << "nCameras " << nCameras << ", nPoints " << nPoints << ", nEdges " << edges.size() << std::endl;
+  return s.str();
 }
 
 const Problem ProblemCollections::ladybug_49_7776 = Problem{

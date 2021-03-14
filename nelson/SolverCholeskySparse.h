@@ -26,7 +26,7 @@ namespace nelson {
 
 
   template<int matTypeV, class T, int B, int NB, class EigenOrderingMethod>
-  class SolverCholeskySparse {
+  class SolverCholeskySparseBase {
 
   public:
 
@@ -41,7 +41,7 @@ namespace nelson {
 
     static constexpr bool hasSettings = false;
     class Settings {};
-    
+
     using SolverType = Eigen::SimplicialLDLT<Eigen::SparseMatrix<T>, Eigen::Upper, EigenOrderingMethod>;
 
   private:
@@ -49,15 +49,39 @@ namespace nelson {
     SparseWrapperT _sparseWrapper;
     DiagType _diagBackup;
 
-    VecType _incVector;
     SolverType _ldlt;
 
   public:
 
-    void init(MatType& input, const mat::VectorBlock<T, B, NB>& b);
+    virtual void init(MatType& input, const VecType & b);
 
     T maxAbsHDiag() const;
-    bool computeIncrement(MatType& input, const mat::VectorBlock<T, B, NB>& b, T relLambda, T absLambda);
+    bool computeIncrement(MatType& input, const VecType & b, T relLambda, T absLambda, VecType& result);
+
+    const Eigen::Solve<SolverType, Eigen::SparseMatrix<T>> solve(const Eigen::SparseMatrix<T>& b) const;
+
+    template<class Derived>
+    const Eigen::Solve<SolverType, Derived> solve(const Eigen::MatrixBase<Derived>& b) const;
+
+  };
+  
+  template<int matTypeV, class T, int B, int NB, class EigenOrderingMethod>
+  class SolverCholeskySparse : public SolverCholeskySparseBase<matTypeV, T, B, NB, EigenOrderingMethod> {
+
+  public:
+
+    using MatType = typename SolverCholeskySparseBase<matTypeV, T, B, NB, EigenOrderingMethod>::MatType;
+    using VecType = typename SolverCholeskySparseBase<matTypeV, T, B, NB, EigenOrderingMethod>::VecType;
+
+  private:
+
+    VecType _incVector;
+
+  public:
+
+    void init(MatType& input, const VecType & b) override;
+
+    bool computeIncrement(MatType& input, const VecType & b, T relLambda, T absLambda);
 
     const VecType& incrementVector() const {
       return _incVector;
@@ -66,11 +90,6 @@ namespace nelson {
     T incrementVectorSquaredNorm() const {
       return _incVector.mat().squaredNorm();
     }
-
-    const Eigen::Solve<SolverType, Eigen::SparseMatrix<T>> solve(const Eigen::SparseMatrix<T>& b) const;
-
-    template<class Derived>
-    const Eigen::Solve<SolverType, Derived> solve(const Eigen::MatrixBase<Derived>& b) const;
 
   };
 

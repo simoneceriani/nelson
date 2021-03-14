@@ -32,7 +32,7 @@ namespace nelson {
   {
     template<class HessianTraits, int wrapperUType, int wrapperWType, int choleskyOrderingS>
     using Solver = SolverDiagonalBlocksInverseSchur<
-      HessianTraits::matTypeU, HessianTraits::matTypeW,
+      HessianTraits::matTypeU, HessianTraits::matTypeV, HessianTraits::matTypeW,
       typename HessianTraits::Type,
       HessianTraits::BU, HessianTraits::BV,
       HessianTraits::NBU, HessianTraits::NBV,
@@ -46,7 +46,7 @@ namespace nelson {
   {
     template<class HessianTraits, int SType, int choleskyOrderingS>
     using Solver = SolverDiagonalBlocksInverseWWtMultSchur<
-      HessianTraits::matTypeU, HessianTraits::matTypeW,
+      HessianTraits::matTypeU, HessianTraits::matTypeV, HessianTraits::matTypeW,
       typename HessianTraits::Type,
       HessianTraits::BU, HessianTraits::BV,
       HessianTraits::NBU, HessianTraits::NBV,

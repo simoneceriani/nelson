@@ -6,6 +6,8 @@
 #include "mat/DiagonalMatrixBlock.hpp"
 #include "mat/SparseCoeffMatrixBlock.hpp"
 #include "mat/SparseMatrixBlock.hpp"
+#include "mat/SparseCoeffDiagonalMatrixBlock.hpp"
+
 #include <cassert>
 
 #include <Eigen/Dense>
@@ -13,14 +15,14 @@
 
 namespace nelson {
 
-  template<class T, int BV, int NBV, int matTypeOut>
-  void MatrixDiagInv<T, BV, NBV, matTypeOut>::init(const MatTypeV& V) {
+  template<int matType, class T, int BV, int NBV, int matTypeOut>
+  void MatrixDiagInv<matType, T, BV, NBV, matTypeOut>::init(const MatTypeV& V) {
     _Vinv.resize(V.blockDescriptor(), V.sparsityPatternCSPtr());
 
   }
 
-  template<class T, int BV, int NBV, int matTypeOut>
-  void MatrixDiagInv<T, BV, NBV, matTypeOut>::compute(const MatTypeV& V, T relLambda, T absLambda) {
+  template<int matType, class T, int BV, int NBV, int matTypeOut>
+  void MatrixDiagInv<matType, T, BV, NBV, matTypeOut>::compute(const MatTypeV& V, T relLambda, T absLambda) {
 
     const auto& settings = _settings.blockInversion;
     const int chunkSize = settings.chunkSize();
@@ -137,8 +139,8 @@ namespace nelson {
     }
   }
 
-  template<class T, int BV, int NBV, int matTypeOut>
-  void MatrixDiagInv<T, BV, NBV, matTypeOut>::rightMultVector(const mat::VectorBlock<T, BV, NBV>& v, mat::VectorBlock<T, BV, NBV>& res) const {
+  template<int matType, class T, int BV, int NBV, int matTypeOut>
+  void MatrixDiagInv<matType, T, BV, NBV, matTypeOut>::rightMultVector(const mat::VectorBlock<T, BV, NBV>& v, mat::VectorBlock<T, BV, NBV>& res) const {
 
     const auto& settings = _settings.rightVectorMult;
     const int chunkSize = settings.chunkSize();

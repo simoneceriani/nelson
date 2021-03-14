@@ -13,10 +13,10 @@ namespace nelson {
     ParallelExecSettings rightVectorMult;
   };
 
-  template<class T, int BV, int NBV, int matTypeOut>
+  template<int matType, class T, int BV, int NBV, int matTypeOut>
   class MatrixDiagInv {
   public:
-    using MatTraitsV = mat::MatrixBlockIterableTypeTraits<mat::BlockDiagonal, T, mat::ColMajor, BV, BV, NBV, NBV>;
+    using MatTraitsV = mat::MatrixBlockIterableTypeTraits<matType, T, mat::ColMajor, BV, BV, NBV, NBV>;
     using MatTypeV = typename MatTraitsV::MatrixType;
 
     using MatTraitsVinv = mat::MatrixBlockIterableTypeTraits<matTypeOut, T, mat::ColMajor, BV, BV, NBV, NBV>;

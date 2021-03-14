@@ -22,9 +22,8 @@ namespace nelson {
   };
   
   //--------------------------------------------------------------------------------------
-
   template<int matTypeV, class T, int B, int NB = mat::Dynamic>
-  class SolverCholeskyDense {
+  class SolverCholeskyDenseBase {
 
   public:
 
@@ -39,22 +38,44 @@ namespace nelson {
 
     static constexpr bool hasSettings = false;
     class Settings {};
-    
+
   private:
 
     DenseWrapperT _denseWrapper;
     DiagType _diagBackup;
 
-    VecType _incVector;
     Eigen::LDLT<typename DenseWrapperT::MatOutputType, Eigen::Upper> _ldlt;
 
   public:
 
-    void init(MatType& input, const mat::VectorBlock<T, B, NB>& b);
+    virtual void init(MatType& input, const VecType& b);
 
     T maxAbsHDiag() const;
 
-    bool computeIncrement(MatType& input, const mat::VectorBlock<T, B, NB>& b, T relLambda, T absLambda);
+    bool computeIncrement(MatType& input, const VecType& b, T relLambda, T absLambda, VecType & result);
+
+    template<class Derived>
+    const Eigen::Solve<Eigen::LDLT<typename SolverCholeskyDenseBase<matTypeV, T, B, NB>::DenseWrapperT::MatOutputType, Eigen::Upper>, Derived> solve(const Eigen::MatrixBase<Derived>& b) const;
+
+    Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> solve(const Eigen::SparseMatrix<T>& b) const;
+
+  };
+
+  //--------------------------------------------------------------------------------------
+  template<int matTypeV, class T, int B, int NB = mat::Dynamic>
+  class SolverCholeskyDense : public SolverCholeskyDenseBase<matTypeV, T, B, NB> {
+  public:
+    using VecType = typename SolverCholeskyDenseBase<matTypeV, T, B, NB>::VecType;
+    using MatType = typename SolverCholeskyDenseBase<matTypeV, T, B, NB>::MatType;
+  private:
+
+    VecType _incVector;
+
+  public:
+
+    void init(MatType& input, const VecType & b) override;
+
+    bool computeIncrement(MatType& input, const VecType & b, T relLambda, T absLambda);
 
     const VecType& incrementVector() const {
       return _incVector;
@@ -63,11 +84,6 @@ namespace nelson {
     T incrementVectorSquaredNorm() const {
       return _incVector.mat().squaredNorm();
     }
-
-    template<class Derived>
-    const Eigen::Solve<Eigen::LDLT<typename SolverCholeskyDense<matTypeV, T, B, NB>::DenseWrapperT::MatOutputType, Eigen::Upper>, Derived> solve(const Eigen::MatrixBase<Derived>& b) const;
-
-    Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> solve(const Eigen::SparseMatrix<T>& b) const;
 
   };
 

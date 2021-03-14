@@ -7,6 +7,7 @@
 #include "mat/VectorBlock.hpp"
 #include "mat/MatrixBlockDescriptor.hpp"
 #include "mat/DiagonalMatrixBlock.hpp"
+#include "mat/SparseCoeffDiagonalMatrixBlock.hpp"
 
 #include <iostream>
 
@@ -16,9 +17,9 @@ constexpr int NBCv = 5;
 
 #define DEBUGOUT if(false)
 
-template<int BC, int NBC>
+template<int matType, int BC, int NBC>
 void templateTestFunc() {
-  mat::DiagonalMatrixBlockIterable<double, mat::ColMajor, BC, BC, NBC, NBC> V;
+  mat::MatrixBlockIterableTypeTraits<matType, double, mat::ColMajor, BC, BC, NBC, NBC>::MatrixType V;
   mat::SparsityPattern<mat::ColMajor>::SPtr spV(new mat::SparsityPattern<mat::ColMajor>(NBCv, NBCv));
   spV->setDiagonal();
 
@@ -34,7 +35,7 @@ void templateTestFunc() {
   b.mat().setRandom();
   bv.resize(blockDescriptorV.rowDescriptionCSPtr());
 
-  nelson::MatrixDiagInv<double, BC, NBC, mat::BlockDiagonal> mvinv;
+  nelson::MatrixDiagInv<matType, double, BC, NBC, mat::BlockDiagonal> mvinv;
 
   SECTION("SINGLE THREAD") {
     mvinv.settings().blockInversion.setSingleThread();
@@ -63,12 +64,16 @@ void templateTestFunc() {
 }
 
 TEMPLATE_TEST_CASE_SIG("MatrixVinvMultiplier", "[MatrixVinvMultiplier]",
-  ((int BC, int NBC), BC, NBC),
-  (BCv, NBCv),
-  (BCv, mat::Dynamic),
-  (mat::Dynamic, NBCv),
-  (mat::Dynamic, mat::Dynamic)
-  )
+  ((int matType, int BC, int NBC), matType, BC, NBC),
+  (mat::BlockDiagonal, BCv, NBCv),
+  (mat::BlockDiagonal, BCv, mat::Dynamic),
+  (mat::BlockDiagonal, mat::Dynamic, NBCv),
+  (mat::BlockDiagonal, mat::Dynamic, mat::Dynamic),
+  (mat::SparseCoeffBlockDiagonal, BCv, NBCv),
+  (mat::SparseCoeffBlockDiagonal, BCv, mat::Dynamic),
+  (mat::SparseCoeffBlockDiagonal, mat::Dynamic, NBCv),
+  (mat::SparseCoeffBlockDiagonal, mat::Dynamic, mat::Dynamic)
+)
 {
-  templateTestFunc< BC, NBC>();
+  templateTestFunc<matType, BC, NBC>();
 }

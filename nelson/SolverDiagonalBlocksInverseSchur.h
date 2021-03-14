@@ -59,7 +59,7 @@ namespace nelson {
   };
 
   template<
-    int matTypeU, int matTypeW,
+    int matTypeU, int matTypeV, int matTypeW,
     class T,
     int BU, int BV,
     int NBU, int NBV,
@@ -70,7 +70,7 @@ namespace nelson {
 
   public:
 
-    using DoubleSectionHessianMatricesT = DoubleSectionHessianMatrices<matTypeU, mat::BlockDiagonal, matTypeW, T, BU, BV, NBU, NBV>;
+    using DoubleSectionHessianMatricesT = DoubleSectionHessianMatrices<matTypeU, matTypeV, matTypeW, T, BU, BV, NBU, NBV>;
     using DoubleSectionHessianVectorsT = DoubleSectionHessianVectors<T, BU, BV, NBU, NBV>;
 
     using Type = T;
@@ -84,7 +84,7 @@ namespace nelson {
     typename DoubleSectionHessianVectorsT::VecTypeU::StorageType _bS;
     typename DoubleSectionHessianVectorsT::VecTypeV::StorageType _bVtilde;
 
-    MatrixDiagInv<T, BV, NBV, mat::BlockCoeffSparse> _matrixVInv;
+    MatrixDiagInv<matTypeV, T, BV, NBV, mat::BlockCoeffSparse> _matrixVInv;
     typename MatrixWrapperTraits<wrapperWType>::template Wrapper<matTypeW, T, mat::RowMajor, BU, BV, NBU, NBV> _matrixW;
 
     using MatrixUType = typename MatrixWrapperTraits<wrapperUType>::template Wrapper<matTypeU, T, mat::ColMajor, BU, BU, NBU, NBU>;
@@ -105,7 +105,7 @@ namespace nelson {
     Settings& settings() { return _settings; }
     const Settings& settings() const { return _settings; }
 
-    const SolverDiagonalBlocksInverseSchurTimeStats& timeStats() const {
+    const SolverDiagonalBlocksInverseSchurTimeStats& timingStats() const {
       return _timeStats;
     }
 

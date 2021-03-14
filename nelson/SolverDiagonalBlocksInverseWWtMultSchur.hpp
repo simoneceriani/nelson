@@ -11,14 +11,14 @@
 namespace nelson {
 
   template<
-    int matTypeU, int matTypeW,
+    int matTypeU, int matTypeV, int matTypeW,
     class T,
     int BU, int BV,
     int NBU, int NBV,
     int SType,
     int choleskyOrderingS
   >
-    SolverDiagonalBlocksInverseWWtMultSchur<matTypeU, matTypeW, T, BU, BV, NBU, NBV, SType, choleskyOrderingS>::SolverDiagonalBlocksInverseWWtMultSchur() :
+    SolverDiagonalBlocksInverseWWtMultSchur<matTypeU, matTypeV, matTypeW, T, BU, BV, NBU, NBV, SType, choleskyOrderingS>::SolverDiagonalBlocksInverseWWtMultSchur() :
     _settings(_Vinv.settings(), _WVinv.settings(), _wwtMult.settings(), _WtX.settings()),
     _uv_maxAbsHDiag(-1)
   {
@@ -26,14 +26,14 @@ namespace nelson {
   }
 
   template<
-    int matTypeU, int matTypeW,
+    int matTypeU, int matTypeV, int matTypeW,
     class T,
     int BU, int BV,
     int NBU, int NBV,
     int SType, 
     int choleskyOrderingS
   >
-    void SolverDiagonalBlocksInverseWWtMultSchur<matTypeU, matTypeW, T, BU, BV, NBU, NBV, SType, choleskyOrderingS>::init(DoubleSectionHessianMatricesT& input, const DoubleSectionHessianVectorsT& b)
+    void SolverDiagonalBlocksInverseWWtMultSchur<matTypeU, matTypeV, matTypeW, T, BU, BV, NBU, NBV, SType, choleskyOrderingS>::init(DoubleSectionHessianMatricesT& input, const DoubleSectionHessianVectorsT& b)
   {
     _timeStats.startInit = std::chrono::steady_clock::now();
 
@@ -76,27 +76,27 @@ namespace nelson {
   }
 
   template<
-    int matTypeU, int matTypeW,
+    int matTypeU, int matTypeV, int matTypeW,
     class T,
     int BU, int BV,
     int NBU, int NBV,
     int SType,
     int choleskyOrderingS
   >
-    T SolverDiagonalBlocksInverseWWtMultSchur<matTypeU, matTypeW, T, BU, BV, NBU, NBV, SType, choleskyOrderingS>::maxAbsHDiag() const
+    T SolverDiagonalBlocksInverseWWtMultSchur<matTypeU, matTypeV, matTypeW, T, BU, BV, NBU, NBV, SType, choleskyOrderingS>::maxAbsHDiag() const
   {
     return _uv_maxAbsHDiag;
   }
 
   template<
-    int matTypeU, int matTypeW,
+    int matTypeU, int matTypeV, int matTypeW,
     class T,
     int BU, int BV,
     int NBU, int NBV,
     int SType,
     int choleskyOrderingS
   >
-    bool SolverDiagonalBlocksInverseWWtMultSchur<matTypeU, matTypeW, T, BU, BV, NBU, NBV, SType, choleskyOrderingS>::computeIncrement(DoubleSectionHessianMatricesT& input, const DoubleSectionHessianVectorsT& b, T relLambda, T absLambda)
+    bool SolverDiagonalBlocksInverseWWtMultSchur<matTypeU, matTypeV, matTypeW, T, BU, BV, NBU, NBV, SType, choleskyOrderingS>::computeIncrement(DoubleSectionHessianMatricesT& input, const DoubleSectionHessianVectorsT& b, T relLambda, T absLambda)
   {
     _timeStats.addIteration();
 
@@ -109,83 +109,32 @@ namespace nelson {
 
     // W * V^-1
     _WVinv.multiply(input.W(), _Vinv.Vinv());
-    _timeStats.lastIteration().t2_VinvWComputed = std::chrono::steady_clock::now();
+    _timeStats.lastIteration().t2_WVinvComputed = std::chrono::steady_clock::now();
 
     // bs = bU - W*V^-1*bv
     _bS.mat() = b.bU().mat();
     _WVinv.rightMultVectorSub(b.bV(), _bS);
+    _timeStats.lastIteration().t3_bSComputed = std::chrono::steady_clock::now();
 
     // S = W * V^-1 * W'
     _wwtMult.multiply(input.U(), _WVinv.result(), input.W());
+    _timeStats.lastIteration().t4_SComputed = std::chrono::steady_clock::now();
 
-    ok = _solverS.computeIncrement(_wwtMult.result(), _bS, relLambda, absLambda);
+    ok = _solverS.computeIncrement(_wwtMult.result(), _bS, relLambda, absLambda, _incVector.bU());
+    _timeStats.lastIteration().t5_xUSolved = std::chrono::steady_clock::now();
 
     _bVtilde.mat() = -b.bV().mat();
-    _WtX.rightMultVectorSub(input.W(), _solverS.incrementVector(), _bVtilde);
+    _WtX.rightMultVectorSub(input.W(), _incVector.bU(), _bVtilde);
+    _timeStats.lastIteration().t6_bVtildeComputed = std::chrono::steady_clock::now();
 
     _Vinv.rightMultVector(_bVtilde, _incVector.bV());
-    _incVector.bU().mat() = _solverS.incrementVector().mat();
+    _timeStats.lastIteration().t7_bVComputed = std::chrono::steady_clock::now();    
 
     if (!ok) {
       // defense
       _incVector.setZero();
     }
 
-    /*
-    // refresh (copy if needed)
-    _matrixW.refresh();
-    _timeStats.lastIteration().t2_WRefreshed = std::chrono::steady_clock::now();
-    _matrixU.refresh();
-    _timeStats.lastIteration().t3_URefreshed= std::chrono::steady_clock::now();
-
-    // bS = (-bU) - W * V^-1 * (-bV)
-    // note, change sing to bU
-    _bS = -b.bU().mat() - _matrixW.mat() * _matrixVInv.mat() * (-b.bV().mat());
-    _timeStats.lastIteration().t4_bSComputed = std::chrono::steady_clock::now();
-
-    // W * V^-1 * Wt
-    //_matrixS = _matrixU.mat().template triangularView<Eigen::Upper>();
-    //MatrixUType::MatOutputType S2 = (_matrixW.mat() * _matrixVInv.mat() * _matrixW.mat().transpose());
-    //_matrixS -= S2;
-    //_matrixS = (_matrixU.mat() - (_matrixW.mat() * _matrixVInv.mat() * _matrixW.mat().transpose())).template triangularView<Eigen::Upper>();
-    //_matrixS = (_matrixU.mat() - (_matrixW.mat() * _matrixVInv.mat() * _matrixW.mat().transpose()));
-    _matrixS = (_matrixU.mat() - (_matrixW.mat() * (_matrixVInv.mat() * _matrixW.mat().transpose()).eval()));
-
-    // add diagonal lambdas
-    if (relLambda != 0 || absLambda != 0) {
-      _matrixS.diagonal() += (relLambda * _matrixU.mat().diagonal());
-      _matrixS.diagonal().array() += absLambda;
-    }
-    _timeStats.lastIteration().t5_SComputed = std::chrono::steady_clock::now();
-
-    // solve!
-    if (_firstTime) {
-      _solverS.init(_matrixS);
-      _firstTime = false;
-    }
-    _timeStats.lastIteration().t6_SSolveInit = std::chrono::steady_clock::now();
-
-    _solverS.factorize(_matrixS);
-    _timeStats.lastIteration().t7_SFactorized = std::chrono::steady_clock::now();
-
-    _solverS.solve(_bS, _incVector.bU().mat());
-    _timeStats.lastIteration().t8_bUComputed = std::chrono::steady_clock::now();
-
-    // (-bV) - Wt * xu
-    _bVtilde = -b.bV().mat() - _matrixW.mat().transpose() * _incVector.bU().mat();
-    _timeStats.lastIteration().t9_bVtildeComputed = std::chrono::steady_clock::now();
-
-    _incVector.bV().mat() = _matrixVInv.mat() * _bVtilde;
-    _timeStats.lastIteration().t10_bVComputed = std::chrono::steady_clock::now();
-
-
-    if (!ok) {
-      // defense
-      _incVector.setZero();
-    }
-
-    
-    */
     return ok;
 
   }

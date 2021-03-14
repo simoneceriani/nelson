@@ -34,15 +34,12 @@ namespace nelson {
   struct SolverDiagonalBlocksInverseWWtMultSchurIterationTimeStat {
     std::chrono::steady_clock::time_point t0_startIteration;
     std::chrono::steady_clock::time_point t1_VInvComputed;
-    std::chrono::steady_clock::time_point t2_VinvWComputed;
-    std::chrono::steady_clock::time_point t3_WVinvWtComputed;
-    std::chrono::steady_clock::time_point t4_bSComputed;
-    std::chrono::steady_clock::time_point t5_SComputed;
-    std::chrono::steady_clock::time_point t6_SSolveInit;
-    std::chrono::steady_clock::time_point t7_SFactorized;
-    std::chrono::steady_clock::time_point t8_bUComputed;
-    std::chrono::steady_clock::time_point t9_bVtildeComputed;
-    std::chrono::steady_clock::time_point t10_bVComputed;
+    std::chrono::steady_clock::time_point t2_WVinvComputed;
+    std::chrono::steady_clock::time_point t3_bSComputed;
+    std::chrono::steady_clock::time_point t4_SComputed;
+    std::chrono::steady_clock::time_point t5_xUSolved;
+    std::chrono::steady_clock::time_point t6_bVtildeComputed;
+    std::chrono::steady_clock::time_point t7_bVComputed;
     std::string toString(const std::string & linePrefix = "") const;
   };
 
@@ -79,7 +76,9 @@ namespace nelson {
   };
   
   template<
-    int matTypeU, int matTypeW,
+    int matTypeU, 
+    int matTypeV,
+    int matTypeW,
     class T,
     int BU, int BV,
     int NBU, int NBV,
@@ -89,7 +88,7 @@ namespace nelson {
   class SolverDiagonalBlocksInverseWWtMultSchur {
   public:
 
-    using DoubleSectionHessianMatricesT = DoubleSectionHessianMatrices<matTypeU, mat::BlockDiagonal, matTypeW, T, BU, BV, NBU, NBV>;
+    using DoubleSectionHessianMatricesT = DoubleSectionHessianMatrices<matTypeU, matTypeV, matTypeW, T, BU, BV, NBU, NBV>;
     using DoubleSectionHessianVectorsT = DoubleSectionHessianVectors<T, BU, BV, NBU, NBV>;
 
     using Type = T;
@@ -105,13 +104,13 @@ namespace nelson {
 
     static constexpr int matSType = MatrixWrapperTraits<SType>::template Wrapper<matTypeU, T, mat::ColMajor, BU, BU, NBU, NBU>::matOutputType;
 
-    MatrixDiagInv<double, BV, NBV, mat::BlockDiagonal> _Vinv;
-    MatrixWVinvMultiplier<matTypeW, T, BU, BV, NBU, NBV> _WVinv;
+    MatrixDiagInv<matTypeV, double, BV, NBV, matTypeV> _Vinv;
+    MatrixWVinvMultiplier<matTypeW, matTypeV, T, BU, BV, NBU, NBV> _WVinv;
     MatrixWWtMultiplier<matSType, T, BU, NBU> _wwtMult;
     MatrixWtXMultiplier<matTypeW, T, BU, BV, NBU, NBV> _WtX;
     
     
-    typename SolverTraits<SType>::template Solver<SingleSectionHessianTraits<matSType, T, BU, NBU>, choleskyOrderingS> _solverS;
+    typename SolverTraits<SType>::template SolverBase<SingleSectionHessianTraits<matSType, T, BU, NBU>, choleskyOrderingS> _solverS;
 
     T _uv_maxAbsHDiag;
 
@@ -124,7 +123,7 @@ namespace nelson {
     Settings& settings() { return _settings; }
     const Settings& settings() const { return _settings; }
 
-    const SolverDiagonalBlocksInverseWWtMultSchurTimeStats& timeStats() const {
+    const SolverDiagonalBlocksInverseWWtMultSchurTimeStats& timingStats() const {
       return _timeStats;
     }
 

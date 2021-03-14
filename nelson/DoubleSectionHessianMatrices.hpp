@@ -5,7 +5,7 @@
 #include "mat/DiagonalMatrixBlock.hpp"
 #include "mat/SparseCoeffMatrixBlock.hpp"
 #include "mat/SparseMatrixBlock.hpp"
-
+#include "mat/SparseCoeffDiagonalMatrixBlock.hpp"
 #include "mat/VectorBlock.hpp"
 
 namespace nelson {

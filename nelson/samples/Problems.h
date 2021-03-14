@@ -7,6 +7,8 @@ struct Problem {
   std::vector<std::pair<int, int>> edges;
 
   bool load(const std::string& file);
+
+  std::string toString() const;
 };
 
 struct ProblemCollections {
