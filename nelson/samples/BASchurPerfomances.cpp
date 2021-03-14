@@ -172,7 +172,7 @@ public:
 };
 
 template<int matUType, int matVType, int matWType>
-class Edge : public BA_Problem<matUType, matVType, matWType>::EdgeBinaryUV<Edge<matUType, matVType, matWType>> {
+class Edge : public BA_Problem<matUType, matVType, matWType>::template EdgeBinaryUV<Edge<matUType, matVType, matWType>> {
   Eigen::Vector2d _meas;
 
   Eigen::Vector3d _pC;

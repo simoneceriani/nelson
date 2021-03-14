@@ -19,7 +19,7 @@ constexpr int NBCv = 5;
 
 template<int matType, int BC, int NBC>
 void templateTestFunc() {
-  mat::MatrixBlockIterableTypeTraits<matType, double, mat::ColMajor, BC, BC, NBC, NBC>::MatrixType V;
+  typename mat::MatrixBlockIterableTypeTraits<matType, double, mat::ColMajor, BC, BC, NBC, NBC>::MatrixType V;
   mat::SparsityPattern<mat::ColMajor>::SPtr spV(new mat::SparsityPattern<mat::ColMajor>(NBCv, NBCv));
   spV->setDiagonal();
 
