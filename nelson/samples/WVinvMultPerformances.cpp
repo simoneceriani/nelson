@@ -111,7 +111,7 @@ void testFunction(const Problem& problem) {
   nelson::SparseWrapper<matWType, double, mat::RowMajor, BR, BC, mat::Dynamic, mat::Dynamic> WVinv_wrap;
   WVinv_wrap.set(&mwvinv.result());
 
-  Eigen::SparseMatrix<double, mat::RowMajor> diff = (WVinv_wrap.mat() - WVinv).triangularView<Eigen::Upper>();
+  Eigen::SparseMatrix<double, mat::RowMajor> diff = (WVinv_wrap.mat() - WVinv).template triangularView<Eigen::Upper>();
 
   std::cout << "Eigen::NumTraits<double>::dummy_precision() " << Eigen::NumTraits<double>::dummy_precision() << std::endl;
 

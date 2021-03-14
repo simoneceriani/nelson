@@ -80,12 +80,12 @@ namespace nelson {
   //---------------------------------------------------------------------------------------------------
 
   template<int matTypeV, class T, int B, int NB>
-  void SolverCholeskyDense<matTypeV, T, B, NB>::init(MatType& input, const mat::VectorBlock<T, B, NB>& b) {
+  void SolverCholeskyDense<matTypeV, T, B, NB>::init(MatType& input, const VecType& b) {
     SolverCholeskyDenseBase<matTypeV, T, B, NB>::init(input, b);
     _incVector.resize(b.segmentDescriptionCSPtr());
   }
   template<int matTypeV, class T, int B, int NB>
-  bool SolverCholeskyDense<matTypeV, T, B, NB>::computeIncrement(MatType& input, const mat::VectorBlock<T, B, NB>& b, T relLambda, T absLambda) {
+  bool SolverCholeskyDense<matTypeV, T, B, NB>::computeIncrement(MatType& input, const VecType & b, T relLambda, T absLambda) {
     return SolverCholeskyDenseBase<matTypeV, T, B, NB>::computeIncrement(input, b, relLambda, absLambda, _incVector);
   }
 
