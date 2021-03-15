@@ -1,19 +1,19 @@
 #pragma once
 #include "EdgeUnary.h"
-#include "EdgeSingleSectionBase.hpp"
+#include "EdgeSectionBase.hpp"
 
 namespace nelson {
 
   template<class Section>
-  EdgeUnarySingleSection<Section>::EdgeUnarySingleSection() :
+  EdgeUnarySectionBase<Section>::EdgeUnarySectionBase() :
     EdgeUnaryBase(),
-    EdgeSingleSectionBase<Section>()
+    EdgeSectionBase<Section>()
   {
 
   }
 
   template<class Section>
-  EdgeUnarySingleSection<Section>::~EdgeUnarySingleSection() {
+  EdgeUnarySectionBase<Section>::~EdgeUnarySectionBase() {
 
   }
 

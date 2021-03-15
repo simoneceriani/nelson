@@ -18,9 +18,10 @@ namespace nelson {
   template<class T, int Ordering, int BR, int BC, int NBR, int NBC>
   void SparseWrapper<mat::BlockDense, T, Ordering, BR, BC, NBR, NBC>::refresh() {
     assert(this->_matrix != nullptr);
-    for (int cb = 0; cb < this->_matrix->numBlocksCol(); cb++) {
-      for (auto it = this->_matrix->colBegin(cb); it() != it.end(); it++) {
-        this->_matCopy.block(it.row(), it.col()) = it.block();
+    for (int cb = 0; cb < this->_matrix->outerSize(); cb++) {
+      for (auto it = this->_matrix->begin(cb); it() != it.end(); it++) {
+        //this->_matCopy.block(it.row(), it.col()) = it.block();
+        this->_matCopy.blockByUID(it.blockUID()) = it.block();
       }
     }
   }
@@ -31,7 +32,12 @@ namespace nelson {
   SparseWrapper<mat::BlockCoeffSparse, T, Ordering, BR, BC, NBR, NBC>::~SparseWrapper() {
 
   }
-  
+
+  template<class T, int Ordering, int BR, int BC, int NBR, int NBC>
+  SparseWrapper<mat::SparseCoeffBlockDiagonal, T, Ordering, BR, BC, NBR, NBC>::~SparseWrapper() {
+
+  }
+
   //---------------------------------------------------------------------------------------------------
 
 
@@ -50,9 +56,10 @@ namespace nelson {
   template<class T, int Ordering, int BR, int BC, int NBR, int NBC>
   void SparseWrapper<mat::BlockDiagonal, T, Ordering, BR, BC, NBR, NBC>::refresh() {
     assert(this->_matrix != nullptr);
-    for (int cb = 0; cb < this->_matrix->numBlocksCol(); cb++) {
-      for (auto it = this->_matrix->colBegin(cb); it() != it.end(); it++) {
-        this->_matCopy.block(it.row(), it.col()) = it.block();
+    for (int cb = 0; cb < this->_matrix->outerSize(); cb++) {
+      for (auto it = this->_matrix->begin(cb); it() != it.end(); it++) {
+        //this->_matCopy.block(it.row(), it.col()) = it.block();
+        this->_matCopy.blockByUID(it.blockUID()) = it.block();
       }
     }
   }
@@ -72,9 +79,10 @@ namespace nelson {
   template<class T, int Ordering, int BR, int BC, int NBR, int NBC>
   void SparseWrapper<mat::BlockSparse, T, Ordering, BR, BC, NBR, NBC>::refresh() {
     assert(this->_matrix != nullptr);
-    for (int cb = 0; cb < this->_matrix->numBlocksCol(); cb++) {
-      for (auto it = this->_matrix->colBegin(cb); it() != it.end(); it++) {
-        this->_matCopy.block(it.row(), it.col()) = it.block();
+    for (int cb = 0; cb < this->_matrix->outerSize(); cb++) {
+      for (auto it = this->_matrix->begin(cb); it() != it.end(); it++) {
+        //this->_matCopy.block(it.row(), it.col()) = it.block();
+        this->_matCopy.blockByUID(it.blockUID()) = it.block();
       }
     }
   }

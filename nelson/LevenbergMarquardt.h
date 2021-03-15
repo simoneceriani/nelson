@@ -4,6 +4,10 @@
 #include "mat/Global.h"
 #include "SolverCholeskyDense.h"
 #include "SolverCholeskySparse.h"
+#include "SolverCholeskySchur.h"
+#include "SolverDiagonalBlocksInverseSchur.h"
+#include "SolverDiagonalBlocksInverseWWtMultSchur.h"
+
 #include "SolverTraits.h"
 
 #include <vector>
@@ -82,10 +86,10 @@ namespace nelson {
 
   //------------------------------------------------------------------------------------------------------
 
-  template<int solverTypeV, int matTypeV, class T, int B, int NB = mat::Dynamic>
+  template<class Solver>
   class LevenbergMarquardt {
 
-    typename SolverTraits<solverTypeV>::template Solver<matTypeV, T, B, NB> _solver;
+    Solver _solver;
 
     LevenbergMarquardtSettings _settings;
     int iter;
@@ -93,12 +97,25 @@ namespace nelson {
 
     LevenbergMarquardtStats _stats;
   public:
+
+    using Utils = LevenbergMarquardtUtils;
+    using Settings = LevenbergMarquardtSettings;
+    using Stats = LevenbergMarquardtStats;
+
     LevenbergMarquardt();
     LevenbergMarquardt(const LevenbergMarquardtSettings& settings);
     virtual ~LevenbergMarquardt();
 
     LevenbergMarquardtSettings& settings() { return _settings; }
     const LevenbergMarquardtSettings& settings() const { return _settings; }
+
+    template<typename RetType = typename Solver::Settings&>
+    inline std::enable_if_t<Solver::hasSettings, RetType> solverSettings() { return _solver.settings(); }
+
+    template<typename RetType = const typename Solver::Settings&>
+    inline std::enable_if_t<Solver::hasSettings, RetType> solverSettings() const { return _solver.settings(); }
+
+    const Solver& solver() const { return _solver; }
 
     const LevenbergMarquardtStats stats() const { return _stats; }
 
@@ -112,9 +129,6 @@ namespace nelson {
       return subiter;
     }
   };
-
-  template<int solverTypeV, class HessianTraits>
-  using LevenbergMarquardtHessianTraits = LevenbergMarquardt< solverTypeV, HessianTraits::matType, typename HessianTraits::Type, HessianTraits::B, HessianTraits::NB>;
 
 
 }

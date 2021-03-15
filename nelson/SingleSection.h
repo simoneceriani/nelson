@@ -7,7 +7,7 @@
 #include "mat/VectorBlock.h"
 
 #include "SingleSectionHessian.h"
-#include "ParallelExecHelper.h"
+#include "BaseSection.h"
 
 #include "EdgeInterface.h"
 #include "EdgeUnary.h"
@@ -16,7 +16,6 @@
 #include <memory>
 #include <vector>
 #include <map>
-#include <forward_list>
 
 namespace nelson {
 
@@ -78,13 +77,8 @@ namespace nelson {
 
   //--------------------------------------------------------------------------------
 
-  struct SingleSectionSettings {
-    ParallelExecSettings edgeEvalParallelSettings;
-    ParallelExecSettings hessianUpdateParallelSettings;
-  };
-
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB = mat::Dynamic>
-  class SingleSection : public BaseNumSizeParameters<B, NB> {
+  class SingleSection : public BaseNumSizeParameters<B, NB>, public BaseSection {
   public:
 
     using Hessian = SingleSectionHessian<matTypeV, T, B, NB>;
@@ -95,36 +89,19 @@ namespace nelson {
     // once the number of params is known (parametersReady() called), _sparsityPattern is allocated and _edgeSetter too, ready to receive edges
     std::shared_ptr<mat::SparsityPattern<mat::ColMajor>> _sparsityPattern;
 
-    struct SetterComputer {
-      std::unique_ptr<EdgeUIDSetterInterface> setter;
-      std::unique_ptr<EdgeHessianUpdater> computer;
-      SetterComputer(EdgeUIDSetterInterface* s, EdgeHessianUpdater* c) : setter(s), computer(c) {     
-      }
-      SetterComputer(){}
-    };
-
-    struct ListWithCount {
-      std::forward_list<SetterComputer> list;
-      int size;
-      ListWithCount() : size(0) {
-
-      }
-    };
-
     std::vector<std::map<int, ListWithCount>> _edgeSetterComputer;
 
     Hessian _hessian;
 
 
-    std::vector<std::unique_ptr<EdgeInterface>> _edgesVector;
-
-    // outer size is the number of independent computation, safe to be computed in parallel, inside they have to go sequential (or parallel but with reduction)
-    std::vector<std::vector<std::unique_ptr<EdgeHessianUpdater>>> _computationUnits;
-
-    SingleSectionSettings _settings;
+    BaseSectionSettings _settings;
 
     void updateHessianBlocks();
     void evaluateEdges(bool hessian);
+
+    void setChi2(double v) override {
+      _hessian.setChi2(v);
+    }
 
   public:
 
@@ -170,28 +147,102 @@ namespace nelson {
       return _hessian.b().segment(pid);
     }
 
-    void addEdge(NodeId i, EdgeUnarySingleSection<Derived>* e);
-    void addEdge(NodeId i, NodeId j, EdgeBinarySingleSection<Derived>* e);
+    void update(bool hessian);
+
+    BaseSectionSettings& settings() {
+      return _settings;
+    }
+    const BaseSectionSettings& settings() const {
+      return _settings;
+    }
+
+    T computeRhoChi2Change(T mu, const HessianVecType& incV, T oldChi2) const {
+      T newChi2 = hessian().chi2();
+      T num = (oldChi2 - newChi2);
+      T den = incV.mat().transpose() * (mu * incV.mat() - hessian().b().mat());
+      //
+      return num / den;
+
+    }
+
+    //-------------------------------------------------------------------------------------------
+    struct EdgeUnaryAdapter {
+
+      using ParameterType = ParT;
+      using HBlockType = typename Hessian::MatTraits::MatrixType::BlockType;
+      using BSegmentType = typename Hessian::VecType::SegmentType;
+
+      static const ParameterType& parameter(const Derived& section, NodeId id) {
+        return section.parameter(id);
+      }
+      static HBlockType HBlock(Derived& section, int uid) {
+        return section.hessianBlockByUID(uid);
+      }
+      static BSegmentType bSegment(Derived& section, int par_id) {
+        return section.bVectorSegment(par_id);
+      }
+
+    };
+
+    template<class EdgeDerived>
+    using EdgeUnary = EdgeUnarySectionBaseCRPT<Derived, EdgeUnaryAdapter, EdgeDerived>;
+
+    template<class EdgeDerived>
+    void addEdge(NodeId i, EdgeUnary<EdgeDerived>* e);
+
+
+    //-------------------------------------------------------------------------------------------
+    struct EdgeBinaryAdapter {
+
+      using Parameter_1_Type = ParameterType;
+      using Parameter_2_Type = ParameterType;
+      
+      using H_11_BlockType = typename Hessian::MatTraits::MatrixType::BlockType;
+      using B_1_SegmentType = typename Hessian::VecType::SegmentType;
+
+      using H_12_BlockType = typename Hessian::MatTraits::MatrixType::BlockType;
+
+      using H_22_BlockType = typename Hessian::MatTraits::MatrixType::BlockType;
+      using B_2_SegmentType = typename Hessian::VecType::SegmentType;
+
+      static const Parameter_1_Type& parameter1(const Derived& section, NodeId id) {
+        return section.parameter(id);
+      }
+      static const Parameter_2_Type& parameter2(const Derived& section, NodeId id) {
+        return section.parameter(id);
+      }
+
+      static H_11_BlockType H_11_Block(Derived& section, int uid) {
+        return section.hessianBlockByUID(uid);
+      }
+      static B_1_SegmentType b_1_Segment(Derived& section, int par_id) {
+        return section.bVectorSegment(par_id);
+      }
+
+      static H_12_BlockType H_12_Block(Derived& section, int uid) {
+        return section.hessianBlockByUID(uid);
+      }
+
+      static H_22_BlockType H_22_Block(Derived& section, int uid) {
+        return section.hessianBlockByUID(uid);
+      }
+      static B_2_SegmentType b_2_Segment(Derived& section, int par_id) {
+        return section.bVectorSegment(par_id);
+      }
+
+    };
+
+    template<class EdgeDerived>
+    using EdgeBinary = EdgeBinarySectionBaseCRPT<Derived, EdgeBinaryAdapter, EdgeDerived>;
+
+    template<class EdgeDerived>
+    void addEdge(NodeId i, NodeId j, EdgeBinary<EdgeDerived>* e);
+
     //void addEdge(int i, int j, int k/*, EdgeTernary* e*/);
     //template<int N>
     //void addEdge(const std::array<int, N>& ids/*, EdgeNAry * e*/);
 
-    void reserveEdges(int n) {
-      _edgesVector.reserve(n);
-    }
 
-    int numEdges() const {
-      return int(_edgesVector.size());
-    }
-
-    void update(bool hessian);
-
-    SingleSectionSettings& settings() {
-      return _settings;
-    }
-    const SingleSectionSettings& settings() const {
-      return _settings;
-    }
   };
 
 }

@@ -6,7 +6,7 @@
 namespace nelson {
 
   template<class Section>
-  class EdgeSingleSectionBase {
+  class EdgeSectionBase {
 
     Section* _section;
 
@@ -19,8 +19,8 @@ namespace nelson {
     }
 
   public:
-    EdgeSingleSectionBase();
-    virtual ~EdgeSingleSectionBase();
+    EdgeSectionBase();
+    virtual ~EdgeSectionBase();
 
     const Section& section() const {
       assert(_section != nullptr);

@@ -41,6 +41,12 @@ TEMPLATE_TEST_CASE_SIG("DenseSparseWrapper", "[MatrixSparseDenseWrapper]",
   (mat::BlockDiagonal, mat::Dynamic, mat::Dynamic),
   (mat::BlockDiagonal, mat::Variable, numBlocks),
   (mat::BlockDiagonal, mat::Variable, mat::Dynamic),
+  (mat::SparseCoeffBlockDiagonal, secSizeFix, numBlocks),
+  (mat::SparseCoeffBlockDiagonal, secSizeFix, mat::Dynamic),
+  (mat::SparseCoeffBlockDiagonal, mat::Dynamic, numBlocks),
+  (mat::SparseCoeffBlockDiagonal, mat::Dynamic, mat::Dynamic),
+  (mat::SparseCoeffBlockDiagonal, mat::Variable, numBlocks),
+  (mat::SparseCoeffBlockDiagonal, mat::Variable, mat::Dynamic),
   (mat::BlockSparse, secSizeFix, numBlocks),
   (mat::BlockSparse, secSizeFix, mat::Dynamic),
   (mat::BlockSparse, mat::Dynamic, numBlocks),
@@ -93,7 +99,7 @@ TEMPLATE_TEST_CASE_SIG("DenseSparseWrapper", "[MatrixSparseDenseWrapper]",
     nelson::DenseSquareWrapper<matType, double, mat::ColMajor, B, NB> wrapperSquareDense;
     wrapperSquareDense.set(&sec.H());
 
-    nelson::DenseSquareWrapper<matType, double, mat::ColMajor, B, NB>::DiagType diagonal = wrapperSquareDense.diagonal();
+    typename nelson::DenseSquareWrapper<matType, double, mat::ColMajor, B, NB>::DiagType diagonal = wrapperSquareDense.diagonal();
     diagonal.setConstant(3);
     wrapperSquareDense.setDiagonal(diagonal);
     wrapperSquareDense.diagonalCopy(diagonal);
@@ -109,7 +115,7 @@ TEMPLATE_TEST_CASE_SIG("DenseSparseWrapper", "[MatrixSparseDenseWrapper]",
     nelson::SparseSquareWrapper<matType, double, mat::ColMajor, B, NB> wrapperSquareSparse;
     wrapperSquareSparse.set(&sec.H());
 
-    nelson::SparseSquareWrapper<matType, double, mat::ColMajor, B, NB>::DiagType diagonal = wrapperSquareSparse.diagonal();
+    typename nelson::SparseSquareWrapper<matType, double, mat::ColMajor, B, NB>::DiagType diagonal = wrapperSquareSparse.diagonal();
     diagonal.setConstant(3);
     wrapperSquareSparse.setDiagonal(diagonal);
     wrapperSquareSparse.diagonalCopy(diagonal);

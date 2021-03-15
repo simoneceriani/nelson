@@ -4,6 +4,10 @@
 #include "mat/Global.h"
 #include "SolverCholeskyDense.h"
 #include "SolverCholeskySparse.h"
+#include "SolverCholeskySchur.h"
+#include "SolverDiagonalBlocksInverseSchur.h"
+#include "SolverDiagonalBlocksInverseWWtMultSchur.h"
+
 #include "SolverTraits.h"
 
 #include <vector>
@@ -67,18 +71,57 @@ namespace nelson {
     std::string toString() const;
   };
 
+  class GaussNewtownTimingStats {
+  public:
+    struct IterationTime {
+      std::chrono::duration<double> evalTime;
+      std::chrono::duration<double> applyIncrementTime;
+      std::chrono::duration<double> computeIncrementTime;
+      std::chrono::duration<double> overallTime;
+      IterationTime();
+      std::string toString(const std::string& linePrefix = "") const;
+    };
+
+  private:
+
+    std::vector<IterationTime> _stats;
+    std::chrono::duration<double> _firstEvalTime;
+    std::chrono::duration<double> _solverInitTime;
+
+  public:
+    GaussNewtownTimingStats();
+    virtual ~GaussNewtownTimingStats();
+
+    void reserve(int n);
+
+    void setFirstEvalTime(const std::chrono::duration<double>& d) { _firstEvalTime = d; };
+    void setSolverInitTime(const std::chrono::duration<double>& d) { _solverInitTime = d; }
+
+    void addIteration(const IterationTime& it);
+
+    std::string toString(const std::string& linePrefix = "") const;
+  };
+
+
   //------------------------------------------------------------------------------------------------------
 
-  template<int solverTypeV, int matTypeV, class T, int B, int NB = mat::Dynamic>
+  template<class Solver>
   class GaussNewton {
 
-    typename SolverTraits<solverTypeV>::template Solver<matTypeV, T, B, NB> _solver;
+    Solver _solver;
 
     GaussNewtonSettings _settings;
     int iter;
 
     GaussNewtownStats _stats;
+    GaussNewtownTimingStats _timingStats;
   public:
+
+    using Utils = GaussNewtonUtils;
+    using Settings = GaussNewtonSettings;
+    using Stats = GaussNewtownStats;
+    using TimingStats = GaussNewtownTimingStats;
+
     GaussNewton();
     GaussNewton(const GaussNewtonSettings & settings);
     virtual ~GaussNewton();
@@ -86,7 +129,16 @@ namespace nelson {
     GaussNewtonSettings& settings() { return _settings; }
     const GaussNewtonSettings& settings() const { return _settings; }
 
+    template<typename RetType = typename Solver::Settings &>
+    inline std::enable_if_t<Solver::hasSettings, RetType> solverSettings() { return _solver.settings(); }
+
+    template<typename RetType = const typename Solver::Settings&>
+    inline std::enable_if_t<Solver::hasSettings, RetType> solverSettings() const { return _solver.settings(); }
+
     const GaussNewtownStats stats() const { return _stats; }
+    const GaussNewtownTimingStats timingStats() const { return _timingStats; }
+
+    const Solver& solver() const { return _solver; }
 
     template<class OptimizationProblem>
     GaussNewtonTerminationReason solve(OptimizationProblem& op);
@@ -95,8 +147,5 @@ namespace nelson {
       return iter;
     }
   };
-
-  template<int solverTypeV, class HessianTraits>
-  using GaussNewtonHessianTraits = GaussNewton< solverTypeV, HessianTraits::matType, typename HessianTraits::Type, HessianTraits::B, HessianTraits::NB>;
 
 }

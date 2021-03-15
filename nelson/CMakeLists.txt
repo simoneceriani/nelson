@@ -29,44 +29,78 @@ add_library(nelson STATIC)
 target_sources_wrapper(nelson
 	PUBLIC 
     Global.h
+    BaseSection.h
     SingleSectionHessian.h
     SingleSectionHessian.hpp
+    DoubleSectionHessianMatrices.h
+    DoubleSectionHessianMatrices.hpp
+    DoubleSectionHessian.h
+    DoubleSectionHessian.hpp
     SingleSection.h
     SingleSection.hpp
+    DoubleSection.h
+    DoubleSection.hpp
     EdgeInterface.h
-    EdgeSingleSectionBase.h
-    EdgeSingleSectionBase.hpp
+    EdgeSectionBase.h
+    EdgeSectionBase.hpp
     EdgeUnary.h
     EdgeUnary.hpp
     EdgeBinary.h
     EdgeBinary.hpp
+    MatrixWrapperTraits.h
     MatrixDenseWrapper.h
     MatrixDenseWrapper.hpp
     MatrixSparseWrapper.h
     MatrixSparseWrapper.hpp
+    MatrixDiagInv.h
+    MatrixDiagInv.hpp
+    MatrixWWtMultiplier.h
+    MatrixWWtMultiplier.hpp
+    MatrixWVinvMultiplier.h
+    MatrixWVinvMultiplier.hpp
+    MatrixWtXMultiplier.h
+    MatrixWtXMultiplier.hpp
     GaussNewton.h
     GaussNewton.hpp
     SolverCholeskyDense.h
     SolverCholeskyDense.hpp
+    SolverCholeskySchur.h
+    SolverCholeskySchur.hpp
     SolverCholeskySparse.h
     SolverCholeskySparse.hpp
+    SolverDiagonalBlocksInverseSchur.h
+    SolverDiagonalBlocksInverseSchur.hpp
+    SolverDiagonalBlocksInverseWWtMultSchur.h
+    SolverDiagonalBlocksInverseWWtMultSchur.hpp
+    SolverTraitsBase.h
     SolverTraits.h
     ParallelExecHelper.h
     LevenbergMarquardt.h
     LevenbergMarquardt.hpp
+    OrderingTraits.h
 	PRIVATE
     Global.cpp
+    BaseSection.cpp
     SingleSectionHessian.cpp
+    DoubleSectionHessian.cpp
     SingleSection.cpp
-    EdgeSingleSectionBase.cpp
+    DoubleSection.cpp
+    EdgeSectionBase.cpp
     EdgeInterface.cpp
     EdgeUnary.cpp
     EdgeBinary.cpp
     MatrixDenseWrapper.cpp
     MatrixSparseWrapper.cpp
+    MatrixDiagInv.cpp
+    MatrixWWtMultiplier.cpp
+    MatrixWVinvMultiplier.cpp
+    MatrixWtXMultiplier.cpp
     GaussNewton.cpp
     SolverCholeskyDense.cpp
+    SolverCholeskySchur.cpp
     SolverCholeskySparse.cpp
+    SolverDiagonalBlocksInverseSchur.cpp
+    SolverDiagonalBlocksInverseWWtMultSchur.cpp
     ParallelExecHelper.cpp
     LevenbergMarquardt.cpp
 )

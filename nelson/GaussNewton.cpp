@@ -2,6 +2,9 @@
 #include "GaussNewton.hpp"
 #include <sstream>
 
+#include <sstream>
+#include <iomanip>
+
 namespace nelson {
 
 
@@ -69,6 +72,63 @@ namespace nelson {
     }
     return s.str();
   }
+
+  //------------------------------------------------------------------------------------------------------
+
+  GaussNewtownTimingStats::IterationTime::IterationTime()
+    :
+    evalTime(0),
+    applyIncrementTime(0),
+    computeIncrementTime(0), 
+    overallTime(0)
+  {
+
+  }
+
+  std::string GaussNewtownTimingStats::IterationTime::toString(const std::string& linePrefix) const {
+    std::ostringstream s;
+    s << std::fixed << std::setprecision(6);
+    s << linePrefix << "overall time = " << overallTime.count() << std::endl;
+    s << linePrefix << "-- compute inc    = " << computeIncrementTime.count() << std::endl;
+    s << linePrefix << "-- apply inc    = " << applyIncrementTime.count() << std::endl;
+    s << linePrefix << "-- eval time    = " << evalTime.count() << std::endl;
+    return s.str();
+  }
+  
+
+  GaussNewtownTimingStats::GaussNewtownTimingStats() :
+    _firstEvalTime(0),
+    _solverInitTime(0)
+
+  {
+
+  }
+
+  GaussNewtownTimingStats::~GaussNewtownTimingStats() {
+
+  }
+
+  void GaussNewtownTimingStats::reserve(int n) {
+    _stats.reserve(n);
+  }
+
+  void GaussNewtownTimingStats::addIteration(const IterationTime& it)
+  {
+    _stats.push_back(it);
+  }
+
+  std::string GaussNewtownTimingStats::toString(const std::string& linePrefix) const {
+    std::ostringstream s;
+    s << std::fixed << std::setprecision(6) << std::endl;
+    s << linePrefix << "first evaluation " << _firstEvalTime.count() << std::endl;
+    s << linePrefix << "solver init " << _solverInitTime.count() << std::endl;
+    for (int i = 0; i < _stats.size(); i++) {
+      s << linePrefix << "-- ITER " << i << " -- " << std::endl;
+      s << linePrefix << _stats[i].toString("  ");
+    }
+    return s.str();
+  }
+
 
 
 

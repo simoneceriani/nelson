@@ -34,7 +34,7 @@ namespace constants {
 
 
 template<class Section>
-class PointLineEdge : public nelson::EdgeBinarySingleSectionCRPT<Section, PointLineEdge<Section>> {
+class PointLineEdge : public nelson::EdgeBinarySectionBaseCRPT<Section, typename Section::EdgeBinaryAdapter, PointLineEdge<Section>> {
   // inputs, local coordinates
   Eigen::Matrix2Xd model_points;
   Eigen::Matrix2Xd model_normals;
@@ -685,16 +685,15 @@ TEMPLATE_TEST_CASE_SIG("GaussNewton-LevenbergMarquardt", "[GaussNewton-Levenberg
       optProblem.structureReady();
 
       optProblem.update(true);
-      std::cout << "chi2 BEFORE " << optProblem.hessian().chi2() << std::endl;
 
       if (!solveGN) {
-        nelson::LevenbergMarquardtHessianTraits<solverType, typename ProblemType::Hessian::Traits> lm;
+        nelson::LevenbergMarquardt<typename nelson::SolverTraits<solverType>::template Solver<typename ProblemType::Hessian::Traits, nelson::choleskyAMDOrdering> > lm;
         auto tc = lm.solve(optProblem);
         std::cout << nelson::LevenbergMarquardtUtils::toString(tc) << std::endl;
         std::cout << "stats " << lm.stats().toString() << std::endl;
       }
       else {
-        nelson::GaussNewtonHessianTraits < solverType, typename ProblemType::Hessian::Traits> gn;
+        nelson::GaussNewton <typename nelson::SolverTraits<solverType>::template Solver<typename ProblemType::Hessian::Traits, nelson::choleskyAMDOrdering> > gn;
         if (changeDiagInSolver) {
           gn.settings().relLambda = 0.01;
           gn.settings().absLambda = 0;

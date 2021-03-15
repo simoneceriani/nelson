@@ -1,18 +1,24 @@
 #pragma once
 #include "LevenbergMarquardt.h"
 
+#include "SolverCholeskyDense.hpp"
+#include "SolverCholeskySparse.hpp"
+#include "SolverCholeskySchur.hpp"
+#include "SolverDiagonalBlocksInverseSchur.hpp"
+#include "SolverDiagonalBlocksInverseWWtMultSchur.hpp"
+
 namespace nelson {
 
-  template<int solverTypeV, int matTypeV, class T, int B, int NB>
-  LevenbergMarquardt<solverTypeV, matTypeV, T, B, NB>::LevenbergMarquardt()
+  template<class Solver>
+  LevenbergMarquardt<Solver>::LevenbergMarquardt()
     : iter(-1),
     subiter(-1)
   {
 
   }
 
-  template<int solverTypeV, int matTypeV, class T, int B, int NB>
-  LevenbergMarquardt<solverTypeV, matTypeV, T, B, NB>::LevenbergMarquardt(const LevenbergMarquardtSettings& settings)
+  template<class Solver>
+  LevenbergMarquardt<Solver>::LevenbergMarquardt(const LevenbergMarquardtSettings& settings)
     : _settings(settings),
     iter(-1),
     subiter(-1)
@@ -20,14 +26,14 @@ namespace nelson {
 
   }
 
-  template<int solverTypeV, int matTypeV, class T, int B, int NB>
-  LevenbergMarquardt<solverTypeV, matTypeV, T, B, NB>::~LevenbergMarquardt() {
+  template<class Solver>
+  LevenbergMarquardt<Solver>::~LevenbergMarquardt() {
 
   }
 
-  template<int solverTypeV, int matTypeV, class T, int B, int NB>
+  template<class Solver>
   template<class OptimizationProblem>
-  LevenbergMarquardtTerminationReason LevenbergMarquardt<solverTypeV, matTypeV, T, B, NB>::solve(OptimizationProblem& op) {
+  LevenbergMarquardtTerminationReason LevenbergMarquardt<Solver>::solve(OptimizationProblem& op) {
 
     _stats.reserve(_settings.maxNumIt, _settings.maxNumSubIt);
 
@@ -69,7 +75,7 @@ namespace nelson {
         }
 
         // evaluate the effects of the iteration performed
-        T rho = -1;
+        typename Solver::Type rho = -1;
         if (solveOk) {
 
           // apply the increment
@@ -80,11 +86,7 @@ namespace nelson {
           _stats.addSubIteration(subiter, op.hessian().chi2());
 
           // evaluate chi2 change
-          auto newChi2 = op.hessian().chi2();
-          auto num = (oldChi2 - newChi2);
-          auto den = _solver.incrementVector().mat().transpose() * (mu * _solver.incrementVector().mat() - op.hessian().b().mat());
-          //
-          rho = num / den;
+          rho = op.computeRhoChi2Change(mu, _solver.incrementVector(), oldChi2);
 
         }
 
@@ -101,8 +103,8 @@ namespace nelson {
           }
 
           // ok, we can go faster!
-          T fc = (2 * rho - 1);
-          T alpha = std::min(_settings.maxScaleFactor, 1 - fc * fc * fc);
+          typename Solver::Type fc = (2 * rho - 1);
+          typename Solver::Type alpha = std::min(_settings.maxScaleFactor, 1 - fc * fc * fc);
           alpha = std::max(_settings.minScaleFactor, alpha);
           mu = mu * alpha;
           curV = _settings.initV;

@@ -16,6 +16,7 @@ namespace nelson {
 
     using MatType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockDense, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
     using MatOutputType = typename MatType::StorageType;
+    static constexpr int matOutputType = mat::BlockDense;
 
   private:
 
@@ -56,6 +57,9 @@ namespace nelson {
     using MatType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockCoeffSparse, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
     using MatCopyType = typename mat::MatrixBlockTypeTraits<mat::BlockDense, T, BR, BC, NBR, NBC>::StorageType;
 
+    using MatOutputType = MatCopyType;
+    static constexpr int matOutputType = mat::BlockDense;
+
   private:
     // the original matrix
     MatType* _matrix;
@@ -65,7 +69,52 @@ namespace nelson {
 
   public:
 
+    DenseWrapper() : _matrix(nullptr) {
+
+    }
+
+    virtual ~DenseWrapper();
+
+    void set(MatType* matrix) {
+      this->_matrix = matrix;
+      _matCopy.setZero(this->_matrix->mat().rows(), this->_matrix->mat().cols());
+      this->refresh();
+    }
+
+    void refresh() {
+      assert(this->_matrix != nullptr);
+      _matCopy = MatCopyType(_matrix->mat());
+    }
+
+    const MatCopyType& mat() const {
+      assert(_matrix != nullptr);
+      return _matCopy;
+    }
+    MatCopyType& mat() {
+      assert(_matrix != nullptr);
+      return _matCopy;
+    }
+
+  };
+
+  template<class T, int Ordering, int BR, int BC, int NBR, int NBC>
+  class DenseWrapper<mat::SparseCoeffBlockDiagonal, T, Ordering, BR, BC, NBR, NBC> {
+  public:
+
+    using MatType = typename mat::MatrixBlockIterableTypeTraits<mat::SparseCoeffBlockDiagonal, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
+    using MatCopyType = typename mat::MatrixBlockTypeTraits<mat::BlockDense, T, BR, BC, NBR, NBC>::StorageType;
+
     using MatOutputType = MatCopyType;
+    static constexpr int matOutputType = mat::BlockDense;
+
+  private:
+    // the original matrix
+    MatType* _matrix;
+
+    // the eigen dense copy
+    MatCopyType _matCopy;
+
+  public:
 
     DenseWrapper() : _matrix(nullptr) {
 
@@ -101,6 +150,8 @@ namespace nelson {
 
     using MatType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockDiagonal, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
     using MatCopyType = mat::DenseMatrixBlock<T, BR, BC, NBR, NBC>;
+    using MatOutputType = typename MatCopyType::StorageType;
+    static constexpr int matOutputType = mat::BlockDense;
 
   private:
     // the original matrix
@@ -111,8 +162,6 @@ namespace nelson {
 
   public:
     
-    using MatOutputType = typename MatCopyType::StorageType;
-
     DenseWrapper() : _matrix(nullptr) {
 
     }
@@ -141,6 +190,8 @@ namespace nelson {
 
     using MatType = typename mat::MatrixBlockIterableTypeTraits<mat::BlockSparse, T, Ordering, BR, BC, NBR, NBC>::MatrixType;
     using MatCopyType = mat::DenseMatrixBlock<T, BR, BC, NBR, NBC>;
+    using MatOutputType = typename MatCopyType::StorageType;
+    static constexpr int matOutputType = mat::BlockDense;
 
   private:
 
@@ -151,8 +202,6 @@ namespace nelson {
     MatCopyType _matCopy;
 
   public:
-
-    using MatOutputType = typename MatCopyType::StorageType;
 
     DenseWrapper() : _matrix(nullptr) {
 
@@ -174,6 +223,7 @@ namespace nelson {
     }
 
   };
+
 
   //----------------------------------------------------------------------------------
 

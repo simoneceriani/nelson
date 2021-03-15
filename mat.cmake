@@ -3,5 +3,5 @@ include_guard(GLOBAL)
 
 # generated with CMakeBaseBuildSystem
 
-set(mat_HASH "beeab0d05eed1a29838eb2d37874f8a20e85bb40")
-set(mat_LOG "2021-01-27T14:29:27+01:00 add-some-compatibility-method")
+set(mat_HASH "847e63e315afe5e6783205a01e6b88caaab5a5c6")
+set(mat_LOG "2021-03-12T23:28:10+01:00 add-SparseCoeffDiagonalMatrixBlock")
