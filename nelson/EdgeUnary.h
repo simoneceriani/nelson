@@ -54,8 +54,8 @@ namespace nelson {
 
       }
 
-      void updateH() override {
-        _e->updateH();
+      void updateH(bool transpose) override {
+        _e->updateH(transpose);
       }
     };
 
@@ -66,7 +66,7 @@ namespace nelson {
 
     // virtual void update(bool updateHessians) = 0; // defined in base
 
-    virtual void updateH() = 0;
+    virtual void updateH(bool transpose) = 0;
 
   };
 
@@ -78,20 +78,15 @@ namespace nelson {
   public:
 
     inline const typename SectionAdapter::ParameterType& parameter() const {
-      //return this->section().parameter(this->parId());
       return SectionAdapter::parameter(this->section(), this->parId());
     }
 
-    void updateH() override final {
+    void updateH(bool transpose) override final {
       assert(this->HUid() >= 0);
       assert(this->parId().isVariable());
 
-      //typename Section::Hessian::MatTraits::MatrixType::BlockType bH = this->section().hessianBlockByUID(this->HUid());
-      //typename Section::Hessian::VecType::SegmentType bV = this->section().bVectorSegment(this->parId().id());
-      //static_cast<Derived*>(this)->updateHBlock(bH, bV);
-
       typename SectionAdapter::HBlockType bH = SectionAdapter::HBlock(this->section(), this->HUid());
-      typename SectionAdapter::BSegmentType bV = SectionAdapter::bSegment(this->section(), this->parId().id());
+      typename SectionAdapter::BSegmentType bV = SectionAdapter::bSegment(this->section(), this->section().user2internalIndexes()(this->parId().id()));
       static_cast<Derived*>(this)->updateHBlock(bH, bV);
 
     }

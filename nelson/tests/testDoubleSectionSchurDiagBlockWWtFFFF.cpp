@@ -132,7 +132,8 @@ public:
     v -= _err;
   }
   template<class Derived1>
-  void updateH12Block(Eigen::MatrixBase<Derived1>& H) {
+  void updateH12Block(Eigen::MatrixBase<Derived1>& H, bool transpose) {
+    assert(transpose == false);
     // std::cout << "EdgeBinartTest::updateH12Block " << this->par_1_Id().id() << "," << this->par_2_Id().id() << std::endl;
     H -= Eigen::Matrix2d::Identity();
   }
@@ -243,7 +244,8 @@ public:
     v -= _err;
   }
   template<class Derived1>
-  void updateH12Block(Eigen::MatrixBase<Derived1>& H) {
+  void updateH12Block(Eigen::MatrixBase<Derived1>& H, bool transpose) {
+    assert(transpose == false);
     // std::cout << "EdgeBinartTest::updateH12Block " << this->par_1_Id().id() << "," << this->par_2_Id().id() << std::endl;
     H -= Eigen::Matrix3d::Identity();
   }
@@ -312,7 +314,8 @@ public:
     v -= Eigen::Vector3d(_err.x(), _err.y(), 0);
   }
   template<class Derived1>
-  void updateH12Block(Eigen::MatrixBase<Derived1>& H) {
+  void updateH12Block(Eigen::MatrixBase<Derived1>& H, bool transpose) {
+    assert(transpose == false);
     // std::cout << "EdgeBinartTest::updateH12Block " << this->par_1_Id().id() << "," << this->par_2_Id().id() << std::endl;
 
     Eigen::Matrix<double, 2, 3> Htmp;

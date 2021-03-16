@@ -226,7 +226,8 @@ public:
     v += _d_err_d_point.transpose() * _err;
   }
   template<class Derived1>
-  void updateH12Block(Eigen::MatrixBase<Derived1>& H) {
+  void updateH12Block(Eigen::MatrixBase<Derived1>& H, bool transpose) {
+    assert(transpose == false);
     H += _d_err_d_gamma.transpose() * _d_err_d_point;
   }
 };

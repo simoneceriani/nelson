@@ -31,7 +31,8 @@ namespace nelson {
     struct ListWithCount {
       std::forward_list<SetterComputer> list;
       int size;
-      ListWithCount() : size(0) {
+      bool transpose;
+      ListWithCount() : size(0), transpose(false) {
 
       }
     };
@@ -39,7 +40,11 @@ namespace nelson {
     std::vector<std::unique_ptr<EdgeInterface>> _edgesVector;
     
     // outer size is the number of independent computation, safe to be computed in parallel, inside they have to go sequential (or parallel but with reduction)
-    std::vector<std::vector<std::unique_ptr<EdgeHessianUpdater>>> _computationUnits;
+    struct UpdaterVectorWithTransposeFlag {
+      std::vector < std::unique_ptr<EdgeHessianUpdater>> updaters;
+      bool transpose;
+    };
+    std::vector < UpdaterVectorWithTransposeFlag> _computationUnits;
 
     void updateHessianBlocks(const ParallelExecSettings & hessianUpdateParallelSettings);
     void evaluateEdges(const ParallelExecSettings& edgeEvalParallelSettings, bool hessian);

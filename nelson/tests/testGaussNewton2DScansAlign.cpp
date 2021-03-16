@@ -108,7 +108,7 @@ public:
     b.noalias() += bs;
   }
   template<class Derived>
-  void updateH12Block(Eigen::MatrixBase<Derived>& H) {
+  void updateH12Block(Eigen::MatrixBase<Derived>& H, bool transpose) {
     H.noalias() -= Hs;
   }
   template<class Derived1, class Derived2>
@@ -172,7 +172,7 @@ public:
 
   void oplus(const typename SingleSectionBase::HessianVecType& inc) {
     for (int i = 0; i < this->numParameters(); i++) {
-      _poses[i].oplus(inc.segment(i));
+      _poses[i].oplus(inc.segment(this->user2internalIndexes()(i)));
     }
   }
 
@@ -230,7 +230,7 @@ public:
 
   void oplus(const typename SingleSectionBase::HessianVecType& inc) {
     for (int i = 0; i < this->numParameters(); i++) {
-      _poses[i].oplus(inc.segment(i));
+      _poses[i].oplus(inc.segment(this->user2internalIndexes()(i)));
     }
   }
 
@@ -287,7 +287,7 @@ public:
 
   void oplus(const typename SingleSectionBase::HessianVecType& inc) {
     for (int i = 0; i < this->numParameters(); i++) {
-      _poses[i].oplus(inc.segment(i));
+      _poses[i].oplus(inc.segment(this->user2internalIndexes()(i)));
     }
   }
 
@@ -350,7 +350,7 @@ public:
 
   void oplus(const typename SingleSectionBase::HessianVecType& inc) {
     for (int i = 0; i < this->numParameters(); i++) {
-      _poses[i].oplus(inc.segment(i));
+      _poses[i].oplus(inc.segment(this->user2internalIndexes()(i)));
     }
   }
 
@@ -409,7 +409,7 @@ public:
 
   void oplus(const typename SingleSectionBase::HessianVecType& inc) {
     for (int i = 0; i < this->numParameters(); i++) {
-      _poses[i].oplus(inc.segment(i));
+      _poses[i].oplus(inc.segment(this->user2internalIndexes()(i)));
     }
   }
 
@@ -470,7 +470,7 @@ public:
 
   void oplus(const typename SingleSectionBase::HessianVecType& inc) {
     for (int i = 0; i < this->numParameters(); i++) {
-      _poses[i].oplus(inc.segment(i));
+      _poses[i].oplus(inc.segment(this->user2internalIndexes()(i)));
     }
   }
 
@@ -498,16 +498,24 @@ TEMPLATE_TEST_CASE_SIG("GaussNewton-LevenbergMarquardt", "[GaussNewton-Levenberg
   (SE2PoseSectionVD_BlockDense, nelson::solverCholeskySparse), (SE2PoseSectionVD_BlockDiagonal, nelson::solverCholeskySparse), (SE2PoseSectionVD_BlockSparse, nelson::solverCholeskySparse), (SE2PoseSectionVD_BlockCoeffSparse, nelson::solverCholeskySparse)
 )
 {
-  for (int repeat = 0; repeat < 2; repeat++) {
+  for (int repeat = 0; repeat < 4; repeat++) {
     SECTION("repeat test for time " + std::to_string(repeat)) {
       std::cout << " *********** repeat " << repeat << " *************" << std::endl;
       auto startTime = std::chrono::steady_clock::now();
       //SE2PoseSectionFF_BlockDense optProblem; assert(false); // change me to ProblemType
       ProblemType optProblem;
 
-      if (repeat == 1) {
+      if (repeat == 1 || repeat == 3 || repeat == 5) {
         optProblem.settings().hessianUpdateParallelSettings.setNumThreadsMax();
         optProblem.settings().edgeEvalParallelSettings.setNumThreadsMax();
+      }
+
+      int ordering = 0;
+      if (repeat == 0 || repeat == 1) {
+        ordering = 1; //AMD
+      }
+      else if (repeat == 2 || repeat == 3) {
+        ordering = 2; //SHUFFLE
       }
 
 
@@ -545,39 +553,6 @@ TEMPLATE_TEST_CASE_SIG("GaussNewton-LevenbergMarquardt", "[GaussNewton-Levenberg
       bool changeDiagInSolver;
       bool solveGN = false;
 
-      //------------------------------- levenberg
-
-      SECTION("NO NOISE - FULL - PURE GN") {
-        noiseSigma.setZero();
-        fullEdges = true;
-        changeDiagInSolver = false;
-        solveGN = false;
-      }
-      SECTION("WITH NOISE - FULL - PURE GN") {
-        noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
-        fullEdges = true;
-        changeDiagInSolver = false;
-        solveGN = false;
-      }
-      if (optProblem.matType() != mat::BlockDiagonal) {
-        SECTION("NO NOISE - SPARSE - PURE GN") {
-          noiseSigma.setZero();
-          fullEdges = false;
-          changeDiagInSolver = false;
-          solveGN = false;
-        }
-        SECTION("WITH NOISE - SPARSE - PURE GN") {
-          noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
-          fullEdges = false;
-          changeDiagInSolver = false;
-          solveGN = false;
-        }
-      }
-      else fullEdges = false;
-      optProblem.parameter(nelson::NodeId::fixed(0)).pose = scanPoses[0];
-      for (int i = 1; i < scanPoses.size(); i++) {
-        optProblem.parameter(i - 1).pose = lie::exp(lie::SE2Algd(noiseSigma.asDiagonal() * Eigen::Vector3d::Random())) * scanPoses[i];
-      }
       //---------------------- GN
       SECTION("NO NOISE - FULL - PURE GN") {
         noiseSigma.setZero();
@@ -634,6 +609,41 @@ TEMPLATE_TEST_CASE_SIG("GaussNewton-LevenbergMarquardt", "[GaussNewton-Levenberg
         }
       }
       else fullEdges = false;
+      //------------------------------- levenberg
+      SECTION("NO NOISE - FULL - PURE GN") {
+        noiseSigma.setZero();
+        fullEdges = true;
+        changeDiagInSolver = false;
+        solveGN = false;
+      }
+      SECTION("WITH NOISE - FULL - PURE GN") {
+        noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
+        fullEdges = true;
+        changeDiagInSolver = false;
+        solveGN = false;
+      }
+      if (optProblem.matType() != mat::BlockDiagonal) {
+        SECTION("NO NOISE - SPARSE - PURE GN") {
+          noiseSigma.setZero();
+          fullEdges = false;
+          changeDiagInSolver = false;
+          solveGN = false;
+        }
+        SECTION("WITH NOISE - SPARSE - PURE GN") {
+          noiseSigma = Eigen::Vector3d(0.01, 0.01, M_PI / 1000.0);
+          fullEdges = false;
+          changeDiagInSolver = false;
+          solveGN = false;
+        }
+      }
+      else fullEdges = false;
+
+
+      optProblem.parameter(nelson::NodeId::fixed(0)).pose = scanPoses[0];
+      for (int i = 1; i < scanPoses.size(); i++) {
+        optProblem.parameter(i - 1).pose = lie::exp(lie::SE2Algd(noiseSigma.asDiagonal() * Eigen::Vector3d::Random())) * scanPoses[i];
+      }
+
 
 
       // add edges
@@ -682,6 +692,15 @@ TEMPLATE_TEST_CASE_SIG("GaussNewton-LevenbergMarquardt", "[GaussNewton-Levenberg
         }
       }
 
+      if (ordering == 1) {
+        optProblem.permuteAMD();
+      }
+      else if (ordering == 2) {
+        Eigen::VectorXi order = optProblem.user2internalIndexes();
+        std::random_shuffle(order.data(), order.data() + order.size());
+        optProblem.setUser2InternalIndexes(order);
+      }
+
       optProblem.structureReady();
 
       optProblem.update(true);
@@ -710,7 +729,7 @@ TEMPLATE_TEST_CASE_SIG("GaussNewton-LevenbergMarquardt", "[GaussNewton-Levenberg
 
       auto endTime = std::chrono::steady_clock::now();
       std::cout << "TOTAL TIME " << std::chrono::duration<double>(endTime - startTime).count() << std::endl;
-      
+
     }
 
   }
