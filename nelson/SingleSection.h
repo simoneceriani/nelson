@@ -223,7 +223,7 @@ namespace nelson {
         return section.hessianBlockByUID(uid);
       }
       static BSegmentType bSegment(Derived& section, int par_id) {
-        return section.bVectorSegment(par_id);
+        return section.bVectorSegment(section.user2internalIndexes()(par_id));
       }
 
     };
@@ -260,7 +260,7 @@ namespace nelson {
         return section.hessianBlockByUID(uid);
       }
       static B_1_SegmentType b_1_Segment(Derived& section, int par_id) {
-        return section.bVectorSegment(par_id);
+        return section.bVectorSegment(section.user2internalIndexes()(par_id));
       }
 
       static H_12_BlockType H_12_Block(Derived& section, int uid) {
@@ -271,7 +271,7 @@ namespace nelson {
         return section.hessianBlockByUID(uid);
       }
       static B_2_SegmentType b_2_Segment(Derived& section, int par_id) {
-        return section.bVectorSegment(par_id);
+        return section.bVectorSegment(section.user2internalIndexes()(par_id));
       }
 
     };

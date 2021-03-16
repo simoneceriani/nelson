@@ -86,7 +86,7 @@ namespace nelson {
       assert(this->parId().isVariable());
 
       typename SectionAdapter::HBlockType bH = SectionAdapter::HBlock(this->section(), this->HUid());
-      typename SectionAdapter::BSegmentType bV = SectionAdapter::bSegment(this->section(), this->section().user2internalIndexes()(this->parId().id()));
+      typename SectionAdapter::BSegmentType bV = SectionAdapter::bSegment(this->section(), this->parId().id());
       static_cast<Derived*>(this)->updateHBlock(bH, bV);
 
     }

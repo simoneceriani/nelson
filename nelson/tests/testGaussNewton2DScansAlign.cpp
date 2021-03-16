@@ -498,7 +498,7 @@ TEMPLATE_TEST_CASE_SIG("GaussNewton-LevenbergMarquardt", "[GaussNewton-Levenberg
   (SE2PoseSectionVD_BlockDense, nelson::solverCholeskySparse), (SE2PoseSectionVD_BlockDiagonal, nelson::solverCholeskySparse), (SE2PoseSectionVD_BlockSparse, nelson::solverCholeskySparse), (SE2PoseSectionVD_BlockCoeffSparse, nelson::solverCholeskySparse)
 )
 {
-  for (int repeat = 0; repeat < 4; repeat++) {
+  for (int repeat = 0; repeat < 6; repeat++) {
     SECTION("repeat test for time " + std::to_string(repeat)) {
       std::cout << " *********** repeat " << repeat << " *************" << std::endl;
       auto startTime = std::chrono::steady_clock::now();

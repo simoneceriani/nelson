@@ -137,7 +137,7 @@ namespace nelson {
       assert(transpose == false);
 
       typename SectionAdapter::H_11_BlockType  bH = SectionAdapter::H_11_Block(this->section(), this->H_11_Uid());
-      typename SectionAdapter::B_1_SegmentType bV = SectionAdapter::b_1_Segment(this->section(), this->section().user2internalIndexes()(this->par_1_Id().id()));
+      typename SectionAdapter::B_1_SegmentType bV = SectionAdapter::b_1_Segment(this->section(), this->par_1_Id().id());
       static_cast<Derived*>(this)->updateH11Block(bH, bV);
     }
     void updateH_12(bool transpose) override final {
@@ -152,7 +152,7 @@ namespace nelson {
       assert(transpose == false);
 
       typename SectionAdapter::H_22_BlockType  bH = SectionAdapter::H_22_Block(this->section(), this->H_22_Uid());
-      typename SectionAdapter::B_2_SegmentType bV = SectionAdapter::b_2_Segment(this->section(), this->section().user2internalIndexes()(this->par_2_Id().id()));
+      typename SectionAdapter::B_2_SegmentType bV = SectionAdapter::b_2_Segment(this->section(), this->par_2_Id().id());
       static_cast<Derived*>(this)->updateH22Block(bH, bV);
     }
   };
