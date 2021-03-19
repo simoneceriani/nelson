@@ -165,7 +165,7 @@ public:
       _points[i] += inc.bV().segment(i - 1);
     }
     for (int i = 1; i < _poses.size(); i++) {
-      _poses[i] = lie::exp(lie::SE3Algd(inc.bU().segment(i - 1))) * _poses[i];
+      _poses[i] = lie::exp(lie::SE3Algd(inc.bU().segment(this->user2internalIndexesU()(i - 1)))) * _poses[i];
     }
   }
 
@@ -233,9 +233,10 @@ public:
 };
 
 template<int matUType, int matVType, int matWType>
-void testFunction(const Problem & problem) {
+void testFunction(const Problem & problem, bool AMDOrdering = false) {
   BA_Problem< matUType, matVType, matWType> ba_problem(problem.nCameras, problem.nPoints, problem.edges.size());
   ba_problem.parametersReady();
+  ba_problem.reserveEdges(problem.edges.size());
 
   for (int i = 0; i < problem.edges.size(); i++) {
     const auto& e = problem.edges[i];
@@ -244,6 +245,13 @@ void testFunction(const Problem & problem) {
     nelson::NodeId cam_i = nelson::NodeId((e_i == 0 ? 0 : e_i - 1), (e_i == 0 ? nelson::NodeType::Fixed : nelson::NodeType::Variable));
     nelson::NodeId point_i = nelson::NodeId((e_j == 0 ? 0 : e_j - 1), (e_j == 0 ? nelson::NodeType::Fixed : nelson::NodeType::Variable));
     ba_problem.addEdge(cam_i, point_i, new Edge<matUType, matVType, matWType>(ba_problem.camera().points3D_to_image(ba_problem.pose(e.first) * ba_problem.point(e.second))));
+  }
+
+  if (AMDOrdering) {
+    auto t0 = std::chrono::steady_clock::now();
+    ba_problem.permuteAMD_SchurU();
+    auto t1 = std::chrono::steady_clock::now();
+    std::cout << "PERMUTATION COMPUTE TIME " << std::chrono::duration<double>(t1 - t0).count() << std::endl;
   }
 
   ba_problem.structureReady();
@@ -257,7 +265,7 @@ void testFunction(const Problem & problem) {
 
   std::cout << "chi2 noise add " << ba_problem.hessian().chi2() << std::endl;
 
-  using SolverAlgorithm = nelson::GaussNewton<typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverseWWtMult>::Solver<typename BA_Problem<matUType, matVType, matWType>::Hessian::Traits, nelson::matrixWrapperSparse, nelson::choleskyAMDOrdering> >;
+  using SolverAlgorithm = nelson::GaussNewton<typename nelson::SolverTraits<nelson::solverCholeskySchurDiagBlockInverseWWtMult>::Solver<typename BA_Problem<matUType, matVType, matWType>::Hessian::Traits, nelson::matrixWrapperSparse, nelson::choleskyNaturalOrdering> >;
   SolverAlgorithm gn;
 
   ba_problem.settings().edgeEvalParallelSettings.setNumThreads(numThreads);
@@ -299,6 +307,15 @@ int main(int argc, char* argv[]) {
   }
   const Problem& problem = *problemPtr;
 
+  std::cout
+    << "----------------------------------------------------" << std::endl
+    << "---------      AMD  ORDERING      ------------------" << std::endl
+    << "----------------------------------------------------" << std::endl
+    << "matUType SparseCoeffBlockDiagonal, matVType SparseCoeffBlockDiagonal, matWType BlockCoeffSparse" << std::endl;
+
+  testFunction<mat::SparseCoeffBlockDiagonal, mat::SparseCoeffBlockDiagonal, mat::BlockCoeffSparse>(problem, true);
+  std::cout
+    << "----------------------------------------------------" << std::endl << std::endl;
   std::cout 
     << "----------------------------------------------------"<< std::endl 
     << "matUType BlockDiagonal, matVType BlockDiagonal, matWType BlockCoeffSparse" << std::endl;
@@ -326,6 +343,8 @@ int main(int argc, char* argv[]) {
   testFunction<mat::SparseCoeffBlockDiagonal, mat::SparseCoeffBlockDiagonal, mat::BlockSparse>(problem);
   std::cout
     << "----------------------------------------------------" << std::endl << std::endl;
+
+
 
 
   return 0;

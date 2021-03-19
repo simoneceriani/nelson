@@ -86,6 +86,7 @@ namespace nelson {
         if (newj >= newi) {
           _sortedEdgeSetterComputer[newj][newi].size = setList.second.size;
           _sortedEdgeSetterComputer[newj][newi].list.swap(setList.second.list);
+          _sortedEdgeSetterComputer[newj][newi].transpose = false;
         }
         else {
           _sortedEdgeSetterComputer[newi][newj].size = setList.second.size;

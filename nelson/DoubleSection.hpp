@@ -20,6 +20,50 @@ namespace nelson {
   }
 
   template<class Derived, class ParUT, class ParVT, int matTypeUv, int matTypeVv, int matTypeWv, class Tv, int BUv, int BVv, int NBUv, int NBVv>
+  void DoubleSection<Derived, ParUT, ParVT, matTypeUv, matTypeVv, matTypeWv, Tv, BUv, BVv, NBUv, NBVv>::setUser2InternalIndexesU(const Eigen::Matrix<int, NBUv, 1>& v) {
+    assert(_user2internalIndexesU.size() == v.size());
+    this->_user2internalIndexesU = v;
+  }
+
+  template<class Derived, class ParUT, class ParVT, int matTypeUv, int matTypeVv, int matTypeWv, class Tv, int BUv, int BVv, int NBUv, int NBVv>
+  void DoubleSection<Derived, ParUT, ParVT, matTypeUv, matTypeVv, matTypeWv, Tv, BUv, BVv, NBUv, NBVv>::permuteAMD_SchurU() {
+    // create sparsity pattern U
+    mat::SparsityPattern<mat::ColMajor> spU(this->numParametersU(), this->numParametersU());
+    // create sparsity pattern from edges
+    for (int j = 0; j < this->_edgeSetterComputerU.size(); j++) {
+      for (auto& setList : this->_edgeSetterComputerU[j]) {
+        assert(_user2internalIndexesU[setList.first] == setList.first);
+        assert(_user2internalIndexesU[j] == j);
+        int i = setList.first;
+        assert(j >= i);
+        spU.add(i, j);
+      }
+    }
+    Eigen::SparseMatrix<int> spMatU = spU.toSparseMatrix();
+
+    // create sparsity pattern U
+    mat::SparsityPattern<mat::ColMajor> spW(this->numParametersU(), this->numParametersV());
+    // create sparsity pattern from edges
+    for (int i = 0; i < this->_edgeSetterComputerW.size(); i++) {
+      for (auto& setList : this->_edgeSetterComputerW[i]) {
+        assert(_user2internalIndexesU[i] == i);
+        assert(_user2internalIndexesU[setList.first] == setList.first);
+        int j = setList.first;
+        spW.add(i, j);
+      }
+    }
+    Eigen::SparseMatrix<int> spMatW = spW.toSparseMatrix();
+
+    Eigen::SparseMatrix<int> spMatUWWt = (spMatU + spMatW * spMatW.transpose()).template triangularView<Eigen::Upper>();
+
+    Eigen::AMDOrdering<int> amd_ordering;
+    Eigen::PermutationMatrix<Eigen::Dynamic, Eigen::Dynamic, int> permutation;
+    amd_ordering(spMatUWWt.selfadjointView<Eigen::Upper>(), permutation);
+    _user2internalIndexesU = Eigen::PermutationMatrix<Eigen::Dynamic, Eigen::Dynamic, int>(permutation.transpose()).indices();
+  }
+
+
+  template<class Derived, class ParUT, class ParVT, int matTypeUv, int matTypeVv, int matTypeWv, class Tv, int BUv, int BVv, int NBUv, int NBVv>
   void DoubleSection<Derived, ParUT, ParVT, matTypeUv, matTypeVv, matTypeWv, Tv, BUv, BVv, NBUv, NBVv>::parametersReady() {
     auto newU = std::vector<std::map<int, ListWithCount>>(this->numParametersU());
     this->_edgeSetterComputerU.swap(newU);
@@ -30,6 +74,8 @@ namespace nelson {
     // this is row major
     auto newW = std::vector<std::map<int, ListWithCount>>(this->numParametersU());
     this->_edgeSetterComputerW.swap(newW);
+
+    this->_user2internalIndexesU = Eigen::Matrix<int, NBUv, 1>::LinSpaced(this->numParametersU(), 0, this->numParametersU() - 1);
 
   }
 
@@ -43,7 +89,15 @@ namespace nelson {
     this->_sparsityPatternU.reset(new mat::SparsityPattern<mat::ColMajor>(this->numParametersU(), this->numParametersU()));
     for (int j = 0; j < this->_edgeSetterComputerU.size(); j++) {
       for (auto& setList : this->_edgeSetterComputerU[j]) {
-        this->_sparsityPatternU->add(setList.first, j);
+        int newi = _user2internalIndexesU[setList.first];
+        int newj = _user2internalIndexesU[j];
+        if (newj > newi) {
+          this->_sparsityPatternU->add(newi, newj);
+        }
+        else {
+          this->_sparsityPatternU->add(newj, newi);
+        }
+        
       }
     }
 
@@ -57,23 +111,52 @@ namespace nelson {
     this->_sparsityPatternW.reset(new mat::SparsityPattern<mat::RowMajor>(this->numParametersU(), this->numParametersV()));
     for (int i = 0; i < this->_edgeSetterComputerW.size(); i++) {
       for (auto& setList : this->_edgeSetterComputerW[i]) {
-        this->_sparsityPatternW->add(i, setList.first);
+        int newi = _user2internalIndexesU[i];
+        this->_sparsityPatternW->add(newi, setList.first);
       }
     }
 
     // prepare hessian structure
+    auto parameterUSizePermuted = this->parameterUSizePermuted(_user2internalIndexesU);
     this->_hessian.resize(
-      this->parameterUSize(), this->numParametersU(),
+      parameterUSizePermuted, this->numParametersU(),
       this->parameterVSize(), this->numParametersV(),
       this->_sparsityPatternU, this->_sparsityPatternV, this->_sparsityPatternW
     );
+
+    //-------------------------------------------------------------------------------------------------
+    // copy _edgeSetterComputer to sorted version    
+    std::vector<std::map<int, ListWithCount>> _sortedEdgeSetterComputerU(this->numParametersU());
+    for (int j = 0; j < this->_edgeSetterComputerU.size(); j++) {
+      for (auto& setList : this->_edgeSetterComputerU[j]) {
+        int newj = _user2internalIndexesU[j];
+        int newi = _user2internalIndexesU[setList.first];
+        if (newj >= newi) {
+          _sortedEdgeSetterComputerU[newj][newi].size = setList.second.size;
+          _sortedEdgeSetterComputerU[newj][newi].list.swap(setList.second.list);
+          _sortedEdgeSetterComputerU[newj][newi].transpose = false;
+        }
+        else {
+          _sortedEdgeSetterComputerU[newi][newj].size = setList.second.size;
+          _sortedEdgeSetterComputerU[newi][newj].list.swap(setList.second.list);
+          _sortedEdgeSetterComputerU[newi][newj].transpose = true;
+        }
+
+      }
+    }
+    std::vector<std::map<int, ListWithCount>> _sortedEdgeSetterComputerW(this->numParametersU());
+    for (int i = 0; i < this->_edgeSetterComputerW.size(); i++) {
+      int newi = _user2internalIndexesU[i];
+        _sortedEdgeSetterComputerW[newi].swap(_edgeSetterComputerW[i]);
+    }
+
 
     //----------------------------------------------------------------------------
     // set the UIDs to the edges
     // iterate on sparsity pattern and _edgeSetterComputer, they have to be the same!
     int buid = 0;
-    for (int j = 0; j < this->_edgeSetterComputerU.size(); j++) {
-      for (auto& setList : this->_edgeSetterComputerU[j]) {
+    for (int j = 0; j < _sortedEdgeSetterComputerU.size(); j++) {
+      for (auto& setList : _sortedEdgeSetterComputerU[j]) {
         assert(_hessian.U().blockUID(setList.first, j) == buid);
         for (auto& set : setList.second.list) {
           set.setter->setUID(buid);
@@ -96,8 +179,8 @@ namespace nelson {
     assert(buid == _hessian.V().nonZeroBlocks());
 
     buid = 0;
-    for (int i = 0; i < this->_edgeSetterComputerW.size(); i++) {
-      for (auto& setList : this->_edgeSetterComputerW[i]) {
+    for (int i = 0; i < _sortedEdgeSetterComputerW.size(); i++) {
+      for (auto& setList : _sortedEdgeSetterComputerW[i]) {
         assert(_hessian.W().blockUID(i, setList.first) == buid);
         for (auto& set : setList.second.list) {
           set.setter->setUID(buid);
@@ -108,17 +191,18 @@ namespace nelson {
     assert(buid == _hessian.W().nonZeroBlocks());
 
    // prepare the _computationUnits, they are the same than the H blocks
-    auto newV = std::vector<std::vector<std::unique_ptr<EdgeHessianUpdater>>>(this->_sparsityPatternU->count() + this->_sparsityPatternV->count() + this->_sparsityPatternW->count());
+    auto newV = std::vector<UpdaterVectorWithTransposeFlag>(this->_sparsityPatternU->count() + this->_sparsityPatternV->count() + this->_sparsityPatternW->count());
     _computationUnits.swap(newV);
 
     int cuCount = 0;
-    for (int j = 0; j < this->_edgeSetterComputerU.size(); j++) {
-      for (auto& setList : this->_edgeSetterComputerU[j]) {
-        _computationUnits[cuCount].resize(setList.second.size);
+    for (int j = 0; j < _sortedEdgeSetterComputerU.size(); j++) {
+      for (auto& setList : _sortedEdgeSetterComputerU[j]) {
+        _computationUnits[cuCount].updaters.resize(setList.second.size);
+        _computationUnits[cuCount].transpose = setList.second.transpose;
         int c = 0;
         for (auto& set : setList.second.list) {
           //auto ptr = std::move(set.computer);
-          _computationUnits[cuCount][c] = std::move(set.computer);
+          _computationUnits[cuCount].updaters[c] = std::move(set.computer);
           c++;
         }
         cuCount++;
@@ -126,23 +210,25 @@ namespace nelson {
     }
     for (int j = 0; j < this->_edgeSetterComputerV.size(); j++) {
       for (auto& setList : this->_edgeSetterComputerV[j]) {
-        _computationUnits[cuCount].resize(setList.second.size);
+        _computationUnits[cuCount].updaters.resize(setList.second.size);
+        _computationUnits[cuCount].transpose = setList.second.transpose;
         int c = 0;
         for (auto& set : setList.second.list) {
           //auto ptr = std::move(set.computer);
-          _computationUnits[cuCount][c] = std::move(set.computer);
+          _computationUnits[cuCount].updaters[c] = std::move(set.computer);
           c++;
         }
         cuCount++;
       }
     }
-    for (int i = 0; i < this->_edgeSetterComputerW.size(); i++) {
-      for (auto& setList : this->_edgeSetterComputerW[i]) {
-        _computationUnits[cuCount].resize(setList.second.size);
+    for (int i = 0; i < _sortedEdgeSetterComputerW.size(); i++) {
+      for (auto& setList : _sortedEdgeSetterComputerW[i]) {
+        _computationUnits[cuCount].updaters.resize(setList.second.size);
+        _computationUnits[cuCount].transpose = setList.second.transpose;
         int c = 0;
         for (auto& set : setList.second.list) {
           //auto ptr = std::move(set.computer);
-          _computationUnits[cuCount][c] = std::move(set.computer);
+          _computationUnits[cuCount].updaters[c] = std::move(set.computer);
           c++;
         }
         cuCount++;
