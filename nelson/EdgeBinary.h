@@ -80,8 +80,8 @@ namespace nelson {
 
       }
 
-      void updateH() override {
-        _e->updateH_11();
+      void updateH(bool transpose) override {
+        _e->updateH_11(transpose);
       }
     };
     class HessianUpdater_12 : public EdgeHessianUpdater {
@@ -91,8 +91,8 @@ namespace nelson {
 
       }
 
-      void updateH() override {
-        _e->updateH_12();
+      void updateH(bool transpose) override {
+        _e->updateH_12(transpose);
       }
     };
     class HessianUpdater_22 : public EdgeHessianUpdater {
@@ -102,17 +102,17 @@ namespace nelson {
 
       }
 
-      void updateH() override {
-        _e->updateH_22();
+      void updateH(bool transpose) override {
+        _e->updateH_22(transpose);
       }
     };
   public:
     EdgeBinarySectionBase();
     virtual ~EdgeBinarySectionBase();
 
-    virtual void updateH_11() = 0;
-    virtual void updateH_12() = 0;
-    virtual void updateH_22() = 0;
+    virtual void updateH_11(bool transpose) = 0;
+    virtual void updateH_12(bool transpose) = 0;
+    virtual void updateH_22(bool transpose) = 0;
 
     // virtual void update(bool updateHessians) = 0; // defined in base
 
@@ -130,22 +130,26 @@ namespace nelson {
       return SectionAdapter::parameter2(this->section(), this->par_2_Id());
     }
 
-    void updateH_11() override final {
+    void updateH_11(bool transpose) override final {
       assert(this->H_11_Uid() >= 0);
       assert(this->par_1_Id().isVariable());
+
+      assert(transpose == false);
 
       typename SectionAdapter::H_11_BlockType  bH = SectionAdapter::H_11_Block(this->section(), this->H_11_Uid());
       typename SectionAdapter::B_1_SegmentType bV = SectionAdapter::b_1_Segment(this->section(), this->par_1_Id().id());
       static_cast<Derived*>(this)->updateH11Block(bH, bV);
     }
-    void updateH_12() override final {
+    void updateH_12(bool transpose) override final {
       assert(this->H_12_Uid() >= 0);
       typename SectionAdapter::H_12_BlockType bH = SectionAdapter::H_12_Block(this->section(), this->H_12_Uid());
-      static_cast<Derived*>(this)->updateH12Block(bH);
+      static_cast<Derived*>(this)->updateH12Block(bH,transpose);
     }
-    void updateH_22() override final {
+    void updateH_22(bool transpose) override final {
       assert(this->H_22_Uid() >= 0);
       assert(this->par_2_Id().isVariable());
+
+      assert(transpose == false);
 
       typename SectionAdapter::H_22_BlockType  bH = SectionAdapter::H_22_Block(this->section(), this->H_22_Uid());
       typename SectionAdapter::B_2_SegmentType bV = SectionAdapter::b_2_Segment(this->section(), this->par_2_Id().id());

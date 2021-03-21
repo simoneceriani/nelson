@@ -80,7 +80,8 @@ public:
     b.setConstant(11);
   }
   template<class Derived>
-  void updateH12Block(Eigen::MatrixBase<Derived>& b) {
+  void updateH12Block(Eigen::MatrixBase<Derived>& b, bool transpose) {
+    assert(transpose == false);
     REQUIRE(this->par_1_Id().isVariable());
     REQUIRE(this->par_2_Id().isVariable());
     std::cout << "EdgeBinaryTest::updateHBlock[12] " << this->par_1_Id().id() << "," << this->par_2_Id().id() << std::endl;

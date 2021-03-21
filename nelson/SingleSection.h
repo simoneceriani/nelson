@@ -28,6 +28,10 @@ namespace nelson {
     constexpr int numParameters() const {
       return NB;
     }
+
+    constexpr int parameterSizePermuted(const Eigen::VectorXi& user2interal) const {
+      return B;
+    }
   };
 
   template<int B>
@@ -37,6 +41,11 @@ namespace nelson {
       return B;
     }
     virtual int numParameters() const = 0;
+
+    int parameterSizePermuted(const Eigen::VectorXi& user2interal) const {
+      return B;
+    }
+
   };
 
   template<int NB>
@@ -46,6 +55,10 @@ namespace nelson {
     constexpr int numParameters() const {
       return NB;
     }
+    int parameterSizePermuted(const Eigen::VectorXi& user2interal) const {
+      return parameterSize();
+    }
+
   };
 
   template<>
@@ -53,6 +66,10 @@ namespace nelson {
   public:
     virtual int parameterSize() const = 0;
     virtual int numParameters() const = 0;
+    int parameterSizePermuted(const Eigen::VectorXi& user2interal) const {
+      return parameterSize();
+    }
+
   };
 
   template<int NB>
@@ -63,6 +80,15 @@ namespace nelson {
       assert(parameterSize().size() == NB);
       return NB;
     }
+
+    std::vector<int> parameterSizePermuted(const Eigen::VectorXi& user2internal) const {
+      const auto& parsize = this->parameterSize();
+      std::vector<int> ret(user2internal.size());
+      for (int i = 0; i < ret.size(); i++) {
+        ret[user2internal(i)] = parsize[i];
+      }
+      return ret;
+    }
   };
 
   template<>
@@ -71,6 +97,14 @@ namespace nelson {
     virtual const std::vector<int>& parameterSize() const = 0;
     int numParameters() const {
       return parameterSize().size();
+    }
+    std::vector<int> parameterSizePermuted(const Eigen::VectorXi& user2internal) const {
+      const auto& parsize = this->parameterSize();
+      std::vector<int> ret(user2internal.size());
+      for (int i = 0; i < ret.size(); i++) {
+        ret[user2internal(i)] = parsize[i];
+      }
+      return ret;
     }
   };
 
@@ -90,6 +124,8 @@ namespace nelson {
     std::shared_ptr<mat::SparsityPattern<mat::ColMajor>> _sparsityPattern;
 
     std::vector<std::map<int, ListWithCount>> _edgeSetterComputer;
+
+    Eigen::Matrix<int, NB, 1> _user2internalIndexes;
 
     Hessian _hessian;
 
@@ -117,6 +153,14 @@ namespace nelson {
       // override if have fixed parameters
       return 0;
     }
+
+    const Eigen::Matrix<int, NB, 1>& user2internalIndexes() const {
+      return _user2internalIndexes;
+    } 
+
+    void setUser2InternalIndexes(const Eigen::Matrix<int, NB, 1>& v);
+
+    void permuteAMD();
 
     // virtual int numParameters() const = 0; // not defined here, but in base class BaseNumParameters<NB>, only if not fixed size (NB)!
     // virtual const std::vector<int>& | int parameterSize() const = 0; // not defined here, but in base class BaseParameterSize<B>, only if not fixed size !
@@ -179,7 +223,7 @@ namespace nelson {
         return section.hessianBlockByUID(uid);
       }
       static BSegmentType bSegment(Derived& section, int par_id) {
-        return section.bVectorSegment(par_id);
+        return section.bVectorSegment(section.user2internalIndexes()(par_id));
       }
 
     };
@@ -216,7 +260,7 @@ namespace nelson {
         return section.hessianBlockByUID(uid);
       }
       static B_1_SegmentType b_1_Segment(Derived& section, int par_id) {
-        return section.bVectorSegment(par_id);
+        return section.bVectorSegment(section.user2internalIndexes()(par_id));
       }
 
       static H_12_BlockType H_12_Block(Derived& section, int uid) {
@@ -227,7 +271,7 @@ namespace nelson {
         return section.hessianBlockByUID(uid);
       }
       static B_2_SegmentType b_2_Segment(Derived& section, int par_id) {
-        return section.bVectorSegment(par_id);
+        return section.bVectorSegment(section.user2internalIndexes()(par_id));
       }
 
     };

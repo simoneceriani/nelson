@@ -22,6 +22,7 @@ set(TESTS_LIST
   testSingleSectionHessian.cpp
   testDoubleSectionHessian.cpp
   testSingleSection.cpp
+  testSingleSectionPermutation.cpp
   testMatrixSparseDenseWrapper.cpp
   testMatrixWWtMultiplier.cpp
   testMatrixWVinvMultiplier.cpp

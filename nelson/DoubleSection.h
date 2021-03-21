@@ -28,6 +28,10 @@ namespace nelson {
     constexpr int numParametersU() const {
       return NB;
     }
+    constexpr int parameterUSizePermuted(const Eigen::VectorXi& user2interal) const {
+      return B;
+    }
+
   };
 
   template<int B>
@@ -37,6 +41,10 @@ namespace nelson {
       return B;
     }
     virtual int numParametersU() const = 0;
+    constexpr int parameterUSizePermuted(const Eigen::VectorXi& user2interal) const {
+      return B;
+    }
+
   };
 
   template<int NB>
@@ -46,6 +54,10 @@ namespace nelson {
     constexpr int numParametersU() const {
       return NB;
     }
+    int parameterUSizePermuted(const Eigen::VectorXi& user2interal) const {
+      return parameterUSize();
+    }
+
   };
 
   template<>
@@ -53,6 +65,9 @@ namespace nelson {
   public:
     virtual int parameterUSize() const = 0;
     virtual int numParametersU() const = 0;
+    int parameterUSizePermuted(const Eigen::VectorXi& user2interal) const {
+      return parameterUSize();
+    }
   };
 
   template<int NB>
@@ -63,6 +78,15 @@ namespace nelson {
       assert(this->parameterUSize().size() == NB);
       return NB;
     }
+    std::vector<int> parameterUSizePermuted(const Eigen::VectorXi& user2internal) const {
+      const auto& parsize = this->parameterUSize();
+      std::vector<int> ret(user2internal.size());
+      for (int i = 0; i < ret.size(); i++) {
+        ret[user2internal(i)] = parsize[i];
+      }
+      return ret;
+    }
+
   };
 
   template<>
@@ -71,6 +95,14 @@ namespace nelson {
     virtual const std::vector<int>& parameterUSize() const = 0;
     int numParametersU() const {
       return parameterUSize().size();
+    }
+    std::vector<int> parameterUSizePermuted(const Eigen::VectorXi& user2internal) const {
+      const auto& parsize = this->parameterUSize();
+      std::vector<int> ret(user2internal.size());
+      for (int i = 0; i < ret.size(); i++) {
+        ret[user2internal(i)] = parsize[i];
+      }
+      return ret;
     }
   };
 
@@ -167,6 +199,8 @@ namespace nelson {
 
     std::vector<std::map<int, ListWithCount>> _edgeSetterComputerU, _edgeSetterComputerV, _edgeSetterComputerW;
 
+    Eigen::Matrix<int, NBUv, 1> _user2internalIndexesU;
+
     Hessian _hessian;  
 
     BaseSectionSettings _settings;
@@ -200,6 +234,15 @@ namespace nelson {
       // override if have fixed parameters
       return 0;
     }
+
+    const Eigen::Matrix<int, NBUv, 1>& user2internalIndexesU() const {
+      return _user2internalIndexesU;
+    }
+
+    void setUser2InternalIndexesU(const Eigen::Matrix<int, NBUv, 1>& v);
+
+    void permuteAMD_SchurU();
+
 
     void parametersReady(); // client has to call this method when numParameters() is known
     void structureReady(); // client has to call this method when all edges have been added
@@ -279,7 +322,7 @@ namespace nelson {
         return section.hessianUBlockByUID(uid);
       }
       static BSegmentType bSegment(Derived& section, int par_id) {
-        return section.bUVectorSegment(par_id);
+        return section.bUVectorSegment(section.user2internalIndexesU()(par_id));
       }
 
       static std::vector<std::map<int, ListWithCount>>& edgeSetterComputer(Derived& section) {
@@ -334,7 +377,7 @@ namespace nelson {
         return section.hessianUBlockByUID(uid);
       }
       static B_1_SegmentType b_1_Segment(Derived& section, int par_id) {
-        return section.bUVectorSegment(par_id);
+        return section.bUVectorSegment(section.user2internalIndexesU()(par_id));
       }
 
       static std::vector<std::map<int, ListWithCount>>& edgeSetterComputer1(Derived& section) {
@@ -377,7 +420,7 @@ namespace nelson {
         return section.hessianUBlockByUID(uid);
       }
       static B_2_SegmentType b_2_Segment(Derived& section, int par_id) {
-        return section.bUVectorSegment(par_id);
+        return section.bUVectorSegment(section.user2internalIndexesU()(par_id));
       }
 
       static std::vector<std::map<int, ListWithCount>>& edgeSetterComputer2(Derived& section) {

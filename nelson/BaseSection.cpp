@@ -10,8 +10,8 @@ namespace nelson {
 
     if (settings.isSingleThread() || reqNumThread == 1) {
       for (int j = 0; j < this->_computationUnits.size(); j++) {
-        for (auto& set : this->_computationUnits[j]) {
-          set->updateH();
+        for (auto& set : this->_computationUnits[j].updaters) {
+          set->updateH(this->_computationUnits[j].transpose);
         }
       }
     }
@@ -21,16 +21,16 @@ namespace nelson {
         if (settings.isChunkAuto()) {
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(static)
           for (int j = 0; j < this->_computationUnits.size(); j++) {
-            for (auto& set : this->_computationUnits[j]) {
-              set->updateH();
+            for (auto& set : this->_computationUnits[j].updaters) {
+              set->updateH(this->_computationUnits[j].transpose);
             }
           }
         }
         else {
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(static, chunkSize)
           for (int j = 0; j < this->_computationUnits.size(); j++) {
-            for (auto& set : this->_computationUnits[j]) {
-              set->updateH();
+            for (auto& set : this->_computationUnits[j].updaters) {
+              set->updateH(this->_computationUnits[j].transpose);
             }
           }
 
@@ -40,16 +40,16 @@ namespace nelson {
         if (settings.isChunkAuto()) {
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(dynamic)
           for (int j = 0; j < this->_computationUnits.size(); j++) {
-            for (auto& set : this->_computationUnits[j]) {
-              set->updateH();
+            for (auto& set : this->_computationUnits[j].updaters) {
+              set->updateH(this->_computationUnits[j].transpose);
             }
           }
         }
         else {
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(dynamic, chunkSize)
           for (int j = 0; j < this->_computationUnits.size(); j++) {
-            for (auto& set : this->_computationUnits[j]) {
-              set->updateH();
+            for (auto& set : this->_computationUnits[j].updaters) {
+              set->updateH(this->_computationUnits[j].transpose);
             }
           }
 
@@ -59,16 +59,16 @@ namespace nelson {
         if (settings.isChunkAuto()) {
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(guided)
           for (int j = 0; j < this->_computationUnits.size(); j++) {
-            for (auto& set : this->_computationUnits[j]) {
-              set->updateH();
+            for (auto& set : this->_computationUnits[j].updaters) {
+              set->updateH(this->_computationUnits[j].transpose);
             }
           }
         }
         else {
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(guided, chunkSize)
           for (int j = 0; j < this->_computationUnits.size(); j++) {
-            for (auto& set : this->_computationUnits[j]) {
-              set->updateH();
+            for (auto& set : this->_computationUnits[j].updaters) {
+              set->updateH(this->_computationUnits[j].transpose);
             }
           }
 
@@ -77,8 +77,8 @@ namespace nelson {
       else if (settings.schedule() == ParallelSchedule::schedule_runtime) {
 #pragma omp parallel for num_threads(reqNumThread) default (shared) schedule(runtime)
         for (int j = 0; j < this->_computationUnits.size(); j++) {
-          for (auto& set : this->_computationUnits[j]) {
-            set->updateH();
+          for (auto& set : this->_computationUnits[j].updaters) {
+            set->updateH(this->_computationUnits[j].transpose);
           }
         }
       }

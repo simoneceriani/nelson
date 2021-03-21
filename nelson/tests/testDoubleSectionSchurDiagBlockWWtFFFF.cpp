@@ -132,8 +132,7 @@ public:
     v -= _err;
   }
   template<class Derived1>
-  void updateH12Block(Eigen::MatrixBase<Derived1>& H) {
-    // std::cout << "EdgeBinartTest::updateH12Block " << this->par_1_Id().id() << "," << this->par_2_Id().id() << std::endl;
+  void updateH12Block(Eigen::MatrixBase<Derived1>& H, bool transpose) {
     H -= Eigen::Matrix2d::Identity();
   }
 
@@ -243,7 +242,8 @@ public:
     v -= _err;
   }
   template<class Derived1>
-  void updateH12Block(Eigen::MatrixBase<Derived1>& H) {
+  void updateH12Block(Eigen::MatrixBase<Derived1>& H, bool transpose) {
+    assert(transpose == false);
     // std::cout << "EdgeBinartTest::updateH12Block " << this->par_1_Id().id() << "," << this->par_2_Id().id() << std::endl;
     H -= Eigen::Matrix3d::Identity();
   }
@@ -312,7 +312,8 @@ public:
     v -= Eigen::Vector3d(_err.x(), _err.y(), 0);
   }
   template<class Derived1>
-  void updateH12Block(Eigen::MatrixBase<Derived1>& H) {
+  void updateH12Block(Eigen::MatrixBase<Derived1>& H, bool transpose) {
+    assert(transpose == false);
     // std::cout << "EdgeBinartTest::updateH12Block " << this->par_1_Id().id() << "," << this->par_2_Id().id() << std::endl;
 
     Eigen::Matrix<double, 2, 3> Htmp;
@@ -397,7 +398,7 @@ public:
 
   void oplus(const typename DoubleSectionBase::HessianVectorsT& inc) {
     for (int i = 0; i < numPoints2d; i++) {
-      _points2d[i].p2d += inc.bU().segment(i);
+      _points2d[i].p2d += inc.bU().segment(this->user2internalIndexesU()(i));
     }
     for (int i = 0; i < numPoints3d; i++) {
       _points3d[i].p3d += inc.bV().segment(i);
@@ -476,6 +477,30 @@ void testFunction() {
     for (int i = 0; i < std::min(numPoints2d, numPoints3d); i++) {
       pss.addEdge(i, i, new EdgeBinaryPoint2d3d<TestType>(i, i, pss.parameterU(i).p2d - pss.parameterV(i).p3d.template head<2>()));
     }
+  }
+
+  SECTION("permute") {
+    if (pss.matTypeW() != mat::BlockDiagonal) {
+      std::cout << "************** PERMUTE ***************" << std::endl;
+      Eigen::VectorXi order = pss.user2internalIndexesU();
+      std::random_shuffle(order.data(), order.data() + order.size());
+      pss.setUser2InternalIndexesU(order);
+    }
+    else {
+      std::cout << "### W DIAGONAL, skip permute ###" << std::endl;
+    }
+  }
+  SECTION("amd-permute") {
+    if (pss.matTypeW() != mat::BlockDiagonal) {
+      std::cout << "************** PERMUTE AMD ***************" << std::endl;
+      pss.permuteAMD_SchurU();
+    }
+    else {
+      std::cout << "### W DIAGONAL, skip permute ###" << std::endl;
+    }
+  }
+  SECTION("standard") {
+    std::cout << "************** STANDARD ***************" << std::endl;
   }
 
 

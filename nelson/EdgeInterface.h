@@ -29,7 +29,7 @@ namespace nelson {
 
   class EdgeHessianUpdater {
   public:
-    virtual void updateH() = 0;
+    virtual void updateH(bool transpose) = 0;
   };
 
   enum class NodeType {
