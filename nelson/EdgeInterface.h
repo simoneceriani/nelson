@@ -42,7 +42,7 @@ namespace nelson {
     NodeType _type;
 
   public:
-    NodeId(int id, NodeType nt = NodeType::Variable) :_id(id), _type(nt) {}
+    NodeId(int id = -1, NodeType nt = NodeType::Variable) :_id(id), _type(nt) {}
 
     int id() const { return _id; };
     NodeType type() const { return _type; }

@@ -43,6 +43,8 @@ target_sources_wrapper(nelson
     EdgeInterface.h
     EdgeSectionBase.h
     EdgeSectionBase.hpp
+    EdgeNary.h
+    EdgeNary.hpp
     EdgeUnary.h
     EdgeUnary.hpp
     EdgeBinary.h
@@ -88,6 +90,7 @@ target_sources_wrapper(nelson
     EdgeSectionBase.cpp
     EdgeInterface.cpp
     EdgeUnary.cpp
+    EdgeNary.cpp
     EdgeBinary.cpp
     MatrixDenseWrapper.cpp
     MatrixSparseWrapper.cpp
