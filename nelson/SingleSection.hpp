@@ -198,7 +198,7 @@ namespace nelson {
       auto i = ids[ii];
 
       if (i.type() == NodeType::Variable) {
-        this->_edgeSetterComputer[i.id()][i.id()].list.emplace_front(SetterComputer(new EdgeNaryBase<N>::EdgeUIDSetter(e, ii, ii), new typename EdgeNarySectionBase<Derived, N>::HessianUpdater(e, ii, ii)));
+        this->_edgeSetterComputer[i.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeNaryBase<N>::EdgeUIDSetter(e, ii, ii), new typename EdgeNarySectionBase<Derived, N>::HessianUpdater(e, ii, ii)));
         this->_edgeSetterComputer[i.id()][i.id()].size++;
       }
 
@@ -207,7 +207,7 @@ namespace nelson {
 
         if (i.type() == NodeType::Variable && j.type() == NodeType::Variable) {
           assert(i.id() < j.id());
-          this->_edgeSetterComputer[j.id()][i.id()].list.emplace_front(SetterComputer(new EdgeNaryBase<N>::EdgeUIDSetter(e, ii, jj), new typename EdgeNarySectionBase<Derived, N>::HessianUpdater(e, ii, jj)));
+          this->_edgeSetterComputer[j.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeNaryBase<N>::EdgeUIDSetter(e, ii, jj), new typename EdgeNarySectionBase<Derived, N>::HessianUpdater(e, ii, jj)));
           this->_edgeSetterComputer[j.id()][i.id()].size++;
         }
       }
@@ -232,7 +232,7 @@ namespace nelson {
       auto i = ids[ii];
 
       if (i.type() == NodeType::Variable) {
-        this->_edgeSetterComputer[i.id()][i.id()].list.emplace_front(SetterComputer(new EdgeNaryBase<mat::Dynamic>::EdgeUIDSetter(e, ii, ii), new typename EdgeNarySectionBase<Derived, mat::Dynamic>::HessianUpdater(e, ii, ii)));
+        this->_edgeSetterComputer[i.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeNaryBase<mat::Dynamic>::EdgeUIDSetter(e, ii, ii), new typename EdgeNarySectionBase<Derived, mat::Dynamic>::HessianUpdater(e, ii, ii)));
         this->_edgeSetterComputer[i.id()][i.id()].size++;
       }
 
@@ -241,7 +241,7 @@ namespace nelson {
 
         if (i.type() == NodeType::Variable && j.type() == NodeType::Variable) {
           assert(i.id() < j.id());
-          this->_edgeSetterComputer[j.id()][i.id()].list.emplace_front(SetterComputer(new EdgeNaryBase<mat::Dynamic>::EdgeUIDSetter(e, ii, jj), new typename EdgeNarySectionBase<Derived, mat::Dynamic>::HessianUpdater(e, ii, jj)));
+          this->_edgeSetterComputer[j.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeNaryBase<mat::Dynamic>::EdgeUIDSetter(e, ii, jj), new typename EdgeNarySectionBase<Derived, mat::Dynamic>::HessianUpdater(e, ii, jj)));
           this->_edgeSetterComputer[j.id()][i.id()].size++;
         }
       }

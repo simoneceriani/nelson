@@ -6,7 +6,7 @@ namespace nelson {
 
   template<int N>
   EdgeNaryBase<N>::EdgeNaryBase(int n) :
-    EdgeNaryContainer(n),
+    EdgeNaryContainer<N>(n),
     _H_uid(n, n)
   {
     if (N == mat::Dynamic) {

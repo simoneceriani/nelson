@@ -7,6 +7,8 @@
 #include <array>
 #include <vector>
 
+#include "mat/Global.h"
+
 #include <Eigen/Core>
 
 namespace nelson {
@@ -21,7 +23,7 @@ namespace nelson {
     constexpr int numParams() const { return N; }
   };
   template<>
-  class EdgeNaryContainer<-1> {
+  class EdgeNaryContainer<mat::Dynamic> {
   protected:
     std::vector<NodeId> _parId;
   public:
@@ -56,7 +58,7 @@ namespace nelson {
     virtual ~EdgeNaryBase();
 
     NodeId parId(int i) const {
-      return _parId[i];
+      return this->_parId[i];
     }
 
     int HUid(int i, int j) const {

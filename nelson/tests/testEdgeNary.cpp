@@ -159,7 +159,6 @@ TEST_CASE("testEdgeNary", "[testEdgeNary]") {
   Edge2_SC e2_SC;
   EdgeD_SC ed_SC(3);
 
-  s.addEdge(std::array<nelson::NodeId, 1>({ 0 }), new Edge1_SC());
   s.addEdge({ 0 }, new Edge1_SC());
   s.addEdge({ 0,1 }, new Edge2_SC());
   s.addEdge(std::vector<nelson::NodeId>({ 0,1,2 }), new EdgeD_SC(3));
