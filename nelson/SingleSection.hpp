@@ -6,6 +6,7 @@
 
 #include "EdgeUnary.hpp"
 #include "EdgeBinary.hpp"
+#include "EdgeNary.hpp"
 
 #include <Eigen/Sparse>
 

@@ -6,6 +6,7 @@
 
 #include "EdgeUnary.hpp"
 #include "EdgeBinary.hpp"
+#include "EdgeNary.hpp"
 
 namespace nelson {
 
@@ -97,7 +98,7 @@ namespace nelson {
         else {
           this->_sparsityPatternU->add(newj, newi);
         }
-        
+
       }
     }
 
@@ -147,7 +148,7 @@ namespace nelson {
     std::vector<std::map<int, ListWithCount>> _sortedEdgeSetterComputerW(this->numParametersU());
     for (int i = 0; i < this->_edgeSetterComputerW.size(); i++) {
       int newi = _user2internalIndexesU[i];
-        _sortedEdgeSetterComputerW[newi].swap(_edgeSetterComputerW[i]);
+      _sortedEdgeSetterComputerW[newi].swap(_edgeSetterComputerW[i]);
     }
 
 
@@ -165,7 +166,7 @@ namespace nelson {
       }
     }
     assert(buid == _hessian.U().nonZeroBlocks());
-    
+
     buid = 0;
     for (int j = 0; j < this->_edgeSetterComputerV.size(); j++) {
       for (auto& setList : this->_edgeSetterComputerV[j]) {
@@ -190,7 +191,7 @@ namespace nelson {
     }
     assert(buid == _hessian.W().nonZeroBlocks());
 
-   // prepare the _computationUnits, they are the same than the H blocks
+    // prepare the _computationUnits, they are the same than the H blocks
     auto newV = std::vector<UpdaterVectorWithTransposeFlag>(this->_sparsityPatternU->count() + this->_sparsityPatternV->count() + this->_sparsityPatternW->count());
     _computationUnits.swap(newV);
 
@@ -261,6 +262,77 @@ namespace nelson {
       EdgeUnaryAdapter::edgeSetterComputer(*static_cast<Derived*>(this))[i.id()][i.id()].size++;
     }
   }
+
+
+  //------------------------------------------------------------------------------------------
+
+  template<class Derived, class ParUT, class ParVT, int matTypeUv, int matTypeVv, int matTypeWv, class Tv, int BUv, int BVv, int NBUv, int NBVv>
+  template<class EdgeUnaryAdapterT, class EdgeDerived, int N>
+  void DoubleSection<Derived, ParUT, ParVT, matTypeUv, matTypeVv, matTypeWv, Tv, BUv, BVv, NBUv, NBVv>::addEdge(const std::array<NodeId, N>& ids, EdgeNary<EdgeUnaryAdapterT, EdgeDerived, N>* e) {
+    assert(ids.size() == e->numParams());
+
+    for (int i = 0; i < ids.size(); i++) {
+      e->setParId(i, ids[i]);
+    }
+    e->setSection(static_cast<Derived*>(this));
+    this->_edgesVector.push_back(std::unique_ptr<EdgeInterface>(e));
+
+    // add setters
+    for (int ii = 0; ii < ids.size(); ii++) {
+      auto i = ids[ii];
+
+      if (i.type() == NodeType::Variable) {
+        EdgeUnaryAdapterT::edgeSetterComputer(*static_cast<Derived*>(this))[i.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeNaryBase<N>::EdgeUIDSetter(e, ii, ii), new typename EdgeNarySectionBase<Derived, N>::HessianUpdater(e, ii, ii)));
+        EdgeUnaryAdapterT::edgeSetterComputer(*static_cast<Derived*>(this))[i.id()][i.id()].size++;
+      }
+
+      for (int jj = ii + 1; jj < ids.size(); jj++) {
+        auto j = ids[jj];
+
+        if (i.type() == NodeType::Variable && j.type() == NodeType::Variable) {
+          assert(i.id() < j.id());
+          EdgeUnaryAdapterT::edgeSetterComputer[j.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeNaryBase<N>::EdgeUIDSetter(e, ii, jj), new typename EdgeNarySectionBase<Derived, N>::HessianUpdater(e, ii, jj)));
+          EdgeUnaryAdapterT::edgeSetterComputer[j.id()][i.id()].size++;
+        }
+      }
+
+    }
+  }
+
+  template<class Derived, class ParUT, class ParVT, int matTypeUv, int matTypeVv, int matTypeWv, class Tv, int BUv, int BVv, int NBUv, int NBVv>
+  template<class EdgeUnaryAdapterT, class EdgeDerived>
+  void DoubleSection<Derived, ParUT, ParVT, matTypeUv, matTypeVv, matTypeWv, Tv, BUv, BVv, NBUv, NBVv>::addEdge(const std::vector<NodeId>& ids, EdgeNary<EdgeUnaryAdapterT, EdgeDerived, mat::Dynamic>* e) {
+    assert(ids.size() == e->numParams());
+
+    for (int i = 0; i < ids.size(); i++) {
+      e->setParId(i, ids[i]);
+    }
+    e->setSection(static_cast<Derived*>(this));
+    this->_edgesVector.push_back(std::unique_ptr<EdgeInterface>(e));
+
+    // add setters
+    for (int ii = 0; ii < ids.size(); ii++) {
+      auto i = ids[ii];
+
+      if (i.type() == NodeType::Variable) {
+        EdgeUnaryAdapterT::edgeSetterComputer(*static_cast<Derived*>(this))[i.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeNaryBase<mat::Dynamic>::EdgeUIDSetter(e, ii, ii), new typename EdgeNarySectionBase<Derived, mat::Dynamic>::HessianUpdater(e, ii, ii)));
+        EdgeUnaryAdapterT::edgeSetterComputer(*static_cast<Derived*>(this))[i.id()][i.id()].size++;
+      }
+
+      for (int jj = ii + 1; jj < ids.size(); jj++) {
+        auto j = ids[jj];
+
+        if (i.type() == NodeType::Variable && j.type() == NodeType::Variable) {
+          assert(i.id() < j.id());
+          EdgeUnaryAdapterT::edgeSetterComputer[j.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeNaryBase<mat::Dynamic>::EdgeUIDSetter(e, ii, jj), new typename EdgeNarySectionBase<Derived, mat::Dynamic>::HessianUpdater(e, ii, jj)));
+          EdgeUnaryAdapterT::edgeSetterComputer[j.id()][i.id()].size++;
+        }
+      }
+
+    }
+  }
+
+  //------------------------------------------------------------------------------------------
 
   template<class Derived, class ParUT, class ParVT, int matTypeUv, int matTypeVv, int matTypeWv, class Tv, int BUv, int BVv, int NBUv, int NBVv>
   template<class EdgeBinaryAdapterT, class EdgeDerived>
