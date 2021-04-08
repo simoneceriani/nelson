@@ -233,7 +233,7 @@ public:
 };
 
 template<int matUType, int matVType, int matWType>
-void testFunction(const Problem & problem, bool AMDOrdering = false) {
+void testFunction(const Problem & problem, bool AMDOrdering, int numThreads) {
   BA_Problem< matUType, matVType, matWType> ba_problem(problem.nCameras, problem.nPoints, problem.edges.size());
   ba_problem.parametersReady();
   ba_problem.reserveEdges(problem.edges.size());
@@ -260,8 +260,6 @@ void testFunction(const Problem & problem, bool AMDOrdering = false) {
 
   ba_problem.addNoise();
   ba_problem.update(false);
-
-  int numThreads = nelson::ParallelExecSettings::maxSupportedThreads() / 2;
 
   std::cout << "chi2 noise add " << ba_problem.hessian().chi2() << std::endl;
 
@@ -290,6 +288,34 @@ void testFunction(const Problem & problem, bool AMDOrdering = false) {
 
 }
 
+void test(const Problem& problem, bool amdOrdering, int numThreads) {
+  std::cout
+    << "----------------------------------------------------" << std::endl
+    << "U BlockDiagonal, V BlockDiagonal, W BlockSparse" << std::endl;
+  testFunction<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockSparse>(problem, amdOrdering, numThreads);
+
+  std::cout
+    << "----------------------------------------------------" << std::endl
+    << "U SparseCoeffBlockDiagonal, V SparseCoeffBlockDiagonal, W BlockCoeffSparse" << std::endl;
+  testFunction<mat::SparseCoeffBlockDiagonal, mat::SparseCoeffBlockDiagonal, mat::BlockCoeffSparse>(problem, amdOrdering, numThreads);
+  std::cout
+    << "----------------------------------------------------" << std::endl << std::endl;
+
+  std::cout
+    << "----------------------------------------------------" << std::endl
+    << "U BlockDiagonal, V BlockDiagonal, W BlockCoeffSparse" << std::endl;
+  testFunction<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockCoeffSparse>(problem, amdOrdering, numThreads);
+  std::cout
+    << "----------------------------------------------------" << std::endl << std::endl;
+
+  std::cout
+    << "----------------------------------------------------" << std::endl
+    << "U SparseCoeffBlockDiagonal, V SparseCoeffBlockDiagonal, W BlockSparse" << std::endl;
+  testFunction<mat::SparseCoeffBlockDiagonal, mat::SparseCoeffBlockDiagonal, mat::BlockSparse>(problem, amdOrdering, numThreads);
+  std::cout
+    << "----------------------------------------------------" << std::endl << std::endl;
+}
+
 int main(int argc, char* argv[]) {
 
   const Problem* problemPtr = &ProblemCollections::ladybug_49_7776;
@@ -307,45 +333,16 @@ int main(int argc, char* argv[]) {
   }
   const Problem& problem = *problemPtr;
 
-  std::cout
-    << "----------------------------------------------------" << std::endl
-    << "---------      AMD  ORDERING      ------------------" << std::endl
-    << "----------------------------------------------------" << std::endl
-    << "matUType SparseCoeffBlockDiagonal, matVType SparseCoeffBlockDiagonal, matWType BlockCoeffSparse" << std::endl;
-
-  testFunction<mat::SparseCoeffBlockDiagonal, mat::SparseCoeffBlockDiagonal, mat::BlockCoeffSparse>(problem, true);
-  std::cout
-    << "----------------------------------------------------" << std::endl << std::endl;
-  std::cout 
-    << "----------------------------------------------------"<< std::endl 
-    << "matUType BlockDiagonal, matVType BlockDiagonal, matWType BlockCoeffSparse" << std::endl;
-  testFunction<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockCoeffSparse>(problem);
-  std::cout
-    << "----------------------------------------------------" << std::endl << std::endl;
-
-  std::cout
-    << "----------------------------------------------------" << std::endl
-    << "matUType SparseCoeffBlockDiagonal, matVType SparseCoeffBlockDiagonal, matWType BlockCoeffSparse" << std::endl;
-  testFunction<mat::SparseCoeffBlockDiagonal, mat::SparseCoeffBlockDiagonal, mat::BlockCoeffSparse>(problem);
-  std::cout
-    << "----------------------------------------------------" << std::endl << std::endl;
-
-  std::cout
-    << "----------------------------------------------------" << std::endl
-    << "matUType BlockDiagonal, matVType BlockDiagonal, matWType BlockSparse" << std::endl;
-  testFunction<mat::BlockDiagonal, mat::BlockDiagonal, mat::BlockSparse>(problem);
-  std::cout
-    << "----------------------------------------------------" << std::endl << std::endl;
-
-  std::cout
-    << "----------------------------------------------------" << std::endl
-    << "matUType SparseCoeffBlockDiagonal, matVType SparseCoeffBlockDiagonal, matWType BlockSparse" << std::endl;
-  testFunction<mat::SparseCoeffBlockDiagonal, mat::SparseCoeffBlockDiagonal, mat::BlockSparse>(problem);
-  std::cout
-    << "----------------------------------------------------" << std::endl << std::endl;
+  //int numThreads = nelson::ParallelExecSettings::maxSupportedThreads() / 2;
+  int numThreads = 1;
 
 
-
+  std::cout << "********* AMD ********* " << std::endl;
+  test(problem, true, numThreads);
+  std::cout << "*********************** " << std::endl << std::endl << std::endl;
+  std::cout << "********* NAT ********* " << std::endl;
+  test(problem, false, numThreads);
+  std::cout << "*********************** " << std::endl << std::endl << std::endl;
 
   return 0;
 }
