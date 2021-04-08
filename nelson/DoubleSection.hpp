@@ -42,13 +42,12 @@ namespace nelson {
     }
     Eigen::SparseMatrix<int> spMatU = spU.toSparseMatrix();
 
-    // create sparsity pattern U
+    // create sparsity pattern W
     mat::SparsityPattern<mat::ColMajor> spW(this->numParametersU(), this->numParametersV());
     // create sparsity pattern from edges
     for (int i = 0; i < this->_edgeSetterComputerW.size(); i++) {
       for (auto& setList : this->_edgeSetterComputerW[i]) {
         assert(_user2internalIndexesU[i] == i);
-        assert(_user2internalIndexesU[setList.first] == setList.first);
         int j = setList.first;
         spW.add(i, j);
       }
