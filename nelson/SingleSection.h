@@ -11,6 +11,7 @@
 
 #include "EdgeInterface.h"
 #include "EdgeUnary.h"
+#include "EdgeNary.h"
 #include "EdgeBinary.h"
 
 #include <memory>
@@ -282,9 +283,14 @@ namespace nelson {
     template<class EdgeDerived>
     void addEdge(NodeId i, NodeId j, EdgeBinary<EdgeDerived>* e);
 
-    //void addEdge(int i, int j, int k/*, EdgeTernary* e*/);
-    //template<int N>
-    //void addEdge(const std::array<int, N>& ids/*, EdgeNAry * e*/);
+    template<class EdgeDerived, int N>
+    using EdgeNary = EdgeNarySectionBaseCRPT<Derived, N, EdgeUnaryAdapter, EdgeDerived>;
+
+    template<class EdgeDerived, int N>
+    void addEdge(const std::array<NodeId, N>& ids, EdgeNary<EdgeDerived, N> *e);
+    
+    template<class EdgeDerived>
+    void addEdge(const std::vector<NodeId>& ids, EdgeNary<EdgeDerived, mat::Dynamic> *e);
 
 
   };

@@ -89,6 +89,9 @@ namespace nelson {
           rho = op.computeRhoChi2Change(mu, _solver.incrementVector(), oldChi2);
 
         }
+        else {
+          _stats.addSubIteration(subiter, -1); //solver error
+        }
 
         if (solveOk && rho > 0) {
 

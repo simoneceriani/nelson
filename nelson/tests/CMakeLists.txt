@@ -29,6 +29,7 @@ set(TESTS_LIST
   testMatrixWtXMultiplier.cpp
   testMatrixVinv.cpp
   testDoubleSectionSchurDiagBlockWWtFFFF.cpp
+  testEdgeNary.cpp
 )
 
 foreach(s ${TESTS_LIST})
@@ -193,6 +194,7 @@ find_package_wrapper(lie REQUIRED CONFIG)
 
 set(TESTS_LIST 
   testGaussNewton2DScansAlign.cpp
+  testGaussNewton2DScansAlignNary.cpp
 )
 
 foreach(s ${TESTS_LIST})

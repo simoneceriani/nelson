@@ -6,6 +6,7 @@
 
 #include "EdgeUnary.hpp"
 #include "EdgeBinary.hpp"
+#include "EdgeNary.hpp"
 
 #include <Eigen/Sparse>
 
@@ -45,7 +46,7 @@ namespace nelson {
     Eigen::AMDOrdering<int> amd_ordering;
     Eigen::PermutationMatrix<Eigen::Dynamic, Eigen::Dynamic, int> permutation;
     amd_ordering(spMat.selfadjointView<Eigen::Upper>(), permutation);
-    _user2internalIndexes = Eigen::PermutationMatrix<Eigen::Dynamic, Eigen::Dynamic, int> (permutation.transpose()).indices();
+    _user2internalIndexes = Eigen::PermutationMatrix<Eigen::Dynamic, Eigen::Dynamic, int>(permutation.transpose()).indices();
 
   }
 
@@ -138,7 +139,7 @@ namespace nelson {
 
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
   template<class EdgeDerived>
-  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(NodeId i, EdgeUnary<EdgeDerived> * e) {
+  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(NodeId i, EdgeUnary<EdgeDerived>* e) {
     assert(e != nullptr);
 
     // add to edges
@@ -182,17 +183,73 @@ namespace nelson {
 
   }
 
-  //template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
-  //void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(int i, int j, int k/*, EdgeTernary* e*/) {
-  //  assert(i < j);
-  //  assert(j < k);
-  //}
-  //
-  //template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
-  //template<int N>
-  //void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(const std::array<int, N>& ids/*, EdgeNAry * e*/) {
-  //
-  //}
+  template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
+  template<class EdgeDerived, int N>
+  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(const std::array<NodeId, N>& ids, EdgeNary<EdgeDerived, N>* e) {
+    assert(ids.size() == e->numParams());
+
+    for (int i = 0; i < ids.size(); i++) {
+      e->setParId(i, ids[i]);
+    }
+    e->setSection(static_cast<Derived*>(this));
+    this->_edgesVector.push_back(std::unique_ptr<EdgeInterface>(e));
+
+    // add setters
+    for (int ii = 0; ii < ids.size(); ii++) {
+      auto i = ids[ii];
+
+      if (i.type() == NodeType::Variable) {
+        this->_edgeSetterComputer[i.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeNaryBase<N>::EdgeUIDSetter(e, ii, ii), new typename EdgeNarySectionBase<Derived, N>::HessianUpdater(e, ii, ii)));
+        this->_edgeSetterComputer[i.id()][i.id()].size++;
+      }
+
+      for (int jj = ii + 1; jj < ids.size(); jj++) {
+        auto j = ids[jj];
+
+        if (i.type() == NodeType::Variable && j.type() == NodeType::Variable) {
+          assert(i.id() < j.id());
+          this->_edgeSetterComputer[j.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeNaryBase<N>::EdgeUIDSetter(e, ii, jj), new typename EdgeNarySectionBase<Derived, N>::HessianUpdater(e, ii, jj)));
+          this->_edgeSetterComputer[j.id()][i.id()].size++;
+        }
+      }
+
+    }
+
+  }
+
+  template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
+  template<class EdgeDerived>
+  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(const std::vector<NodeId>& ids, EdgeNary<EdgeDerived, mat::Dynamic>* e) {
+    assert(ids.size() == e->numParams());
+
+    for (int i = 0; i < ids.size(); i++) {
+      e->setParId(i, ids[i]);
+    }
+    e->setSection(static_cast<Derived*>(this));
+    this->_edgesVector.push_back(std::unique_ptr<EdgeInterface>(e));
+
+    // add setters
+    for (int ii = 0; ii < ids.size(); ii++) {
+      auto i = ids[ii];
+
+      if (i.type() == NodeType::Variable) {
+        this->_edgeSetterComputer[i.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeNaryBase<mat::Dynamic>::EdgeUIDSetter(e, ii, ii), new typename EdgeNarySectionBase<Derived, mat::Dynamic>::HessianUpdater(e, ii, ii)));
+        this->_edgeSetterComputer[i.id()][i.id()].size++;
+      }
+
+      for (int jj = ii + 1; jj < ids.size(); jj++) {
+        auto j = ids[jj];
+
+        if (i.type() == NodeType::Variable && j.type() == NodeType::Variable) {
+          assert(i.id() < j.id());
+          this->_edgeSetterComputer[j.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeNaryBase<mat::Dynamic>::EdgeUIDSetter(e, ii, jj), new typename EdgeNarySectionBase<Derived, mat::Dynamic>::HessianUpdater(e, ii, jj)));
+          this->_edgeSetterComputer[j.id()][i.id()].size++;
+        }
+      }
+
+    }
+
+  }
 
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
   void SingleSection<Derived, ParT, matTypeV, T, B, NB>::update(bool hessian) {

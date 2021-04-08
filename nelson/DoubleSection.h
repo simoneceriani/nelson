@@ -12,6 +12,7 @@
 #include "EdgeInterface.h"
 #include "EdgeUnary.h"
 #include "EdgeBinary.h"
+#include "EdgeNary.h"
 
 #include <memory>
 #include <vector>
@@ -364,6 +365,24 @@ namespace nelson {
     void addEdge(NodeId i, EdgeUnary<EdgeUnaryAdapter, EdgeDerived>* e);
 
     //-------------------------------------------------------------------------------------------
+
+    template<class EdgeUnaryAdapter, class EdgeDerived, int N>
+    using EdgeNary = EdgeNarySectionBaseCRPT<Derived, N, EdgeUnaryAdapter, EdgeDerived>;
+
+    template<class EdgeDerived, int N>
+    using EdgeNaryU = EdgeNarySectionBaseCRPT<Derived, N, EdgeUnaryUAdapter, EdgeDerived>;
+    template<class EdgeDerived, int N>
+    using EdgeNaryV = EdgeNarySectionBaseCRPT<Derived, N, EdgeUnaryVAdapter, EdgeDerived>;
+
+
+    template<class EdgeUnaryAdapterT, class EdgeDerived, int N>
+    void addEdge(const std::array<NodeId, N>& ids, EdgeNary<EdgeUnaryAdapterT, EdgeDerived, N>* e);
+
+    template<class EdgeUnaryAdapterT, class EdgeDerived>
+    void addEdge(const std::vector<NodeId>& ids, EdgeNary<EdgeUnaryAdapterT, EdgeDerived, mat::Dynamic>* e);
+
+
+    //-------------------------------------------------------------------------------------------
     struct EdgeBinaryParameter1_U {
 
       using Parameter_1_Type = ParameterTypeU;
@@ -510,11 +529,6 @@ namespace nelson {
 
     template<class EdgeBinaryAdapterT, class EdgeDerived>
     void addEdge(NodeId i, NodeId j, EdgeBinary<EdgeBinaryAdapterT, EdgeDerived>* e);
-
-    //void addEdge(NodeId i, NodeId j, EdgeBinarySectionBase<Derived>* e);
-    //void addEdge(int i, int j, int k/*, EdgeTernary* e*/);
-    //template<int N>
-    //void addEdge(const std::array<int, N>& ids/*, EdgeNAry * e*/);
 
   };
 
