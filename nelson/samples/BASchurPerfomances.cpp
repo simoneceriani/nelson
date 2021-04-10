@@ -217,18 +217,18 @@ public:
   template<class Derived1, class Derived2>
   void updateH11Block(Eigen::MatrixBase<Derived1>& H, Eigen::MatrixBase<Derived2>& v) {
     // wrt camera
-    H += _d_err_d_gamma.transpose() * _d_err_d_gamma;
+    H.noalias() += _d_err_d_gamma.transpose() * _d_err_d_gamma;
     v += _d_err_d_gamma.transpose() * _err;
   }
   template<class Derived1, class Derived2>
   void updateH22Block(Eigen::MatrixBase<Derived1>& H, Eigen::MatrixBase<Derived2>& v) {
-    H += _d_err_d_point.transpose() * _d_err_d_point;
+    H.noalias() += _d_err_d_point.transpose() * _d_err_d_point;
     v += _d_err_d_point.transpose() * _err;
   }
   template<class Derived1>
   void updateH12Block(Eigen::MatrixBase<Derived1>& H, bool transpose) {
     assert(transpose == false);
-    H += _d_err_d_gamma.transpose() * _d_err_d_point;
+    H.noalias() += _d_err_d_gamma.transpose() * _d_err_d_point;
   }
 };
 
