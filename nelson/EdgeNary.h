@@ -15,26 +15,40 @@ namespace nelson {
 
   template<int N>
   class EdgeNaryContainer {
-  protected:
     std::array<NodeId, N> _parId;
   public:
     EdgeNaryContainer(int n) { std::fill(_parId.begin(), _parId.end(), -1); }
+
+    std::array<NodeId, N>& parId() {
+      return _parId;
+    }
+
+    const std::array<NodeId, N>& parId() const {
+      return _parId;
+    }
 
     constexpr int numParams() const { return N; }
   };
   template<>
   class EdgeNaryContainer<mat::Dynamic> {
-  protected:
     std::vector<NodeId> _parId;
   public:
     EdgeNaryContainer(int n) : _parId(n,-1) {}
+
+    std::vector<NodeId>& parId() {
+      return _parId;
+    }
+
+    const std::vector<NodeId>& parId() const {
+      return _parId;
+    }
 
     int numParams() const { return _parId.size(); }
   };
 
   template<int N>
-  class EdgeNaryBase : public EdgeInterface, public EdgeNaryContainer<N> {
-
+  class EdgeNaryBase : public EdgeInterface  {
+    EdgeNaryContainer<N> _parIds;
     Eigen::Matrix<int, N, N> _H_uid; //note, only triag up used.... can we do better storing a linear vector only?
 
   protected:
@@ -58,12 +72,16 @@ namespace nelson {
     virtual ~EdgeNaryBase();
 
     NodeId parId(int i) const {
-      return this->_parId[i];
+      return this->_parIds.parId()[i];
     }
 
     int HUid(int i, int j) const {
       assert(j >= i);
       return _H_uid(i,j);
+    }
+
+    int numParams() const {
+      return _parIds.numParams();
     }
 
   };

@@ -6,7 +6,7 @@ namespace nelson {
 
   template<int N>
   EdgeNaryBase<N>::EdgeNaryBase(int n) :
-    EdgeNaryContainer<N>(n),
+    _parIds(n),
     _H_uid(n, n)
   {
     if (N == mat::Dynamic) {
@@ -23,7 +23,7 @@ namespace nelson {
 
   template<int N>
   void EdgeNaryBase<N>::setParId(int i, NodeId id) {
-    this->_parId[i] = id;
+    this->_parIds.parId()[i] = id;
   }
 
   template<int N>

@@ -30,6 +30,7 @@ set(TESTS_LIST
   testMatrixVinv.cpp
   testDoubleSectionSchurDiagBlockWWtFFFF.cpp
   testEdgeNary.cpp
+  testEdgeBNary.cpp
 )
 
 foreach(s ${TESTS_LIST})
