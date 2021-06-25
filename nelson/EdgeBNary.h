@@ -14,6 +14,15 @@
 #include "EdgeNary.h"
 
 namespace nelson {
+  template<int N>
+  struct ContainerType {
+    using Type = std::array<NodeId, N>;
+  };
+
+  template<>
+  struct ContainerType<mat::Dynamic> {
+    using Type = std::vector<NodeId>;
+  };
 
   template<int N1, int N2>
   class EdgeBNaryContainer {
@@ -230,7 +239,7 @@ namespace nelson {
       assert(this->par_1_Id(i).isVariable());
       assert(this->par_2_Id(j).isVariable());
 
-      typename SectionAdapter::H_11_BlockType  bH = SectionAdapter::H_12_Block(this->section(), this->HUid_W(i, j));
+      typename SectionAdapter::H_12_BlockType  bH = SectionAdapter::H_12_Block(this->section(), this->HUid_W(i, j));
       static_cast<Derived*>(this)->updateHVBlock(i, j, bH, transpose);
     }
 

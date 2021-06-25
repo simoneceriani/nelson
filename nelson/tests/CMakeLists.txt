@@ -196,6 +196,7 @@ find_package_wrapper(lie REQUIRED CONFIG)
 set(TESTS_LIST 
   testGaussNewton2DScansAlign.cpp
   testGaussNewton2DScansAlignNary.cpp
+  testGaussNewton2DScansAlignBNary.cpp
 )
 
 foreach(s ${TESTS_LIST})

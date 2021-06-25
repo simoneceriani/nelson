@@ -364,6 +364,90 @@ namespace nelson {
     }
   }
 
+
+//--- BNary
+
+  template<class Derived, class ParUT, class ParVT, int matTypeUv, int matTypeVv, int matTypeWv, class Tv, int BUv, int BVv, int NBUv, int NBVv>
+  template<class EdgeDerived, int N1, int N2>
+  void DoubleSection<Derived, ParUT, ParVT, matTypeUv, matTypeVv, matTypeWv, Tv, BUv, BVv, NBUv, NBVv>::addEdge(
+    const typename ContainerType<N1>::Type & ids1, 
+    const typename ContainerType<N2>::Type & ids2, 
+    EdgeBNary<EdgeDerived, N1, N2> *e
+  ) {
+    assert(ids1.size() == e->numParams1()); 
+    assert(ids2.size() == e->numParams2()); 
+
+    for (int i = 0; i < ids1.size(); i++) {
+      e->setPar1Id(i, ids1[i]);
+    }
+    for (int i = 0; i < ids2.size(); i++) {
+      e->setPar2Id(i, ids2[i]);
+    }
+    e->setSection(static_cast<Derived*>(this));
+    this->_edgesVector.push_back(std::unique_ptr<EdgeInterface>(e));
+
+    // add setters U
+    for (int ii = 0; ii < ids1.size(); ii++) {
+      auto i = ids1[ii];
+
+      if (i.type() == NodeType::Variable) {
+        this->_edgeSetterComputerU[i.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeBNaryBase<N1, N2>::EdgeUID_U_Setter(e, ii, ii), new typename EdgeBNarySectionBase<Derived, N1, N2>::HessianUpdater_U(e, ii, ii)));
+        this->_edgeSetterComputerU[i.id()][i.id()].size++;
+      }
+
+      for (int jj = ii + 1; jj < ids1.size(); jj++) {
+        auto j = ids1[jj];
+
+        if (i.type() == NodeType::Variable && j.type() == NodeType::Variable) {
+          assert(i.id() < j.id());
+          this->_edgeSetterComputerU[j.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeBNaryBase<N1, N2>::EdgeUID_U_Setter(e, ii, jj), new typename EdgeBNarySectionBase<Derived, N1, N2>::HessianUpdater_U(e, ii, jj)));
+          this->_edgeSetterComputerU[j.id()][i.id()].size++;
+        }
+      }
+
+    }
+    // add setters V
+    for (int ii = 0; ii < ids2.size(); ii++) {
+      auto i = ids2[ii];
+
+      if (i.type() == NodeType::Variable) {
+        this->_edgeSetterComputerV[i.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeBNaryBase<N1, N2>::EdgeUID_V_Setter(e, ii, ii), new typename EdgeBNarySectionBase<Derived, N1, N2>::HessianUpdater_V(e, ii, ii)));
+        this->_edgeSetterComputerV[i.id()][i.id()].size++;
+      }
+
+      for (int jj = ii + 1; jj < ids2.size(); jj++) {
+        auto j = ids2[jj];
+
+        if (i.type() == NodeType::Variable && j.type() == NodeType::Variable) {
+          assert(i.id() < j.id());
+          this->_edgeSetterComputerV[j.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeBNaryBase<N1, N2>::EdgeUID_V_Setter(e, ii, jj), new typename EdgeBNarySectionBase<Derived, N1, N2>::HessianUpdater_V(e, ii, jj)));
+          this->_edgeSetterComputerV[j.id()][i.id()].size++;
+        }
+      }
+
+    }
+
+  
+
+    // add setters W
+    for (int ii = 0; ii < ids1.size(); ii++) {
+      auto i = ids1[ii];
+
+      for (int jj = ii + 1; jj < ids2.size(); jj++) {
+        auto j = ids2[jj];
+
+        if (i.type() == NodeType::Variable && j.type() == NodeType::Variable) {
+          this->_edgeSetterComputerW[j.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeBNaryBase<N1, N2>::EdgeUID_W_Setter(e, ii, jj), new typename EdgeBNarySectionBase<Derived, N1, N2>::HessianUpdater_W(e, ii, jj)));
+          this->_edgeSetterComputerW[j.id()][i.id()].size++;
+        }
+      }
+
+    }
+
+  }
+
+  //---------------------------------------------------------------------------------------------
+
   template<class Derived, class ParUT, class ParVT, int matTypeUv, int matTypeVv, int matTypeWv, class Tv, int BUv, int BVv, int NBUv, int NBVv>
   void DoubleSection<Derived, ParUT, ParVT, matTypeUv, matTypeVv, matTypeWv, Tv, BUv, BVv, NBUv, NBVv>::update(bool hessian) {
 

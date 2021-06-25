@@ -13,6 +13,7 @@
 #include "EdgeUnary.h"
 #include "EdgeBinary.h"
 #include "EdgeNary.h"
+#include "EdgeBNary.h"
 
 #include <memory>
 #include <vector>
@@ -530,6 +531,15 @@ namespace nelson {
     template<class EdgeBinaryAdapterT, class EdgeDerived>
     void addEdge(NodeId i, NodeId j, EdgeBinary<EdgeBinaryAdapterT, EdgeDerived>* e);
 
+    template<class EdgeDerived, int N1, int N2>
+    using EdgeBNary = EdgeBNarySectionBaseCRPT<Derived, N1, N2, EdgeBinaryAdapterUV, EdgeDerived>;
+
+    template<class EdgeDerived, int N1, int N2>
+    void addEdge(
+      const typename ContainerType<N1>::Type & ids1, 
+      const typename ContainerType<N2>::Type & ids2, 
+      EdgeBNary<EdgeDerived, N1, N2> *e
+    );
     
 
   };

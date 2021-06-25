@@ -21,17 +21,7 @@
 #include <map>
 
 namespace nelson {
-
-    template<int N>
-    struct ContainerType {
-      using Type = std::array<NodeId, N>;
-    };
-
-    template<>
-    struct ContainerType<mat::Dynamic> {
-      using Type = std::vector<NodeId>;
-    };
-
+    
   template<int B, int NB>
   class BaseNumSizeParameters {
   public:
