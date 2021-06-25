@@ -60,3 +60,65 @@ TEST_CASE("testEdgeBNaryBase", "[testEdgeNary]") {
     } e(1, 1);
   }
 }
+
+//----------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------
+
+struct Element {
+  static constexpr int N = 2;
+};
+
+class Section : public nelson::SingleSection<Section, Element, mat::BlockDense, double, Element::N, 3> {
+  std::vector<Element> _elements;
+public:
+
+  Section() {
+    this->parametersReady();
+  }
+
+  virtual const Element& parameter(nelson::NodeId i) const {
+    return _elements[i.id()];
+  }
+  virtual Element& parameter(nelson::NodeId i) {
+    return _elements[i.id()];
+  }
+
+};
+
+struct Edge1_S : public nelson::EdgeBNarySectionBaseCRPT<Section, 1, 1, Section::EdgeBinaryAdapter, Edge1_S> {
+
+  void update(bool hessians) {
+
+  }
+
+  template<class Derived1, class Derived2>
+  void updateHUBlock(int i, Eigen::MatrixBase<Derived1>& H, Eigen::MatrixBase<Derived2>& b) {
+
+  }
+  template<class Derived>
+  void updateHUBlock(int i, int j, Eigen::MatrixBase<Derived>& Hij, bool transpose) {
+
+  }
+  template<class Derived1, class Derived2>
+  void updateHVBlock(int i, Eigen::MatrixBase<Derived1>& H, Eigen::MatrixBase<Derived2>& b) {
+
+  }
+  template<class Derived>
+  void updateHVBlock(int i, int j, Eigen::MatrixBase<Derived>& Hij, bool transpose) {
+
+  }
+  template<class Derived>
+  void updateHWBlock(int i, int j, Eigen::MatrixBase<Derived>& Hij, bool transpose) {
+
+  }
+};
+
+TEST_CASE("testEdgeNary", "[testEdgeNary]") {
+
+  Edge1_S e1_S;
+  Section s;
+
+  s.addEdge(std::array<nelson::NodeId,1>({ 0 }), std::array<nelson::NodeId,1>({ 1}), new Edge1_S());
+
+}

@@ -203,7 +203,7 @@ namespace nelson {
       typename SectionAdapter::H_11_BlockType  bH = SectionAdapter::H_11_Block(this->section(), this->HUid_U(i, j));
       if (i == j) {
         assert(transpose == false);
-        typename SectionAdapter::BSegmentType bV = SectionAdapter::b_1_Segment(this->section(), this->par_1_Id(i).id());
+        typename SectionAdapter::B_1_SegmentType bV = SectionAdapter::b_1_Segment(this->section(), this->par_1_Id(i).id());
         static_cast<Derived*>(this)->updateHUBlock(i, bH, bV);
       }
       else {
@@ -211,14 +211,14 @@ namespace nelson {
       }
     }
     void updateH_V(int i, int j, bool transpose) override final {
-      assert(this->HVid_V(i, j) >= 0);
+      assert(this->HUid_V(i, j) >= 0);
       assert(this->par_2_Id(i).isVariable());
       assert(this->par_2_Id(j).isVariable());
 
-      typename SectionAdapter::H_22_BlockType  bH = SectionAdapter::H_22_Block(this->section(), this->HVid_U(i, j));
+      typename SectionAdapter::H_22_BlockType  bH = SectionAdapter::H_22_Block(this->section(), this->HUid_V(i, j));
       if (i == j) {
         assert(transpose == false);
-        typename SectionAdapter::BSegmentType bV = SectionAdapter::b_2_Segment(this->section(), this->par_2_Id(i).id());
+        typename SectionAdapter::B_2_SegmentType bV = SectionAdapter::b_2_Segment(this->section(), this->par_2_Id(i).id());
         static_cast<Derived*>(this)->updateHVBlock(i, bH, bV);
       }
       else {
@@ -226,11 +226,11 @@ namespace nelson {
       }
     }
     void updateH_W(int i, int j, bool transpose) override final {
-      assert(this->HWid_V(i, j) >= 0);
+      assert(this->HUid_W(i, j) >= 0);
       assert(this->par_1_Id(i).isVariable());
       assert(this->par_2_Id(j).isVariable());
 
-      typename SectionAdapter::H_11_BlockType  bH = SectionAdapter::H_12_Block(this->section(), this->HVid_U(i, j));
+      typename SectionAdapter::H_11_BlockType  bH = SectionAdapter::H_12_Block(this->section(), this->HUid_W(i, j));
       static_cast<Derived*>(this)->updateHVBlock(i, j, bH, transpose);
     }
 

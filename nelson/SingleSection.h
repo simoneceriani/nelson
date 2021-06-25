@@ -12,10 +12,12 @@
 #include "EdgeInterface.h"
 #include "EdgeUnary.h"
 #include "EdgeNary.h"
+#include "EdgeBNary.h"
 #include "EdgeBinary.h"
 
 #include <memory>
 #include <vector>
+#include <array>
 #include <map>
 
 namespace nelson {
@@ -291,6 +293,23 @@ namespace nelson {
     
     template<class EdgeDerived>
     void addEdge(const std::vector<NodeId>& ids, EdgeNary<EdgeDerived, mat::Dynamic> *e);
+
+
+    template<class EdgeDerived, int N1, int N2>
+    using EdgeBNary = EdgeBNarySectionBaseCRPT<Derived, N1, N2, EdgeBinaryAdapter, EdgeDerived>;
+
+    // generic
+    template<class EdgeDerived, int N1, int N2, class Container1, class Container2>
+    void addEdge(const Container1& ids1, const Container2& ids2, EdgeBNary<EdgeDerived, N1, N2> *e);    
+
+    template<class EdgeDerived, int N1, int N2>
+    void addEdge(const std::array<NodeId, N1>& ids1, const std::array<NodeId, N2>& ids2, EdgeBNary<EdgeDerived, N1, N2> *e);    
+    template<class EdgeDerived, int N1>
+    void addEdge(const std::array<NodeId, N1>& ids1, const std::vector<NodeId>& ids2, EdgeBNary<EdgeDerived, N1, mat::Dynamic> *e);
+    template<class EdgeDerived, int N2>
+    void addEdge(const std::vector<NodeId>& ids1, const std::array<NodeId, N2>& ids2, EdgeBNary<EdgeDerived, mat::Dynamic, N2> *e);
+    template<class EdgeDerived>
+    void addEdge(const std::vector<NodeId>& ids1, const std::vector<NodeId>& ids2, EdgeBNary<EdgeDerived, mat::Dynamic, mat::Dynamic> *e);
 
 
   };
