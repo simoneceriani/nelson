@@ -125,7 +125,7 @@ public:
   }
   template<class Derived>
   void updateHWBlock(int i, int j, Eigen::MatrixBase<Derived>& Hij, bool transpose) {
-    assert(i == 0 && j == 1);
+    assert(i == 0 && j == 0);
     Hij.noalias() -= Hs;
   }  
 

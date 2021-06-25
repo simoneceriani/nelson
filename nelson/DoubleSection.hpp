@@ -433,7 +433,7 @@ namespace nelson {
     for (int ii = 0; ii < ids1.size(); ii++) {
       auto i = ids1[ii];
 
-      for (int jj = ii + 1; jj < ids2.size(); jj++) {
+      for (int jj = 0; jj < ids2.size(); jj++) {
         auto j = ids2[jj];
 
         if (i.type() == NodeType::Variable && j.type() == NodeType::Variable) {

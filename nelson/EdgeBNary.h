@@ -240,7 +240,7 @@ namespace nelson {
       assert(this->par_2_Id(j).isVariable());
 
       typename SectionAdapter::H_12_BlockType  bH = SectionAdapter::H_12_Block(this->section(), this->HUid_W(i, j));
-      static_cast<Derived*>(this)->updateHVBlock(i, j, bH, transpose);
+      static_cast<Derived*>(this)->updateHWBlock(i, j, bH, transpose);
     }
 
   };
