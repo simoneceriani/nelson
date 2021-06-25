@@ -86,7 +86,8 @@ public:
 
 };
 
-struct Edge1_S : public nelson::EdgeBNarySectionBaseCRPT<Section, 1, 1, Section::EdgeBinaryAdapter, Edge1_S> {
+template<int N1, int N2>
+struct Edge1_S : public nelson::EdgeBNarySectionBaseCRPT<Section, N1, N2, Section::EdgeBinaryAdapter, Edge1_S<N1,N2>> {
 
   void update(bool hessians) {
 
@@ -116,9 +117,12 @@ struct Edge1_S : public nelson::EdgeBNarySectionBaseCRPT<Section, 1, 1, Section:
 
 TEST_CASE("testEdgeNary", "[testEdgeNary]") {
 
-  Edge1_S e1_S;
+  Edge1_S<1,1> e1_S;
   Section s;
 
-  s.addEdge(std::array<nelson::NodeId,1>({ 0 }), std::array<nelson::NodeId,1>({ 1}), new Edge1_S());
+  s.addEdge({0}, {1}, new Edge1_S<1,1>());
+  s.addEdge(std::array<nelson::NodeId, 1>({0}), {1}, new Edge1_S<1,mat::Dynamic>());
+  s.addEdge({0}, std::array<nelson::NodeId, 1>({1}), new Edge1_S<mat::Dynamic,1>());
+  s.addEdge({0}, {1}, new Edge1_S<mat::Dynamic,mat::Dynamic>());
 
 }

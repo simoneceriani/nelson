@@ -22,6 +22,16 @@
 
 namespace nelson {
 
+    template<int N>
+    struct ContainerType {
+      using Type = std::array<NodeId, N>;
+    };
+
+    template<>
+    struct ContainerType<mat::Dynamic> {
+      using Type = std::vector<NodeId>;
+    };
+
   template<int B, int NB>
   class BaseNumSizeParameters {
   public:
@@ -303,13 +313,19 @@ namespace nelson {
     void addEdgeT(const Container1& ids1, const Container2& ids2, EdgeBNary<EdgeDerived, N1, N2> *e);    
 
     template<class EdgeDerived, int N1, int N2>
-    void addEdge(const std::array<NodeId, N1>& ids1, const std::array<NodeId, N2>& ids2, EdgeBNary<EdgeDerived, N1, N2> *e);    
-    template<class EdgeDerived, int N1>
-    void addEdge(const std::array<NodeId, N1>& ids1, const std::vector<NodeId>& ids2, EdgeBNary<EdgeDerived, N1, mat::Dynamic> *e);
-    template<class EdgeDerived, int N2>
-    void addEdge(const std::vector<NodeId>& ids1, const std::array<NodeId, N2>& ids2, EdgeBNary<EdgeDerived, mat::Dynamic, N2> *e);
-    template<class EdgeDerived>
-    void addEdge(const std::vector<NodeId>& ids1, const std::vector<NodeId>& ids2, EdgeBNary<EdgeDerived, mat::Dynamic, mat::Dynamic> *e);
+    void addEdge(
+      const typename ContainerType<N1>::Type & ids1, 
+      const typename ContainerType<N2>::Type & ids2, 
+      EdgeBNary<EdgeDerived, N1, N2> *e
+    );
+    // template<class EdgeDerived, int N1, int N2>
+    // void addEdge(const std::array<NodeId, N1>& ids1, const std::array<NodeId, N2>& ids2, EdgeBNary<EdgeDerived, N1, N2> *e);    
+    // template<class EdgeDerived, int N1>
+    // void addEdge(const std::array<NodeId, N1>& ids1, const std::vector<NodeId>& ids2, EdgeBNary<EdgeDerived, N1, mat::Dynamic> *e);
+    // template<class EdgeDerived, int N2>
+    // void addEdge(const std::vector<NodeId>& ids1, const std::array<NodeId, N2>& ids2, EdgeBNary<EdgeDerived, mat::Dynamic, N2> *e);
+    // template<class EdgeDerived>
+    // void addEdge(const std::vector<NodeId>& ids1, const std::vector<NodeId>& ids2, EdgeBNary<EdgeDerived, mat::Dynamic, mat::Dynamic> *e);
 
 
   };

@@ -530,6 +530,8 @@ namespace nelson {
     template<class EdgeBinaryAdapterT, class EdgeDerived>
     void addEdge(NodeId i, NodeId j, EdgeBinary<EdgeBinaryAdapterT, EdgeDerived>* e);
 
+    
+
   };
 
 }

@@ -328,29 +328,109 @@ namespace nelson {
 
   }
 
-
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
   template<class EdgeDerived, int N1, int N2>
-  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(const std::array<NodeId, N1>& ids1, const std::array<NodeId, N2>& ids2, EdgeBNary<EdgeDerived, N1, N2> *e) {
-    this->addEdgeT(ids1, ids2, e);
+  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(
+    const typename ContainerType<N1>::Type & ids1, 
+    const typename ContainerType<N2>::Type & ids2, 
+    EdgeBNary<EdgeDerived, N1, N2> *e
+  ) {
+    assert(ids1.size() == e->numParams1()); 
+    assert(ids2.size() == e->numParams2()); 
+
+    for (int i = 0; i < ids1.size(); i++) {
+      e->setPar1Id(i, ids1[i]);
+    }
+    for (int i = 0; i < ids2.size(); i++) {
+      e->setPar2Id(i, ids2[i]);
+    }
+    e->setSection(static_cast<Derived*>(this));
+    this->_edgesVector.push_back(std::unique_ptr<EdgeInterface>(e));
+
+    // add setters U
+    for (int ii = 0; ii < ids1.size(); ii++) {
+      auto i = ids1[ii];
+
+      if (i.type() == NodeType::Variable) {
+        this->_edgeSetterComputer[i.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeBNaryBase<N1, N2>::EdgeUID_U_Setter(e, ii, ii), new typename EdgeBNarySectionBase<Derived, N1, N2>::HessianUpdater_U(e, ii, ii)));
+        this->_edgeSetterComputer[i.id()][i.id()].size++;
+      }
+
+      for (int jj = ii + 1; jj < ids1.size(); jj++) {
+        auto j = ids1[jj];
+
+        if (i.type() == NodeType::Variable && j.type() == NodeType::Variable) {
+          assert(i.id() < j.id());
+          this->_edgeSetterComputer[j.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeBNaryBase<N1, N2>::EdgeUID_U_Setter(e, ii, jj), new typename EdgeBNarySectionBase<Derived, N1, N2>::HessianUpdater_U(e, ii, jj)));
+          this->_edgeSetterComputer[j.id()][i.id()].size++;
+        }
+      }
+
+    }
+    // add setters V
+    for (int ii = 0; ii < ids2.size(); ii++) {
+      auto i = ids2[ii];
+
+      if (i.type() == NodeType::Variable) {
+        this->_edgeSetterComputer[i.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeBNaryBase<N1, N2>::EdgeUID_V_Setter(e, ii, ii), new typename EdgeBNarySectionBase<Derived, N1, N2>::HessianUpdater_V(e, ii, ii)));
+        this->_edgeSetterComputer[i.id()][i.id()].size++;
+      }
+
+      for (int jj = ii + 1; jj < ids2.size(); jj++) {
+        auto j = ids2[jj];
+
+        if (i.type() == NodeType::Variable && j.type() == NodeType::Variable) {
+          assert(i.id() < j.id());
+          this->_edgeSetterComputer[j.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeBNaryBase<N1, N2>::EdgeUID_V_Setter(e, ii, jj), new typename EdgeBNarySectionBase<Derived, N1, N2>::HessianUpdater_V(e, ii, jj)));
+          this->_edgeSetterComputer[j.id()][i.id()].size++;
+        }
+      }
+
+    }
+
+  
+
+    // add setters W
+    for (int ii = 0; ii < ids1.size(); ii++) {
+      auto i = ids1[ii];
+
+      for (int jj = ii + 1; jj < ids2.size(); jj++) {
+        auto j = ids2[jj];
+
+        if (i.type() == NodeType::Variable && j.type() == NodeType::Variable) {
+          this->_edgeSetterComputer[j.id()][i.id()].list.emplace_front(SetterComputer(new typename EdgeBNaryBase<N1, N2>::EdgeUID_W_Setter(e, ii, jj), new typename EdgeBNarySectionBase<Derived, N1, N2>::HessianUpdater_W(e, ii, jj)));
+          this->_edgeSetterComputer[j.id()][i.id()].size++;
+        }
+      }
+
+    }
+
   }
 
-  template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
-  template<class EdgeDerived, int N1>
-  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(const std::array<NodeId, N1>& ids1, const std::vector<NodeId>& ids2, EdgeBNary<EdgeDerived, N1, mat::Dynamic> *e) {
-    this->addEdgeT(ids1, ids2, e);
-  }
-  template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
-  template<class EdgeDerived, int N2>
-  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(const std::vector<NodeId>& ids1, const std::array<NodeId, N2>& ids2, EdgeBNary<EdgeDerived, mat::Dynamic, N2> *e){
-    this->addEdgeT(ids1, ids2, e);
-  }
-  template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
-  template<class EdgeDerived>
-  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(const std::vector<NodeId>& ids1, const std::vector<NodeId>& ids2, EdgeBNary<EdgeDerived, mat::Dynamic, mat::Dynamic> *e){
-    this->addEdgeT(ids1, ids2, e);
-  }
 
+//
+//  template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
+//  template<class EdgeDerived, int N1, int N2>
+//  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(const std::array<NodeId, N1>& ids1, const std::array<NodeId, N2>& ids2, EdgeBNary<EdgeDerived, N1, N2> *e) {
+//    this->addEdgeT(ids1, ids2, e);
+//  }
+//
+//  template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
+//  template<class EdgeDerived, int N1>
+//  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(const std::array<NodeId, N1>& ids1, const std::vector<NodeId>& ids2, EdgeBNary<EdgeDerived, N1, mat::Dynamic> *e) {
+//    this->addEdgeT(ids1, ids2, e);
+//  }
+//  template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
+//  template<class EdgeDerived, int N2>
+//  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(const std::vector<NodeId>& ids1, const std::array<NodeId, N2>& ids2, EdgeBNary<EdgeDerived, mat::Dynamic, N2> *e){
+//    this->addEdgeT(ids1, ids2, e);
+//  }
+//  template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
+//  template<class EdgeDerived>
+//  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(const std::vector<NodeId>& ids1, const std::vector<NodeId>& ids2, EdgeBNary<EdgeDerived, mat::Dynamic, mat::Dynamic> *e){
+//    this->addEdgeT(ids1, ids2, e);
+//  }
+//
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
   void SingleSection<Derived, ParT, matTypeV, T, B, NB>::update(bool hessian) {
 
