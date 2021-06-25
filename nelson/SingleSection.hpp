@@ -255,7 +255,7 @@ namespace nelson {
 //--- BNary
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
   template<class EdgeDerived, int N1, int N2, class Container1, class Container2>
-  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(const Container1& ids1, const Container2& ids2, EdgeBNary<EdgeDerived, N1, N2>  *e) {
+  void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdgeT(const Container1& ids1, const Container2& ids2, EdgeBNary<EdgeDerived, N1, N2>  *e) {
     assert(ids1.size() == e->numParams1()); 
     assert(ids2.size() == e->numParams2()); 
 
@@ -332,23 +332,23 @@ namespace nelson {
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
   template<class EdgeDerived, int N1, int N2>
   void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(const std::array<NodeId, N1>& ids1, const std::array<NodeId, N2>& ids2, EdgeBNary<EdgeDerived, N1, N2> *e) {
-    this->addEdge(ids1, ids2, e);
+    this->addEdgeT(ids1, ids2, e);
   }
 
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
   template<class EdgeDerived, int N1>
   void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(const std::array<NodeId, N1>& ids1, const std::vector<NodeId>& ids2, EdgeBNary<EdgeDerived, N1, mat::Dynamic> *e) {
-    this->addEdge(ids1, ids2, e);
+    this->addEdgeT(ids1, ids2, e);
   }
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
   template<class EdgeDerived, int N2>
   void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(const std::vector<NodeId>& ids1, const std::array<NodeId, N2>& ids2, EdgeBNary<EdgeDerived, mat::Dynamic, N2> *e){
-    this->addEdge(ids1, ids2, e);
+    this->addEdgeT(ids1, ids2, e);
   }
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >
   template<class EdgeDerived>
   void SingleSection<Derived, ParT, matTypeV, T, B, NB>::addEdge(const std::vector<NodeId>& ids1, const std::vector<NodeId>& ids2, EdgeBNary<EdgeDerived, mat::Dynamic, mat::Dynamic> *e){
-    this->addEdge(ids1, ids2, e);
+    this->addEdgeT(ids1, ids2, e);
   }
 
   template<class Derived, class ParT, int matTypeV, class T, int B, int NB >

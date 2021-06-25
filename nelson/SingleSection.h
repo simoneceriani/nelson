@@ -300,7 +300,7 @@ namespace nelson {
 
     // generic
     template<class EdgeDerived, int N1, int N2, class Container1, class Container2>
-    void addEdge(const Container1& ids1, const Container2& ids2, EdgeBNary<EdgeDerived, N1, N2> *e);    
+    void addEdgeT(const Container1& ids1, const Container2& ids2, EdgeBNary<EdgeDerived, N1, N2> *e);    
 
     template<class EdgeDerived, int N1, int N2>
     void addEdge(const std::array<NodeId, N1>& ids1, const std::array<NodeId, N2>& ids2, EdgeBNary<EdgeDerived, N1, N2> *e);    
