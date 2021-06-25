@@ -90,7 +90,7 @@ namespace nelson {
   public:
 
     // TODO: better if 2 constructor with a enable_if like mechanism....
-    EdgeBNaryBase(int n1 = N1, int n2 = N2);
+    EdgeBNaryBase(int n1, int n2);
     virtual ~EdgeBNaryBase();
 
     NodeId par_1_Id(int i) const {
@@ -168,7 +168,7 @@ namespace nelson {
 
   public:
 
-    EdgeBNarySectionBase(int size1 = N1, int size2 = N2);
+    EdgeBNarySectionBase(int size1, int size2);
     virtual ~EdgeBNarySectionBase();
 
     // virtual void update(bool updateHessians) = 0; // defined in base
